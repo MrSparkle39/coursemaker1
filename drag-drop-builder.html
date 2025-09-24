@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Course Builder - CourseMaker</title>
+  <meta name="description" content="CourseMaker drag and drop builder">
+  <meta name="author" content="CourseMaker" />
+  
+  <!-- CourseMaker Universal Header -->
+  <script src="universal-header.js"></script>
+  
+  <!-- React App Styles -->
+  <link rel="stylesheet" href="index-DwHa_Dpf.css">
+  
+  <style>
+    /* Ensure the React app takes full height */
+    #root {
+      min-height: 100vh;
+    }
+    
+    /* Hide the universal header initially, it will be inserted by the script */
+    .universal-header-placeholder {
+      display: none;
+    }
+    
+    /* Loading state */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0f172a;
+      color: white;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Universal Header will be inserted here by universal-header.js -->
+  <div class="universal-header-placeholder"></div>
+  
+  <!-- React App Root -->
+  <div id="root">
+    <div class="loading">
+      <div style="text-align: center;">
+        <div style="width: 40px; height: 40px; border: 4px solid #1e293b; border-top: 4px solid #06b6d4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+        <h2 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 600;">Loading Interactive Builder</h2>
+        <p style="margin: 0; color: #94a3b8; font-size: 0.875rem;">Preparing your drag-and-drop course creation tools...</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- React App Script -->
+  <script type="module" src="index-DwBZwBrh.js"></script>
+  
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</body>
+</html>

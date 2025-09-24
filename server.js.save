@@ -1,0 +1,48 @@
+// --- PowerPoint Course Maker - Server (Part A) ---
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const textToSpeech = require('@google-cloud/text-to-speech');
+
+// Google TTS client (uses your downloaded key)
+const ttsClient = new textToSpeech.TextToSpeechClient({
+  keyFilename: path.join(__dirname, 'google-cloud-key.json'),
+});
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: '2mb' }));
+
+// Audio output folder + static hosting
+const AUDIO_DIR = path.join(__dirname, 'generated_audio');
+if (!fs.existsSync(AUDIO_DIR)) fs.mkdirSync(AUDIO_DIR, { recursive: true });
+app.use('/audio', express.static(AUDIO_DIR));
+
+// Only cost-effective Neural2 voices (~$16/1M chars)
+const ALLOWED_VOICES = new Set([
+  'en-US-Neural2-A','en-US-Neural2-C','en-US-Neural2-D','en-US-Neural2-F',
+  'en-GB-Neural2-A','en-GB-Neural2-B',
+  'en-AU-Neural2-A','en-AU-Neural2-B'
+]);
+
+function inferLanguageCode(voiceName) {
+  const parts = voiceName.split('-'); // e.g. en, US, Neural2, A
+  return parts.length >= 2 ? `${parts[0]}-${parts[1]}` : 'en-US';
+}
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const textToSpeech = require('@google-cloud/text-to-speech');
+
+// --- Google TTS client (uses your downloaded key) ---
+const ttsClient = new textToSpeech.TextToSpeechClient({
+  keyFilename: path.join(__dirname, 'google-cloud-key.json'),
+});
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: '2mb' }));

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Choose Your Plan · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="universal-header.js"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .plan-card {
+      transition: all 0.3s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .plan-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .plan-card.featured {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: rgba(6, 182, 212, 0.3);
+      position: relative;
+    }
+    .plan-card.featured::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1));
+      border-radius: 1rem;
+      pointer-events: none;
+    }
+    .feature-check {
+      color: #10b981;
+      font-weight: bold;
+    }
+    .feature-cross {
+      color: #ef4444;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Universal Header will be inserted here by universal-header.js -->
+
+  <!-- Hero Section -->
+  <section class="relative py-20">
+    <div class="mx-auto max-w-7xl px-4 md:px-6">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+          Choose Your <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Plan</span>
+        </h1>
+        <p class="text-xl text-slate-400 mb-8 max-w-3xl mx-auto">
+          Transform your PowerPoint presentations into engaging online courses with AI narration and interactive elements. Choose the plan that fits your needs.
+        </p>
+        
+        <!-- Plan Toggle (Monthly/Annual) -->
+        <div class="flex items-center justify-center gap-4 mb-12">
+          <span class="text-slate-300">Monthly</span>
+          <div class="relative">
+            <input type="checkbox" id="planToggle" class="sr-only">
+            <label for="planToggle" class="flex items-center cursor-pointer">
+              <div class="relative w-14 h-8 bg-slate-700 rounded-full border border-white/10">
+                <div class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform duration-300" id="toggleButton"></div>
+              </div>
+            </label>
+          </div>
+          <span class="text-slate-300">Annual <span class="badge text-green-300 border-green-400/40 bg-green-500/20">Save 20%</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Plans Grid -->
+  <section class="py-16">
+    <div class="mx-auto max-w-7xl px-4 md:px-6">
+      <div class="grid gap-8 lg:grid-cols-3" id="plansGrid">
+        
+        <!-- Free Plan -->
+        <div class="plan-card rounded-2xl p-8 relative" data-plan="free">
+          <div class="mb-6">
+            <h3 class="text-2xl font-bold text-white mb-2">Free</h3>
+            <div class="flex items-baseline gap-2 mb-4">
+              <span class="text-4xl font-bold text-white">$0</span>
+              <span class="text-slate-400">/month</span>
+            </div>
+            <p class="text-slate-300">Perfect for trying out CourseMaker</p>
+          </div>
+          
+          <div class="space-y-4 mb-8">
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">1 course per month</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Basic PowerPoint conversion</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Standard slide templates</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-cross">✗</span>
+              <span class="text-slate-400">AI narration</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-cross">✗</span>
+              <span class="text-slate-400">Interactive elements</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-cross">✗</span>
+              <span class="text-slate-400">Custom branding</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-cross">✗</span>
+              <span class="text-slate-400">Analytics</span>
+            </div>
+          </div>
+          
+          <button class="w-full rounded-xl border border-white/20 bg-white/5 py-3 font-medium hover:bg-white/10 transition-colors" onclick="selectPlan('free')">
+            Get Started Free
+          </button>
+        </div>
+        
+        <!-- Pro Plan -->
+        <div class="plan-card featured rounded-2xl p-8 relative" data-plan="pro">
+          <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+            <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">Most Popular</span>
+          </div>
+          
+          <div class="mb-6">
+            <h3 class="text-2xl font-bold text-white mb-2">Pro</h3>
+            <div class="flex items-baseline gap-2 mb-4">
+              <span class="text-4xl font-bold text-white">
+                <span id="proPriceMonthly">$29</span>
+                <span id="proPriceAnnual" class="hidden">$23</span>
+              </span>
+              <span class="text-slate-400">/month</span>
+            </div>
+            <p class="text-slate-300">For educators and small businesses</p>
+          </div>
+          
+          <div class="space-y-4 mb-8">
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">10 courses per month</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">AI narration (100k characters)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Interactive slides (50/month)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Neural voice quality</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Basic analytics</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Email support</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-cross">✗</span>
+              <span class="text-slate-400">Premium voices</span>
+            </div>
+          </div>
+          
+          <button class="w-full rounded-xl bg-cyan-500 py-3 font-medium text-slate-900 hover:bg-cyan-400 transition-colors" onclick="selectPlan('pro')">
+            Start Pro Plan
+          </button>
+        </div>
+        
+        <!-- Business Plan -->
+        <div class="plan-card rounded-2xl p-8 relative" data-plan="business">
+          <div class="mb-6">
+            <h3 class="text-2xl font-bold text-white mb-2">Business</h3>
+            <div class="flex items-baseline gap-2 mb-4">
+              <span class="text-4xl font-bold text-white">
+                <span id="businessPriceMonthly">$99</span>
+                <span id="businessPriceAnnual" class="hidden">$79</span>
+              </span>
+              <span class="text-slate-400">/month</span>
+            </div>
+            <p class="text-slate-300">For teams and organizations</p>
+          </div>
+          
+          <div class="space-y-4 mb-8">
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Unlimited courses</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Unlimited AI narration</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Unlimited interactive slides</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Premium Chirp HD voices</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Advanced analytics</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Custom branding</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="feature-check">✓</span>
+              <span class="text-slate-200">Priority support</span>
+            </div>
+          </div>
+          
+          <button class="w-full rounded-xl bg-purple-500 py-3 font-medium text-white hover:bg-purple-400 transition-colors" onclick="selectPlan('business')">
+            Start Business Plan
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Comparison Table -->
+  <section class="py-16">
+    <div class="mx-auto max-w-6xl px-4 md:px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-4">Compare All Features</h2>
+        <p class="text-slate-400">See exactly what's included in each plan</p>
+      </div>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="border-b border-white/10">
+              <tr>
+                <th class="text-left p-6 font-medium text-slate-200">Features</th>
+                <th class="text-center p-6 font-medium text-slate-200">Free</th>
+                <th class="text-center p-6 font-medium text-cyan-300">Pro</th>
+                <th class="text-center p-6 font-medium text-purple-300">Business</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">Courses per month</td>
+                <td class="p-6 text-center text-slate-300">1</td>
+                <td class="p-6 text-center text-slate-300">10</td>
+                <td class="p-6 text-center text-slate-300">Unlimited</td>
+              </tr>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">PowerPoint conversion</td>
+                <td class="p-6 text-center"><span class="feature-check">✓</span></td>
+                <td class="p-6 text-center"><span class="feature-check">✓</span></td>
+                <td class="p-6 text-center"><span class="feature-check">✓</span></td>
+              </tr>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">AI narration characters/month</td>
+                <td class="p-6 text-center"><span class="feature-cross">✗</span></td>
+                <td class="p-6 text-center text-slate-300">100,000</td>
+                <td class="p-6 text-center text-slate-300">Unlimited</td>
+              </tr>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">Interactive slides per month</td>
+                <td class="p-6 text-center"><span class="feature-cross">✗</span></td>
+                <td class="p-6 text-center text-slate-300">50</td>
+                <td class="p-6 text-center text-slate-300">Unlimited</td>
+              </tr>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">Voice quality</td>
+                <td class="p-6 text-center"><span class="feature-cross">✗</span></td>
+                <td class="p-6 text-center text-slate-300">Neural</td>
+                <td class="p-6 text-center text-slate-300">Chirp HD</td>
+              </tr>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">Analytics</td>
+                <td class="p-6 text-center"><span class="feature-cross">✗</span></td>
+                <td class="p-6 text-center text-slate-300">Basic</td>
+                <td class="p-6 text-center text-slate-300">Advanced</td>
+              </tr>
+              <tr class="border-b border-white/5">
+                <td class="p-6 text-slate-200">Custom branding</td>
+                <td class="p-6 text-center"><span class="feature-cross">✗</span></td>
+                <td class="p-6 text-center"><span class="feature-cross">✗</span></td>
+                <td class="p-6 text-center"><span class="feature-check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="p-6 text-slate-200">Support</td>
+                <td class="p-6 text-center text-slate-300">Community</td>
+                <td class="p-6 text-center text-slate-300">Email</td>
+                <td class="p-6 text-center text-slate-300">Priority</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-16">
+    <div class="mx-auto max-w-4xl px-4 md:px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+        <p class="text-slate-400">Everything you need to know about our plans</p>
+      </div>
+      
+      <div class="space-y-6">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 class="font-semibold text-white mb-2">Can I change plans anytime?</h3>
+          <p class="text-slate-300">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately and billing is prorated.</p>
+        </div>
+        
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 class="font-semibold text-white mb-2">What happens if I exceed my limits?</h3>
+          <p class="text-slate-300">You'll receive notifications as you approach your limits. For Pro plans, you can purchase additional credits or upgrade to Business for unlimited usage.</p>
+        </div>
+        
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 class="font-semibold text-white mb-2">Do you offer refunds?</h3>
+          <p class="text-slate-300">We offer a 30-day money-back guarantee on all paid plans. No questions asked.</p>
+        </div>
+        
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 class="font-semibold text-white mb-2">Can I cancel anytime?</h3>
+          <p class="text-slate-300">Absolutely. You can cancel your subscription at any time from your account settings. You'll retain access until the end of your billing period.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-12">
+    <div class="mx-auto max-w-7xl px-4 md:px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="flex items-center gap-3 mb-4 md:mb-0">
+          <div class="h-8 w-8 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+          <span class="text-lg font-semibold">CourseMaker</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-slate-400">
+          <a href="/terms.html" class="hover:text-white">Terms</a>
+          <a href="/privacy.html" class="hover:text-white">Privacy</a>
+          <a href="/contact.html" class="hover:text-white">Contact</a>
+          <a href="/help.html" class="hover:text-white">Help</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Plan selection and pricing toggle functionality
+    let isAnnual = false;
+    
+    // Handle annual/monthly toggle
+    document.getElementById('planToggle').addEventListener('change', function() {
+      isAnnual = this.checked;
+      const toggleButton = document.getElementById('toggleButton');
+      
+      if (isAnnual) {
+        toggleButton.style.transform = 'translateX(24px)';
+        toggleButton.style.backgroundColor = '#06b6d4';
+        showAnnualPricing();
+      } else {
+        toggleButton.style.transform = 'translateX(0)';
+        toggleButton.style.backgroundColor = '#ffffff';
+        showMonthlyPricing();
+      }
+    });
+    
+    function showMonthlyPricing() {
+      document.getElementById('proPriceMonthly').classList.remove('hidden');
+      document.getElementById('proPriceAnnual').classList.add('hidden');
+      document.getElementById('businessPriceMonthly').classList.remove('hidden');
+      document.getElementById('businessPriceAnnual').classList.add('hidden');
+    }
+    
+    function showAnnualPricing() {
+      document.getElementById('proPriceMonthly').classList.add('hidden');
+      document.getElementById('proPriceAnnual').classList.remove('hidden');
+      document.getElementById('businessPriceMonthly').classList.add('hidden');
+      document.getElementById('businessPriceAnnual').classList.remove('hidden');
+    }
+    
+    // Plan selection function
+    function selectPlan(planType) {
+      const billing = isAnnual ? 'annual' : 'monthly';
+      
+      // Check if user is logged in
+      checkAuthAndProceed(planType, billing);
+    }
+    
+    async function checkAuthAndProceed(planType, billing) {
+      try {
+        // Check if user is authenticated
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          // User is logged in, proceed to checkout or plan change
+          const user = await response.json();
+          
+          if (planType === 'free' && user.planType === 'free') {
+            // Already on free plan, redirect to dashboard
+            window.location.href = '/dashboard.html';
+          } else if (planType === user.planType) {
+            // Same plan, redirect to dashboard
+            window.location.href = '/dashboard.html';
+          } else {
+            // Different plan, go to checkout
+            proceedToCheckout(planType, billing);
+          }
+        } else {
+          // User not logged in, redirect to register (always start with free plan)
+          window.location.href = `/register.html`;
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        // On error, assume not logged in
+        window.location.href = `/register.html`;
+      }
+    }
+    
+    function proceedToCheckout(planType, billing) {
+      if (planType === 'free') {
+        // Free plan - just change plan
+        changePlan('free');
+      } else {
+        // Paid plan - go to checkout page
+        window.location.href = `/checkout.html?plan=${planType}&billing=${billing}`;
+      }
+    }
+    
+    async function changePlan(planType) {
+      try {
+        const response = await fetch('/api/user/change-plan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ planType })
+        });
+        
+        if (response.ok) {
+          window.location.href = '/dashboard.html';
+        } else {
+          alert('Failed to change plan. Please try again.');
+        }
+      } catch (error) {
+        console.error('Plan change error:', error);
+        alert('Error changing plan. Please try again.');
+      }
+    }
+    
+    // URL parameter handling for preselected plans
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const preselectedPlan = urlParams.get('plan');
+      
+      if (preselectedPlan) {
+        // Highlight the preselected plan
+        const planCard = document.querySelector(`[data-plan="${preselectedPlan}"]`);
+        if (planCard) {
+          planCard.style.boxShadow = '0 0 0 2px #06b6d4';
+          planCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+  </script>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>

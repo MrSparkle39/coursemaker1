@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign In · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .auth-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Background decoration -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="mx-auto h-[420px] max-w-6xl bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent blur-3xl"></div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">← Back to Home</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
+    <div class="w-full max-w-md">
+      
+      <!-- Toggle Buttons -->
+      <div class="flex mb-8 rounded-xl border border-white/10 bg-slate-800/60 p-1">
+        <button id="btnShowLogin" class="flex-1 rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 transition-all">
+          Sign In
+        </button>
+        <button id="btnShowSignup" class="flex-1 rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition-all hover:text-white">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="auth-card rounded-2xl p-8">
+        <div class="text-center mb-6">
+          <h1 class="text-2xl font-bold">Welcome back</h1>
+          <p class="text-slate-400 mt-2">Sign in to your CourseMaker account</p>
+        </div>
+
+        <form id="loginFormSubmit" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
+            <input type="email" id="loginEmail" required
+                   class="w-full rounded-lg border border-white/10 bg-slate-900/60 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="your@email.com">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
+            <input type="password" id="loginPassword" required
+                   class="w-full rounded-lg border border-white/10 bg-slate-900/60 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="••••••••">
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input type="checkbox" class="rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-400 focus:ring-offset-slate-800">
+              <span class="ml-2 text-sm text-slate-300">Remember me</span>
+            </label>
+            <a href="#" class="text-sm text-cyan-400 hover:text-cyan-300">Forgot password?</a>
+          </div>
+
+          <button type="submit" id="btnLogin"
+                  class="w-full rounded-lg bg-cyan-500 px-4 py-3 font-medium text-slate-900 hover:bg-cyan-400 transition-colors">
+            Sign In
+          </button>
+        </form>
+
+        <div id="loginError" class="hidden mt-4 p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-sm"></div>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signupForm" class="auth-card rounded-2xl p-8 hidden">
+        <div class="text-center mb-6">
+          <h1 class="text-2xl font-bold">Create your account</h1>
+          <p class="text-slate-400 mt-2">Join thousands creating amazing courses</p>
+        </div>
+
+        <form id="signupFormSubmit" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Full Name</label>
+            <input type="text" id="signupName" required
+                   class="w-full rounded-lg border border-white/10 bg-slate-900/60 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="John Doe">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
+            <input type="email" id="signupEmail" required
+                   class="w-full rounded-lg border border-white/10 bg-slate-900/60 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="your@email.com">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
+            <input type="password" id="signupPassword" required minlength="8"
+                   class="w-full rounded-lg border border-white/10 bg-slate-900/60 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="••••••••">
+            <p class="text-xs text-slate-400 mt-1">Minimum 8 characters</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Confirm Password</label>
+            <input type="password" id="signupPasswordConfirm" required
+                   class="w-full rounded-lg border border-white/10 bg-slate-900/60 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="••••••••">
+          </div>
+
+          <!-- Plan Selection -->
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-3">Choose your plan</label>
+            <div class="space-y-3">
+              <label class="flex items-start cursor-pointer">
+                <input type="radio" name="plan" value="free" checked class="mt-1 text-cyan-500 focus:ring-cyan-400">
+                <div class="ml-3">
+                  <div class="font-medium text-white">Free</div>
+                  <div class="text-xs text-slate-400">1 course, 5 slides max, no AI voices</div>
+                </div>
+              </label>
+              
+              <label class="flex items-start cursor-pointer">
+                <input type="radio" name="plan" value="pro" class="mt-1 text-cyan-500 focus:ring-cyan-400">
+                <div class="ml-3">
+                  <div class="font-medium text-cyan-300">Pro - $29/month</div>
+                  <div class="text-xs text-slate-400">Unlimited courses, Neural2 AI voices, 200 slides per course</div>
+                </div>
+              </label>
+              
+              <label class="flex items-start cursor-pointer">
+                <input type="radio" name="plan" value="business" class="mt-1 text-cyan-500 focus:ring-cyan-400">
+                <div class="ml-3">
+                  <div class="font-medium text-purple-300">Business - $79/month</div>
+                  <div class="text-xs text-slate-400">Everything in Pro + Chirp3 HD voices, team features</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <input type="checkbox" id="agreeTerms" required class="mt-1 rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-400">
+            <label for="agreeTerms" class="ml-2 text-sm text-slate-300">
+              I agree to the <a href="#" class="text-cyan-400 hover:text-cyan-300">Terms of Service</a> and <a href="#" class="text-cyan-400 hover:text-cyan-300">Privacy Policy</a>
+            </label>
+          </div>
+
+          <button type="submit" id="btnSignup"
+                  class="w-full rounded-lg bg-cyan-500 px-4 py-3 font-medium text-slate-900 hover:bg-cyan-400 transition-colors">
+            Create Account
+          </button>
+        </form>
+
+        <div id="signupError" class="hidden mt-4 p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 text-sm"></div>
+        <div id="signupSuccess" class="hidden mt-4 p-3 rounded-lg bg-green-500/20 border border-green-500/40 text-green-300 text-sm"></div>
+      </div>
+
+      <!-- Social Login Options -->
+      <div class="mt-8 text-center">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-white/10"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="bg-slate-950 px-3 text-slate-400">Or continue with</span>
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <button class="inline-flex w-full justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/10">
+            <svg class="h-5 w-5" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span class="ml-2">Google</span>
+          </button>
+
+          <button class="inline-flex w-full justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/10">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.024-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.221.085.343-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.747 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.99C24.007 5.367 18.641.001 12.017.001z"/>
+            </svg>
+            <span class="ml-2">GitHub</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-8 text-center text-xs text-slate-400">
+        <p>By signing up, you agree to our Terms of Service and Privacy Policy.</p>
+        <p class="mt-2">© 2025 CourseMaker. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Form toggle functionality
+    const btnShowLogin = document.getElementById('btnShowLogin');
+    const btnShowSignup = document.getElementById('btnShowSignup');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    btnShowLogin.addEventListener('click', () => {
+      showLogin();
+    });
+
+    btnShowSignup.addEventListener('click', () => {
+      showSignup();
+    });
+
+    function showLogin() {
+      btnShowLogin.classList.add('bg-cyan-500', 'text-slate-900');
+      btnShowLogin.classList.remove('text-slate-300');
+      btnShowSignup.classList.remove('bg-cyan-500', 'text-slate-900');
+      btnShowSignup.classList.add('text-slate-300');
+      
+      loginForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+      
+      // Clear any error messages
+      document.getElementById('loginError').classList.add('hidden');
+      document.getElementById('signupError').classList.add('hidden');
+      document.getElementById('signupSuccess').classList.add('hidden');
+    }
+
+    function showSignup() {
+      btnShowSignup.classList.add('bg-cyan-500', 'text-slate-900');
+      btnShowSignup.classList.remove('text-slate-300');
+      btnShowLogin.classList.remove('bg-cyan-500', 'text-slate-900');
+      btnShowLogin.classList.add('text-slate-300');
+      
+      signupForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      
+      // Clear any error messages
+      document.getElementById('loginError').classList.add('hidden');
+      document.getElementById('signupError').classList.add('hidden');
+      document.getElementById('signupSuccess').classList.add('hidden');
+    }
+
+    // Check if user is already logged in
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch('/api/auth/check', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          // User is already logged in, redirect to dashboard
+          window.location.href = '/dashboard.html';
+        }
+      } catch (error) {
+        // User is not logged in, continue with login page
+        console.log('User not logged in');
+      }
+    });
+
+    // Login form submission
+    document.getElementById('loginFormSubmit').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const btnLogin = document.getElementById('btnLogin');
+      const errorDiv = document.getElementById('loginError');
+      
+      // Disable button and show loading
+      btnLogin.disabled = true;
+      btnLogin.textContent = 'Signing In...';
+      errorDiv.classList.add('hidden');
+      
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Success - redirect to dashboard
+          window.location.href = '/dashboard.html';
+        } else {
+          // Show error
+          errorDiv.textContent = result.error || 'Login failed. Please try again.';
+          errorDiv.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'Connection error. Please try again.';
+        errorDiv.classList.remove('hidden');
+      } finally {
+        btnLogin.disabled = false;
+        btnLogin.textContent = 'Sign In';
+      }
+    });
+
+    // Signup form submission
+    document.getElementById('signupFormSubmit').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+      const plan = document.querySelector('input[name="plan"]:checked').value;
+      
+      const btnSignup = document.getElementById('btnSignup');
+      const errorDiv = document.getElementById('signupError');
+      const successDiv = document.getElementById('signupSuccess');
+      
+      // Hide previous messages
+      errorDiv.classList.add('hidden');
+      successDiv.classList.add('hidden');
+      
+      // Validate passwords match
+      if (password !== passwordConfirm) {
+        errorDiv.textContent = 'Passwords do not match.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      
+      // Validate password strength
+      if (password.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters long.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      
+      // Disable button and show loading
+      btnSignup.disabled = true;
+      btnSignup.textContent = 'Creating Account...';
+      
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ name, email, password, planType: plan })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Success - show success message and redirect
+          successDiv.textContent = 'Account created successfully! Redirecting to dashboard...';
+          successDiv.classList.remove('hidden');
+          
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 2000);
+        } else {
+          // Show error
+          errorDiv.textContent = result.error || 'Registration failed. Please try again.';
+          errorDiv.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        errorDiv.textContent = 'Connection error. Please try again.';
+        errorDiv.classList.remove('hidden');
+      } finally {
+        btnSignup.disabled = false;
+        btnSignup.textContent = 'Create Account';
+      }
+    });
+
+    // Password confirmation validation
+    document.getElementById('signupPasswordConfirm').addEventListener('input', function() {
+      const password = document.getElementById('signupPassword').value;
+      const confirm = this.value;
+      
+      if (confirm && password !== confirm) {
+        this.setCustomValidity('Passwords do not match');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+
+    // Plan selection highlighting
+    document.querySelectorAll('input[name="plan"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        // Remove highlighting from all options
+        document.querySelectorAll('input[name="plan"]').forEach(r => {
+          const label = r.closest('label');
+          label.classList.remove('bg-cyan-500/20', 'border-cyan-400/40');
+          label.classList.add('border-transparent');
+        });
+        
+        // Highlight selected option
+        if (this.checked) {
+          const label = this.closest('label');
+          label.classList.add('bg-cyan-500/20', 'border-cyan-400/40');
+          label.classList.remove('border-transparent');
+        }
+      });
+    });
+
+    // Check for URL parameters (e.g., ?signup=true)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('signup') === 'true') {
+      showSignup();
+    }
+  </script>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>

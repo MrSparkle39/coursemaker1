@@ -1,0 +1,49 @@
+const express = require('express');
+const multer = require('multer');
+const { exec } = require('child_process');
+const fs = require('fs');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const upload = multer({ dest: 'uploads/' });
+
+app.get('/', (req, res) => {
+    res.json({ message: 'PowerPoint Course Maker API Ready!' });
+});
+
+app.post('/convert', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        
+        const outputDir = `converted/${Date.now()}`;
+        
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const cmd = `libreoffice --headless --convert-to "png:PNG Export:{"Resolution":{"Value":"300","Unit":"DPI"}}" --outdir ${outputDir} "${req.file.path}"`;
+        
+        exec(cmd, (error, stdout, stderr) => {
+            if (error) {
+                return res.status(500).json({ error: error.message });
+            }
+            
+            setTimeout(() => {
+                const files = fs.readdirSync(outputDir);
+                res.json({ success: true, files: files });
+            }, 2000);
+        });
+        
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.listen(80, () => {
+    console.log('PowerPoint converter running on port 80');
+});

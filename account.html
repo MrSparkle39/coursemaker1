@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Account Settings · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="universal-header.js"></script>
+  <script src="universal-footer.js"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Universal Header will be inserted here by universal-header.js -->
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-4xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">Account Settings</h1>
+      <p class="mt-2 text-slate-400">Manage your profile, security, and preferences</p>
+    </div>
+
+    <!-- Profile Information -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Profile Information</h2>
+      
+      <form id="profileForm" class="space-y-6">
+        <div class="grid gap-6 md:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Full Name</label>
+            <input type="text" id="userName" 
+                   class="w-full rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                   placeholder="Your full name">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+            <input type="email" id="userEmailField" disabled
+                   class="w-full rounded-lg border border-white/10 bg-slate-700 px-4 py-3 text-sm text-slate-400"
+                   placeholder="your@email.com">
+            <p class="text-xs text-slate-500 mt-1">Contact support to change your email address</p>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2">Bio (Optional)</label>
+          <textarea id="userBio" rows="3"
+                    class="w-full rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                    placeholder="Tell us a bit about yourself..."></textarea>
+        </div>
+        
+        <div class="flex gap-3">
+          <button type="submit" class="rounded-xl bg-cyan-500 px-6 py-2 font-medium text-slate-900 hover:bg-cyan-400">
+            Save Changes
+          </button>
+          <button type="button" id="btnCancelProfile" class="rounded-xl border border-white/10 bg-white/5 px-6 py-2 font-medium hover:bg-white/10">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Security</h2>
+      
+      <!-- Change Password -->
+      <div class="mb-6 rounded-lg border border-white/10 bg-slate-800/40 p-4">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-medium text-white">Password</h3>
+            <p class="text-sm text-slate-400">Last changed 3 months ago</p>
+          </div>
+          <button id="btnChangePassword" class="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+            Change Password
+          </button>
+        </div>
+        
+        <div id="passwordForm" class="hidden mt-4 space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Current Password</label>
+            <input type="password" id="currentPassword"
+                   class="w-full rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">New Password</label>
+            <input type="password" id="newPassword" minlength="8"
+                   class="w-full rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400">
+            <p class="text-xs text-slate-500 mt-1">Must be at least 8 characters long</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Confirm New Password</label>
+            <input type="password" id="confirmPassword"
+                   class="w-full rounded-lg border border-white/10 bg-slate-900 px-4 py-3 text-sm focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400">
+          </div>
+          
+          <div class="flex gap-3">
+            <button id="btnSavePassword" class="rounded-lg bg-green-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-green-400">
+              Update Password
+            </button>
+            <button id="btnCancelPassword" class="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/10">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-Factor Authentication -->
+      <div class="mb-6 rounded-lg border border-white/10 bg-slate-800/40 p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-medium text-white">Two-Factor Authentication</h3>
+            <p class="text-sm text-slate-400">Add an extra layer of security to your account</p>
+          </div>
+          <button class="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/10">
+            Set Up 2FA
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Sessions -->
+      <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="font-medium text-white">Active Sessions</h3>
+            <p class="text-sm text-slate-400">Manage devices that are signed into your account</p>
+          </div>
+          <button id="btnViewSessions" class="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/10">
+            Manage Sessions
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription Management -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Subscription</h2>
+      
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <h3 class="font-medium text-white mb-2">Current Plan</h3>
+          <div class="text-2xl font-bold mb-1" id="currentPlan">Pro Plan</div>
+          <div class="text-sm text-slate-400 mb-4" id="currentPlanPrice">$29/month</div>
+          <a href="/upgrade.html" class="inline-block rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+            Upgrade Plan
+          </a>
+        </div>
+        
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <h3 class="font-medium text-white mb-2">Next Billing</h3>
+          <div class="text-lg font-semibold mb-1" id="nextBilling">March 15, 2025</div>
+          <div class="text-sm text-slate-400 mb-4">Auto-renewal enabled</div>
+          <button class="inline-block rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/10">
+            Manage Billing
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Preferences</h2>
+      
+      <div class="space-y-6">
+        <!-- Email Notifications -->
+        <div>
+          <h3 class="font-medium text-white mb-4">Email Notifications</h3>
+          <div class="space-y-3">
+            <label class="flex items-center">
+              <input type="checkbox" id="emailCourseComplete" checked class="rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-400">
+              <span class="ml-3 text-sm text-slate-300">Course completion notifications</span>
+            </label>
+            
+            <label class="flex items-center">
+              <input type="checkbox" id="emailUsageAlerts" checked class="rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-400">
+              <span class="ml-3 text-sm text-slate-300">Usage limit alerts</span>
+            </label>
+            
+            <label class="flex items-center">
+              <input type="checkbox" id="emailMarketing" class="rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-400">
+              <span class="ml-3 text-sm text-slate-300">Marketing and product updates</span>
+            </label>
+            
+            <label class="flex items-center">
+              <input type="checkbox" id="emailBilling" checked class="rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-400">
+              <span class="ml-3 text-sm text-slate-300">Billing and payment notifications</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Default Course Settings -->
+        <div>
+          <h3 class="font-medium text-white mb-4">Default Course Settings</h3>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Default Voice</label>
+              <select id="defaultVoice" class="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-sm">
+                <option value="">Choose default voice...</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Default Speaking Speed</label>
+              <select id="defaultSpeed" class="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-sm">
+                <option value="0.75">0.75x (Slow)</option>
+                <option value="1.0" selected>1.0x (Normal)</option>
+                <option value="1.25">1.25x (Fast)</option>
+                <option value="1.5">1.5x (Faster)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button id="btnSavePreferences" class="rounded-xl bg-cyan-500 px-6 py-2 font-medium text-slate-900 hover:bg-cyan-400">
+            Save Preferences
+          </button>
+          <button id="btnResetPreferences" class="rounded-xl border border-white/10 bg-white/5 px-6 py-2 font-medium hover:bg-white/10">
+            Reset to Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="rounded-2xl border border-red-500/20 bg-red-500/5 p-6">
+      <h2 class="text-xl font-semibold mb-6 text-red-400">Danger Zone</h2>
+      
+      <div class="space-y-4">
+        <div class="flex items-center justify-between rounded-lg border border-red-500/20 bg-red-500/5 p-4">
+          <div>
+            <h3 class="font-medium text-white">Export Your Data</h3>
+            <p class="text-sm text-slate-400">Download all your courses and data</p>
+          </div>
+          <button class="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/10">
+            Export Data
+          </button>
+        </div>
+        
+        <div class="flex items-center justify-between rounded-lg border border-red-500/20 bg-red-500/5 p-4">
+          <div>
+            <h3 class="font-medium text-white">Delete Account</h3>
+            <p class="text-sm text-slate-400">Permanently delete your account and all data</p>
+          </div>
+          <button id="btnDeleteAccount" class="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-400">
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold mb-4" id="confirmTitle">Confirm Action</h3>
+        <p class="text-slate-300 mb-6" id="confirmMessage">Are you sure you want to proceed?</p>
+        
+        <div class="flex gap-3">
+          <button id="btnConfirmCancel" class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-medium hover:bg-white/10">
+            Cancel
+          </button>
+          <button id="btnConfirmAction" class="flex-1 rounded-xl bg-red-500 px-4 py-2 font-medium text-white hover:bg-red-400">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+
+    // Voice options based on plan
+    const VOICE_OPTIONS = {
+      free: [],
+      pro: [
+        { value: "en-US-Neural2-A", label: "Neural2-A (Male)" },
+        { value: "en-US-Neural2-C", label: "Neural2-C (Female)" },
+        { value: "en-US-Neural2-D", label: "Neural2-D (Male)" },
+        { value: "en-US-Neural2-F", label: "Neural2-F (Female)" },
+        { value: "en-GB-Neural2-A", label: "Neural2-A British (Female)" },
+        { value: "en-GB-Neural2-B", label: "Neural2-B British (Male)" }
+      ],
+      business: [
+        { value: "en-US-Neural2-A", label: "Neural2-A (Male)" },
+        { value: "en-US-Neural2-C", label: "Neural2-C (Female)" },
+        { value: "en-US-Neural2-D", label: "Neural2-D (Male)" },
+        { value: "en-US-Neural2-F", label: "Neural2-F (Female)" },
+        { value: "Chirp3-HD:en-US:Achernar", label: "Achernar (Female) • Chirp3 HD" },
+        { value: "Chirp3-HD:en-US:Charon", label: "Charon (Male) • Chirp3 HD" },
+        { value: "Chirp3-HD:en-US:Despina", label: "Despina (Female) • Chirp3 HD" },
+        { value: "Chirp3-HD:en-US:Fenrir", label: "Fenrir (Male) • Chirp3 HD" }
+      ]
+    };
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      setupEventListeners();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+          populateVoiceOptions();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userEmailField').value = currentUser.email;
+      document.getElementById('userName').value = currentUser.name || '';
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      // Update plan badge color
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+
+      // Update subscription info
+      const planNames = {
+        'free': 'Free Plan',
+        'pro': 'Pro Plan', 
+        'business': 'Business Plan'
+      };
+      const planPrices = {
+        'free': 'Free',
+        'pro': '$29/month',
+        'business': '$79/month'
+      };
+
+      document.getElementById('currentPlan').textContent = planNames[currentUser.planType];
+      document.getElementById('currentPlanPrice').textContent = planPrices[currentUser.planType];
+    }
+
+    // Populate voice options based on user plan
+    function populateVoiceOptions() {
+      if (!currentUser) return;
+      
+      const voiceSelect = document.getElementById('defaultVoice');
+      const voices = VOICE_OPTIONS[currentUser.planType] || [];
+      
+      voiceSelect.innerHTML = '<option value="">Choose default voice...</option>';
+      
+      voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.value;
+        option.textContent = voice.label;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      
+      // Profile form
+      document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
+      document.getElementById('btnCancelProfile').addEventListener('click', () => {
+        // Reset form to original values
+        document.getElementById('userName').value = currentUser.name || '';
+      });
+
+      // Password change
+      document.getElementById('btnChangePassword').addEventListener('click', () => {
+        document.getElementById('passwordForm').classList.remove('hidden');
+        document.getElementById('btnChangePassword').classList.add('hidden');
+      });
+      
+      document.getElementById('btnCancelPassword').addEventListener('click', () => {
+        document.getElementById('passwordForm').classList.add('hidden');
+        document.getElementById('btnChangePassword').classList.remove('hidden');
+        // Clear password fields
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      });
+
+      document.getElementById('btnSavePassword').addEventListener('click', handlePasswordChange);
+
+      // Preferences
+      document.getElementById('btnSavePreferences').addEventListener('click', handleSavePreferences);
+      document.getElementById('btnResetPreferences').addEventListener('click', handleResetPreferences);
+
+      // Danger zone
+      document.getElementById('btnDeleteAccount').addEventListener('click', () => {
+        showConfirmModal(
+          'Delete Account',
+          'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.',
+          handleDeleteAccount
+        );
+      });
+
+      // Modal
+      document.getElementById('btnConfirmCancel').addEventListener('click', hideConfirmModal);
+    }
+
+    // Handle profile update
+    async function handleProfileUpdate(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('userName').value;
+      const bio = document.getElementById('userBio').value;
+      
+      try {
+        const response = await fetch('/api/user/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name, bio })
+        });
+        
+        if (response.ok) {
+          alert('Profile updated successfully!');
+          await loadUserData(); // Refresh user data
+        } else {
+          const error = await response.json();
+          alert('Failed to update profile: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Profile update error:', error);
+        alert('Failed to update profile');
+      }
+    }
+
+    // Handle password change
+    async function handlePasswordChange() {
+      const current = document.getElementById('currentPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      
+      if (newPass !== confirm) {
+        alert('New passwords do not match');
+        return;
+      }
+      
+      if (newPass.length < 8) {
+        alert('New password must be at least 8 characters long');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/user/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ currentPassword: current, newPassword: newPass })
+        });
+        
+        if (response.ok) {
+          alert('Password changed successfully!');
+          document.getElementById('btnCancelPassword').click(); // Hide form
+        } else {
+          const error = await response.json();
+          alert('Failed to change password: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Password change error:', error);
+        alert('Failed to change password');
+      }
+    }
+
+    // Handle save preferences
+    async function handleSavePreferences() {
+      const preferences = {
+        defaultVoice: document.getElementById('defaultVoice').value,
+        defaultSpeed: document.getElementById('defaultSpeed').value,
+        emailNotifications: {
+          courseComplete: document.getElementById('emailCourseComplete').checked,
+          usageAlerts: document.getElementById('emailUsageAlerts').checked,
+          marketing: document.getElementById('emailMarketing').checked,
+          billing: document.getElementById('emailBilling').checked
+        }
+      };
+      
+      try {
+        const response = await fetch('/api/user/preferences', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(preferences)
+        });
+        
+        if (response.ok) {
+          alert('Preferences saved successfully!');
+        } else {
+          const error = await response.json();
+          alert('Failed to save preferences: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Save preferences error:', error);
+        alert('Failed to save preferences');
+      }
+    }
+
+    // Handle reset preferences
+    function handleResetPreferences() {
+      document.getElementById('defaultVoice').value = '';
+      document.getElementById('defaultSpeed').value = '1.0';
+      document.getElementById('emailCourseComplete').checked = true;
+      document.getElementById('emailUsageAlerts').checked = true;
+      document.getElementById('emailMarketing').checked = false;
+      document.getElementById('emailBilling').checked = true;
+    }
+
+    // Handle delete account
+    async function handleDeleteAccount() {
+      try {
+        const response = await fetch('/api/user/account', {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          alert('Account deleted successfully. You will be redirected to the homepage.');
+          window.location.href = '/';
+        } else {
+          const error = await response.json();
+          alert('Failed to delete account: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Delete account error:', error);
+        alert('Failed to delete account');
+      }
+    }
+
+    // Modal functions
+    function showConfirmModal(title, message, callback) {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      document.getElementById('confirmModal').classList.remove('hidden');
+      
+      // Store callback for confirm button
+      document.getElementById('btnConfirmAction').onclick = () => {
+        hideConfirmModal();
+        callback();
+      };
+    }
+
+    function hideConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+  </script>
+
+</body>
+</html>

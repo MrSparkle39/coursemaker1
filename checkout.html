@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="universal-header.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .checkout-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .form-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .form-input:focus {
+      border-color: rgba(6, 182, 212, 0.5);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    }
+    .stripe-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .processing {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .success-animation {
+      animation: successPulse 0.6s ease-out;
+    }
+    @keyframes successPulse {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Universal Header will be inserted here by universal-header.js -->
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-4xl px-4 py-8 md:px-6">
+    
+    <!-- Progress Steps -->
+    <div class="mb-8">
+      <div class="flex items-center justify-center gap-4 text-sm">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-medium">✓</div>
+          <span class="text-green-400">Plan Selected</span>
+        </div>
+        <div class="w-8 h-px bg-slate-600"></div>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white font-medium">2</div>
+          <span class="text-cyan-400 font-medium">Payment</span>
+        </div>
+        <div class="w-8 h-px bg-slate-600"></div>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-slate-400 font-medium">3</div>
+          <span class="text-slate-400">Complete</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-3">
+      
+      <!-- Order Summary -->
+      <div class="lg:col-span-1">
+        <div class="checkout-card rounded-2xl p-6">
+          <h2 class="text-xl font-semibold text-white mb-6">Order Summary</h2>
+          
+          <div id="orderDetails" class="space-y-4">
+            <!-- Plan details will be populated here -->
+          </div>
+          
+          <div class="border-t border-white/10 mt-6 pt-6">
+            <div class="flex items-center justify-between text-sm text-slate-300 mb-2">
+              <span>Subtotal</span>
+              <span id="subtotal">$0.00</span>
+            </div>
+            <div class="flex items-center justify-between text-sm text-slate-300 mb-2" id="discountRow" style="display: none;">
+              <span>Discount (Annual)</span>
+              <span id="discount" class="text-green-400">-$0.00</span>
+            </div>
+            <div class="flex items-center justify-between text-sm text-slate-300 mb-4">
+              <span>Tax</span>
+              <span id="tax">$0.00</span>
+            </div>
+            <div class="flex items-center justify-between text-lg font-semibold text-white">
+              <span>Total</span>
+              <span id="total">$0.00</span>
+            </div>
+          </div>
+          
+          <div class="mt-6 p-4 rounded-lg bg-cyan-500/10 border border-cyan-400/20">
+            <div class="flex items-center gap-2 text-cyan-400 text-sm font-medium mb-1">
+              <span>🛡️</span>
+              <span>30-Day Money Back Guarantee</span>
+            </div>
+            <p class="text-xs text-slate-300">Cancel anytime within 30 days for a full refund.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Payment Form -->
+      <div class="lg:col-span-2">
+        <div class="checkout-card rounded-2xl p-6">
+          <h2 class="text-xl font-semibold text-white mb-6">Payment Information</h2>
+          
+          <form id="checkoutForm" class="space-y-6">
+            
+            <!-- Billing Information -->
+            <div>
+              <h3 class="text-lg font-medium text-white mb-4">Billing Information</h3>
+              <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">First Name</label>
+                  <input type="text" id="firstName" required 
+                         class="w-full rounded-xl form-input p-3 text-sm" 
+                         placeholder="John">
+                </div>
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Last Name</label>
+                  <input type="text" id="lastName" required 
+                         class="w-full rounded-xl form-input p-3 text-sm" 
+                         placeholder="Doe">
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm text-slate-300 mb-2">Email Address</label>
+                  <input type="email" id="email" required 
+                         class="w-full rounded-xl form-input p-3 text-sm" 
+                         placeholder="john@example.com">
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm text-slate-300 mb-2">Company (Optional)</label>
+                  <input type="text" id="company" 
+                         class="w-full rounded-xl form-input p-3 text-sm" 
+                         placeholder="Your Company">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Payment Method -->
+            <div>
+              <h3 class="text-lg font-medium text-white mb-4">Payment Method</h3>
+              
+              <!-- Stripe Elements Container -->
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Card Number</label>
+                  <div id="cardNumber" class="stripe-input"></div>
+                </div>
+                
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label class="block text-sm text-slate-300 mb-2">Expiry Date</label>
+                    <div id="cardExpiry" class="stripe-input"></div>
+                  </div>
+                  <div>
+                    <label class="block text-sm text-slate-300 mb-2">CVC</label>
+                    <div id="cardCvc" class="stripe-input"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Cardholder Name</label>
+                  <input type="text" id="cardholderName" required 
+                         class="w-full rounded-xl form-input p-3 text-sm" 
+                         placeholder="Name on card">
+                </div>
+              </div>
+              
+              <!-- Payment Error Display -->
+              <div id="paymentErrors" class="hidden mt-4 p-4 rounded-lg bg-red-500/20 border border-red-400/40">
+                <div class="flex items-center gap-2 text-red-400 text-sm">
+                  <span>⚠️</span>
+                  <span id="errorMessage"></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Terms and Privacy -->
+            <div class="flex items-start gap-3">
+              <input type="checkbox" id="termsAgree" required 
+                     class="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900">
+              <label for="termsAgree" class="text-sm text-slate-300">
+                I agree to the <a href="/terms.html" class="text-cyan-400 hover:text-cyan-300" target="_blank">Terms of Service</a> 
+                and <a href="/privacy.html" class="text-cyan-400 hover:text-cyan-300" target="_blank">Privacy Policy</a>
+              </label>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="pt-4">
+              <button type="submit" id="submitButton" 
+                      class="w-full rounded-xl bg-cyan-500 py-4 text-lg font-medium text-slate-900 hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="buttonText">Complete Payment</span>
+                <span id="buttonSpinner" class="hidden">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-slate-900 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              </button>
+              
+              <div class="mt-4 flex items-center justify-center gap-4 text-xs text-slate-400">
+                <span>🔒 Secured by Stripe</span>
+                <span>•</span>
+                <span>SSL Encrypted</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-8 w-full max-w-md text-center success-animation">
+        <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-2">Payment Successful!</h3>
+        <p class="text-slate-300 mb-6">Welcome to <span id="successPlanName">Pro</span>! Your account has been upgraded.</p>
+        <button onclick="goToDashboard()" 
+                class="w-full rounded-xl bg-cyan-500 py-3 font-medium text-slate-900 hover:bg-cyan-400">
+          Go to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if plan is selected, redirect if not
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const plan = urlParams.get('plan');
+      const billing = urlParams.get('billing');
+      
+      if (!plan) {
+        alert('No plan selected. Redirecting to plans page.');
+        window.location.href = '/plans.html';
+        return;
+      }
+      
+      // Initialize checkout with selected plan
+      initializeCheckout(plan, billing);
+    });
+
+    // Stripe configuration
+    const stripe = Stripe('pk_test_your_publishable_key_here'); // Replace with your actual publishable key
+    const elements = stripe.elements({
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorPrimary: '#06b6d4',
+          colorBackground: 'rgba(15, 23, 42, 0.6)',
+          colorText: '#ffffff',
+          colorDanger: '#ef4444',
+          fontFamily: 'system-ui, sans-serif',
+          spacingUnit: '4px',
+          borderRadius: '12px'
+        }
+      }
+    });
+
+    // Create Stripe Elements
+    const cardNumber = elements.create('cardNumber');
+    const cardExpiry = elements.create('cardExpiry');
+    const cardCvc = elements.create('cardCvc');
+
+    // Mount elements
+    cardNumber.mount('#cardNumber');
+    cardExpiry.mount('#cardExpiry');
+    cardCvc.mount('#cardCvc');
+
+    // Global variables
+    let selectedPlan = null;
+    let billingCycle = 'monthly';
+    let currentUser = null;
+
+    // Plan pricing configuration
+    const PLAN_PRICING = {
+      pro: {
+        monthly: { price: 29, priceId: 'price_pro_monthly' },
+        annual: { price: 23, priceId: 'price_pro_annual' }
+      },
+      business: {
+        monthly: { price: 99, priceId: 'price_business_monthly' },
+        annual: { price: 79, priceId: 'price_business_annual' }
+      }
+    };
+
+    // Initialize checkout page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      selectedPlan = urlParams.get('plan');
+      billingCycle = urlParams.get('billing') || 'monthly';
+
+      // Validate plan
+      if (!selectedPlan || !PLAN_PRICING[selectedPlan]) {
+        alert('Invalid plan selected. Redirecting to plans page.');
+        window.location.href = '/plans.html';
+        return;
+      }
+
+      // Check authentication
+      await checkAuthentication();
+      
+      // Populate order summary
+      populateOrderSummary();
+      
+      // Pre-fill user data if available
+      if (currentUser) {
+        document.getElementById('email').value = currentUser.email || '';
+        document.getElementById('firstName').value = currentUser.name?.split(' ')[0] || '';
+        document.getElementById('lastName').value = currentUser.name?.split(' ').slice(1).join(' ') || '';
+      }
+    });
+
+    async function checkAuthentication() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+        } else {
+          // Not authenticated, redirect to login with return URL
+          const returnUrl = encodeURIComponent(window.location.href);
+          window.location.href = `/login.html?redirect=${returnUrl}`;
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    function populateOrderSummary() {
+      const planConfig = PLAN_PRICING[selectedPlan][billingCycle];
+      const planName = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
+      const isAnnual = billingCycle === 'annual';
+      
+      // Calculate pricing
+      const monthlyPrice = PLAN_PRICING[selectedPlan].monthly.price;
+      const price = planConfig.price;
+      const subtotal = isAnnual ? price * 12 : price;
+      const discount = isAnnual ? (monthlyPrice * 12) - (price * 12) : 0;
+      const tax = Math.round(subtotal * 0.08 * 100) / 100; // 8% tax example
+      const total = subtotal + tax;
+
+      // Populate order details
+      document.getElementById('orderDetails').innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-white">${planName} Plan</div>
+            <div class="text-sm text-slate-400">${isAnnual ? 'Annual' : 'Monthly'} Billing</div>
+          </div>
+          <div class="text-right">
+            <div class="font-medium text-white">$${price}</div>
+            <div class="text-sm text-slate-400">/${isAnnual ? 'month' : 'month'}</div>
+          </div>
+        </div>
+        ${isAnnual ? `
+        <div class="text-sm text-green-400 bg-green-500/10 rounded-lg p-3 border border-green-400/20">
+          💰 You're saving $${discount} with annual billing!
+        </div>
+        ` : ''}
+      `;
+
+      // Update pricing display
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+      
+      if (discount > 0) {
+        document.getElementById('discountRow').style.display = 'flex';
+        document.getElementById('discount').textContent = `-$${discount.toFixed(2)}`;
+      }
+    }
+
+    // Handle form submission
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitButton = document.getElementById('submitButton');
+      const buttonText = document.getElementById('buttonText');
+      const buttonSpinner = document.getElementById('buttonSpinner');
+      
+      // Disable button and show loading
+      submitButton.disabled = true;
+      buttonText.classList.add('hidden');
+      buttonSpinner.classList.remove('hidden');
+      
+      try {
+        // Clear any previous errors
+        hideError();
+        
+        // Create payment method
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+          type: 'card',
+          card: cardNumber,
+          billing_details: {
+            name: document.getElementById('cardholderName').value,
+            email: document.getElementById('email').value,
+            address: {
+              // Add address fields if needed
+            }
+          }
+        });
+
+        if (error) {
+          showError(error.message);
+          return;
+        }
+
+        // Process payment on server
+        await processPayment(paymentMethod.id);
+        
+      } catch (error) {
+        console.error('Payment error:', error);
+        showError('Payment failed. Please try again.');
+      } finally {
+        // Re-enable button
+        submitButton.disabled = false;
+        buttonText.classList.remove('hidden');
+        buttonSpinner.classList.add('hidden');
+      }
+    });
+
+    async function processPayment(paymentMethodId) {
+      const planConfig = PLAN_PRICING[selectedPlan][billingCycle];
+      
+      const response = await fetch('/api/process-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          paymentMethodId,
+          planType: selectedPlan,
+          billingCycle,
+          priceId: planConfig.priceId,
+          customerInfo: {
+            email: document.getElementById('email').value,
+            name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+            company: document.getElementById('company').value
+          }
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Payment successful
+        showSuccessModal();
+      } else if (result.requiresAction) {
+        // Handle 3D Secure or other authentication
+        const { error } = await stripe.confirmCardPayment(result.clientSecret);
+        
+        if (error) {
+          showError(error.message);
+        } else {
+          showSuccessModal();
+        }
+      } else {
+        showError(result.error || 'Payment failed. Please try again.');
+      }
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('paymentErrors').classList.remove('hidden');
+      
+      // Scroll to error
+      document.getElementById('paymentErrors').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+
+    function hideError() {
+      document.getElementById('paymentErrors').classList.add('hidden');
+    }
+
+    function showSuccessModal() {
+      const planName = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
+      document.getElementById('successPlanName').textContent = planName;
+      document.getElementById('successModal').classList.remove('hidden');
+    }
+
+    function goToDashboard() {
+      window.location.href = '/dashboard.html';
+    }
+
+    // Handle real-time validation
+    cardNumber.on('change', ({error}) => {
+      if (error) {
+        showError(error.message);
+      } else {
+        hideError();
+      }
+    });
+  </script>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>

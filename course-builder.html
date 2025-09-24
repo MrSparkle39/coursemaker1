@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Builder · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    
+    .slide-type-card {
+      transition: all 0.2s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .slide-type-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
+    .slide-type-card.pro-feature {
+      background: rgba(168, 85, 247, 0.1);
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+    .slide-type-card.pro-feature:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="/dashboard.html">← Back to Dashboard</a>
+        <a class="hover:text-white" href="/courses.html">My Courses</a>
+        <a class="hover:text-white" href="/usage.html">Usage</a>
+        <a class="hover:text-white" href="/account.html">Account</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="badge" id="userPlan">Pro Plan</span>
+          <span class="text-sm text-slate-400" id="userEmail">user@example.com</span>
+        </div>
+        <button id="btnLogout" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">Interactive Course Builder</h1>
+      <p class="mt-2 text-slate-400" id="courseInfo">Loading course information...</p>
+    </div>
+
+    <!-- Course Summary -->
+    <div id="courseSummary" class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-semibold" id="courseTitle">Course Title</h2>
+          <p class="text-slate-400" id="courseStats">0 slides • 0 interactive slides</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btnViewCourse" class="rounded-xl border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-300 hover:bg-cyan-500/20">
+            👁️ Preview Course
+          </button>
+          <button id="btnManageCourse" class="rounded-xl bg-slate-700 px-4 py-2 text-sm hover:bg-slate-600">
+            ⚙️ Manage Course
+          </button>
+        </div>
+      </div>
+      
+      <!-- Recent Interactive Slides -->
+      <div id="recentSlides" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Will populate with recent interactive slides -->
+      </div>
+    </div>
+
+    <!-- Usage Limits -->
+    <div id="usageLimits" class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-medium">Interactive Slides Usage</h3>
+        <span class="text-sm text-slate-400" id="currentUsage">0 / 50 used this month</span>
+      </div>
+      <div class="w-full bg-slate-700 rounded-full h-2">
+        <div id="usageBar" class="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <div class="flex items-center justify-between mt-2 text-xs text-slate-500">
+        <span>Resets monthly</span>
+        <a href="/upgrade.html" class="text-cyan-400 hover:text-cyan-300">Upgrade for unlimited →</a>
+      </div>
+    </div>
+
+    <!-- Slide Type Selection -->
+    <div id="slideTypeSelection" class="mb-8">
+      <h2 class="text-xl font-semibold mb-6">Choose Interactive Slide Type</h2>
+      
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Standard Slide -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="standard" data-plan-required="free">
+          <div class="text-4xl mb-3">📄</div>
+          <h4 class="font-semibold text-white mb-2">Standard Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Create custom content with text and images</p>
+          <div class="text-xs text-slate-400">Full creative control</div>
+        </div>
+        
+        <!-- Quiz Slide -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="quiz" data-plan-required="pro">
+          <div class="text-4xl mb-3">❓</div>
+          <h4 class="font-semibold text-white mb-2">Quiz Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Multiple choice questions with feedback</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-slate-400">Engage students with knowledge checks</div>
+            <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Pro</span>
+          </div>
+        </div>
+        
+        <!-- Interactive Hotspot -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="hotspot" data-plan-required="pro">
+          <div class="text-4xl mb-3">🎯</div>
+          <h4 class="font-semibold text-white mb-2">Interactive Hotspot</h4>
+          <p class="text-sm text-slate-300 mb-3">Click to explore different areas</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-slate-400">Perfect for detailed explanations</div>
+            <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Pro</span>
+          </div>
+        </div>
+        
+        <!-- Assessment Slide -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="assessment" data-plan-required="pro">
+          <div class="text-4xl mb-3">📊</div>
+          <h4 class="font-semibold text-white mb-2">Assessment Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Scored questions with grading</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-slate-400">Formal testing and evaluation</div>
+            <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Pro</span>
+          </div>
+        </div>
+        
+        <!-- Standard Slide -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="standard" data-plan-required="free">
+          <div class="text-4xl mb-3">📝</div>
+          <h4 class="font-semibold text-white mb-2">Standard Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Custom slides with text, images, and shapes</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-slate-400">Professional slide design</div>
+            <span class="badge text-green-300 border-green-400/40 bg-green-500/20">Free</span>
+          </div>
+        </div>
+        
+        <!-- Drag & Drop -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="drag_drop" data-plan-required="business">
+          <div class="text-4xl mb-3">🔀</div>
+          <h4 class="font-semibold text-white mb-2">Drag & Drop</h4>
+          <p class="text-sm text-slate-300 mb-3">Match items to correct categories</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-amber-400">Interactive Exercise</div>
+            <span class="badge text-amber-300 border-amber-400/40 bg-amber-500/20">Business</span>
+          </div>
+        </div>
+        
+        <!-- Timeline Slide -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="timeline" data-plan-required="business">
+          <div class="text-4xl mb-3">📅</div>
+          <h4 class="font-semibold text-white mb-2">Timeline Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Interactive timeline with events</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-amber-400">Interactive Timeline</div>
+            <span class="badge text-amber-300 border-amber-400/40 bg-amber-500/20">Business</span>
+          </div>
+        </div>
+        
+        <!-- Before/After Comparison -->
+        <div class="slide-type-card rounded-xl p-6 cursor-pointer" data-slide-type="before_after" data-plan-required="business">
+          <div class="text-4xl mb-3">🔄</div>
+          <h4 class="font-semibold text-white mb-2">Before/After</h4>
+          <p class="text-sm text-slate-300 mb-3">Compare two states with slider</p>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-amber-400">Interactive Comparison</div>
+            <span class="badge text-amber-300 border-amber-400/40 bg-amber-500/20">Business</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 class="text-lg font-semibold mb-4">Need Help?</h3>
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <h4 class="font-medium mb-2">📚 Getting Started</h4>
+          <p class="text-sm text-slate-400 mb-3">Learn how to create engaging interactive slides that keep students engaged.</p>
+          <a href="/help/interactive-slides" class="text-cyan-400 hover:text-cyan-300 text-sm">View Tutorial →</a>
+        </div>
+        <div>
+          <h4 class="font-medium mb-2">💡 Best Practices</h4>
+          <p class="text-sm text-slate-400 mb-3">Discover proven techniques for creating effective educational content.</p>
+          <a href="/help/best-practices" class="text-cyan-400 hover:text-cyan-300 text-sm">Read Guide →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentCourse = null;
+    let courseSlides = [];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadCourseData();
+      setupEventListeners();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Load course data from URL parameter
+    async function loadCourseData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('courseId');
+      
+      if (!courseId) {
+        alert('No course ID provided. Redirecting to dashboard...');
+        window.location.href = '/dashboard.html';
+        return;
+      }
+      
+      try {
+        // Load course basic info
+        const courseResponse = await fetch(`/api/user/course/${courseId}`, {
+          credentials: 'include'
+        });
+        
+        if (courseResponse.ok) {
+          currentCourse = await courseResponse.json();
+          document.getElementById('courseInfo').textContent = `Creating interactive slides for: ${currentCourse.title}`;
+          document.getElementById('courseTitle').textContent = currentCourse.title;
+        } else {
+          throw new Error('Course not found');
+        }
+
+        // Load course slides
+        const slidesResponse = await fetch(`/api/user/course/${courseId}/slides`, {
+          credentials: 'include'
+        });
+        
+        if (slidesResponse.ok) {
+          courseSlides = await slidesResponse.json();
+          updateCourseStats();
+          updateRecentSlides();
+        }
+
+        // Load usage stats
+        const usageResponse = await fetch('/api/user/usage', {
+          credentials: 'include'
+        });
+        
+        if (usageResponse.ok) {
+          const usage = await usageResponse.json();
+          updateUsageDisplay(usage);
+        }
+        
+      } catch (error) {
+        console.error('Error loading course:', error);
+        alert('Failed to load course. Redirecting to dashboard...');
+        window.location.href = '/dashboard.html';
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      // Update plan badge color
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+
+      // Update slide type cards based on plan
+      updateSlideTypeAccess();
+    }
+
+    // Update course statistics
+    function updateCourseStats() {
+      const totalSlides = courseSlides.length;
+      const interactiveSlides = courseSlides.filter(slide => slide.slide_type !== 'standard').length;
+      
+      document.getElementById('courseStats').textContent = `${totalSlides} slides • ${interactiveSlides} interactive slides`;
+    }
+
+    // Update recent interactive slides
+    function updateRecentSlides() {
+      const recentContainer = document.getElementById('recentSlides');
+      const interactiveSlides = courseSlides
+        .filter(slide => slide.slide_type !== 'standard')
+        .slice(-6) // Show last 6 interactive slides
+        .reverse();
+
+      if (interactiveSlides.length === 0) {
+        recentContainer.innerHTML = `
+          <div class="col-span-full text-center py-8 text-slate-400">
+            <div class="text-4xl mb-2">⚡</div>
+            <p>No interactive slides yet</p>
+            <p class="text-sm">Create your first interactive slide below</p>
+          </div>
+        `;
+        return;
+      }
+
+      recentContainer.innerHTML = interactiveSlides.map(slide => {
+        const typeIcons = {
+          quiz: '❓',
+          hotspot: '🎯',
+          assessment: '📊',
+          standard: '📝',
+          drag_drop: '🔀',
+          timeline: '📅',
+          before_after: '🔄'
+        };
+
+        const typeNames = {
+          quiz: 'Quiz',
+          hotspot: 'Hotspot',
+          assessment: 'Assessment',
+          standard: 'Standard',
+          drag_drop: 'Drag & Drop',
+          timeline: 'Timeline',
+          before_after: 'Before/After'
+        };
+
+        return `
+          <div class="slide-type-card rounded-lg p-4 cursor-pointer hover:bg-slate-800/60" 
+               onclick="editSlide(${slide.id}, '${slide.slide_type}')">
+            <div class="flex items-center gap-3">
+              <div class="text-2xl">${typeIcons[slide.slide_type] || '⚡'}</div>
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-white truncate">${slide.title || `Slide ${slide.slide_number}`}</div>
+                <div class="text-xs text-slate-400">${typeNames[slide.slide_type] || slide.slide_type}</div>
+              </div>
+              <div class="text-xs text-slate-500">Edit →</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Update usage display
+    function updateUsageDisplay(usage) {
+      if (!currentUser || !currentUser.limits) return;
+      
+      const interactiveUsed = usage.interactive_slides_created || 0;
+      const interactiveLimit = currentUser.limits.max_interactive_slides;
+      
+      if (interactiveLimit === -1) {
+        document.getElementById('currentUsage').textContent = `${interactiveUsed} used this month (Unlimited)`;
+        document.getElementById('usageBar').style.width = '0%';
+      } else {
+        document.getElementById('currentUsage').textContent = `${interactiveUsed} / ${interactiveLimit} used this month`;
+        const percentage = interactiveLimit > 0 ? (interactiveUsed / interactiveLimit) * 100 : 0;
+        document.getElementById('usageBar').style.width = `${Math.min(100, percentage)}%`;
+      }
+    }
+
+    // Update slide type access based on plan
+    function updateSlideTypeAccess() {
+      if (!currentUser) return;
+      
+      const cards = document.querySelectorAll('.slide-type-card');
+      
+      cards.forEach(card => {
+        const requiredPlan = card.dataset.planRequired;
+        const slideType = card.dataset.slideType;
+        
+        // Check if user has access to this slide type
+        let hasAccess = false;
+        
+        if (requiredPlan === 'free') {
+          hasAccess = true;
+        } else if (requiredPlan === 'pro') {
+          hasAccess = ['pro', 'business'].includes(currentUser.planType);
+        } else if (requiredPlan === 'business') {
+          hasAccess = currentUser.planType === 'business';
+        }
+        
+        if (!hasAccess) {
+          card.style.opacity = '0.5';
+          card.style.cursor = 'not-allowed';
+          
+          // Add upgrade hint
+          const upgradeHint = card.querySelector('.upgrade-hint');
+          if (!upgradeHint) {
+            const hint = document.createElement('div');
+            hint.className = 'upgrade-hint text-xs text-amber-400 mt-2';
+            hint.textContent = `Upgrade to ${requiredPlan} plan to unlock`;
+            card.appendChild(hint);
+          }
+        }
+      });
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      document.getElementById('btnViewCourse').addEventListener('click', previewCourse);
+      document.getElementById('btnManageCourse').addEventListener('click', manageCourse);
+      
+      // Slide type selection
+      document.querySelectorAll('.slide-type-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const slideType = card.dataset.slideType;
+          const requiredPlan = card.dataset.planRequired;
+          
+          // Check if user has access
+          let hasAccess = false;
+          if (requiredPlan === 'free') {
+            hasAccess = true;
+          } else if (requiredPlan === 'pro') {
+            hasAccess = ['pro', 'business'].includes(currentUser.planType);
+          } else if (requiredPlan === 'business') {
+            hasAccess = currentUser.planType === 'business';
+          }
+          
+          if (!hasAccess) {
+            alert(`This feature requires a ${requiredPlan} plan. Please upgrade to access ${slideType} slides.`);
+            window.location.href = '/upgrade.html';
+            return;
+          }
+          
+          selectSlideType(slideType);
+        });
+      });
+    }
+
+        // Navigate to specific slide type builder
+        function selectSlideType(slideType) {
+            const courseId = currentCourse.id;
+            
+            // Handle special cases
+            if (slideType === 'assessment') {
+                window.location.href = `/quiz-builder.html?courseId=${courseId}&type=assessment`;
+            } else if (slideType === 'standard') {
+                // For standard slides, we need to create a new slide first, then edit it
+                createStandardSlide(courseId);
+            } else if (slideType === 'drag_drop') {
+                window.location.href = `/drag-and-drop-builder.html?courseId=${courseId}`;
+            } else {
+                // Build the URL with course ID for other slide types
+                const baseUrl = `/${slideType}-builder.html?courseId=${courseId}`;
+                window.location.href = baseUrl;
+            }
+        }
+    
+    // Create a new standard slide and navigate to editor
+    async function createStandardSlide(courseId) {
+      try {
+        // Get the next slide number
+        const response = await fetch(`/api/user/course/${courseId}/slides`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const slides = await response.json();
+          const nextSlideNumber = slides.length + 1;
+          
+          // Navigate to standard slide builder with the slide index
+          window.location.href = `/standardslides.html?courseId=${courseId}&slideIndex=${slides.length}`;
+        } else {
+          console.error('Failed to get course slides');
+          // Fallback: navigate without slide index
+          window.location.href = `/standardslides.html?courseId=${courseId}`;
+        }
+      } catch (error) {
+        console.error('Error creating standard slide:', error);
+        // Fallback: navigate without slide index
+        window.location.href = `/standardslides.html?courseId=${courseId}`;
+      }
+    }
+
+    // Edit existing slide
+    function editSlide(slideId, slideType) {
+      const courseId = currentCourse.id;
+      
+      if (slideType === 'assessment') {
+        window.location.href = `/quiz-builder.html?courseId=${courseId}&slideId=${slideId}&type=assessment`;
+      } else if (slideType === 'standard') {
+        // Find the slide index for standard slides
+        const slide = courseSlides.find(s => s.id === slideId);
+        if (slide) {
+          window.location.href = `/standardslides.html?courseId=${courseId}&slideIndex=${slide.slide_number - 1}`;
+        }
+      } else if (slideType === 'drag_drop') {
+        window.location.href = `/drag-and-drop-builder.html?courseId=${courseId}&slideId=${slideId}`;
+      } else {
+        window.location.href = `/${slideType}-builder.html?courseId=${courseId}&slideId=${slideId}`;
+      }
+    }
+
+    // Preview course
+    function previewCourse() {
+      if (!currentCourse) return;
+      // Redirect back to dashboard with preview action
+      window.location.href = `/dashboard.html?preview=${currentCourse.id}`;
+    }
+
+    // Manage course
+    function manageCourse() {
+      if (!currentCourse) return;
+      // Redirect back to dashboard with edit action  
+      window.location.href = `/dashboard.html?edit=${currentCourse.id}`;
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+  </script>
+</body>
+</html>

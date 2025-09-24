@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome to CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="universal-header.js"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .step-card {
+      transition: all 0.3s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .step-card.active {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: rgba(6, 182, 212, 0.3);
+      transform: scale(1.02);
+    }
+    .step-card.completed {
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .progress-bar {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #06b6d4, #3b82f6);
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+    .form-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .form-input:focus {
+      border-color: rgba(6, 182, 212, 0.5);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    }
+    .plan-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .plan-option:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    .plan-option.selected {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Universal Header will be inserted here by universal-header.js -->
+
+  <!-- Progress Bar -->
+  <div class="bg-slate-900/50 border-b border-white/5">
+    <div class="mx-auto max-w-4xl px-4 py-4 md:px-6">
+      <div class="progress-bar h-2">
+        <div class="progress-fill" id="progressBar" style="width: 25%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-4xl px-4 py-8 md:px-6">
+    
+    <!-- Step 1: Welcome & Profile -->
+    <div id="step1" class="step-content fade-in">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold tracking-tight mb-4">
+          Welcome to <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">CourseMaker</span>!
+        </h1>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+          Let's get you set up to create amazing courses from your PowerPoint presentations. This will only take a few minutes.
+        </p>
+      </div>
+      
+      <div class="step-card rounded-2xl p-8 max-w-2xl mx-auto">
+        <h2 class="text-2xl font-semibold text-white mb-6">Tell us about yourself</h2>
+        
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">What should we call you?</label>
+            <input type="text" id="displayName" 
+                   class="w-full rounded-xl form-input p-3 text-sm" 
+                   placeholder="Your preferred name">
+            <p class="text-xs text-slate-400 mt-1">This will appear in your courses and profile</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">What's your role?</label>
+            <select id="userRole" class="w-full rounded-xl form-input p-3 text-sm">
+              <option value="">Select your role</option>
+              <option value="educator">Educator/Teacher</option>
+              <option value="trainer">Corporate Trainer</option>
+              <option value="consultant">Consultant</option>
+              <option value="content_creator">Content Creator</option>
+              <option value="student">Student</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Organization (Optional)</label>
+            <input type="text" id="organization" 
+                   class="w-full rounded-xl form-input p-3 text-sm" 
+                   placeholder="Your school, company, or organization">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">What's your main goal with CourseMaker?</label>
+            <select id="primaryGoal" class="w-full rounded-xl form-input p-3 text-sm">
+              <option value="">Select your primary goal</option>
+              <option value="online_courses">Create online courses for students</option>
+              <option value="employee_training">Employee training and development</option>
+              <option value="client_education">Educate clients or customers</option>
+              <option value="personal_projects">Personal learning projects</option>
+              <option value="monetize_content">Monetize my expertise</option>
+              <option value="other">Something else</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="flex justify-end mt-8">
+          <button onclick="nextStep()" id="step1Next" disabled
+                  class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed">
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Plan Selection -->
+    <div id="step2" class="step-content hidden">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight mb-4">Choose Your Plan</h1>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+          Select the plan that best fits your needs. You can always upgrade later.
+        </p>
+      </div>
+      
+      <div class="grid gap-6 md:grid-cols-3 mb-8">
+        <!-- Free Plan -->
+        <div class="plan-option step-card rounded-2xl p-6" data-plan="free" onclick="selectPlan('free')">
+          <div class="text-center">
+            <h3 class="text-xl font-semibold text-white mb-2">Free</h3>
+            <div class="text-3xl font-bold text-cyan-400 mb-4">$0</div>
+            <p class="text-slate-300 text-sm mb-4">Perfect for getting started</p>
+            
+            <div class="space-y-2 text-sm text-left">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>1 course per month</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Basic PowerPoint conversion</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-slate-500">✗</span>
+                <span class="text-slate-400">AI narration</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pro Plan -->
+        <div class="plan-option step-card rounded-2xl p-6 border-cyan-400/40" data-plan="pro" onclick="selectPlan('pro')">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">Recommended</span>
+          </div>
+          <div class="text-center">
+            <h3 class="text-xl font-semibold text-white mb-2">Pro</h3>
+            <div class="text-3xl font-bold text-cyan-400 mb-4">$29</div>
+            <p class="text-slate-300 text-sm mb-4">For serious course creators</p>
+            
+            <div class="space-y-2 text-sm text-left">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>10 courses per month</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>AI narration included</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Interactive elements</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Business Plan -->
+        <div class="plan-option step-card rounded-2xl p-6" data-plan="business" onclick="selectPlan('business')">
+          <div class="text-center">
+            <h3 class="text-xl font-semibold text-white mb-2">Business</h3>
+            <div class="text-3xl font-bold text-purple-400 mb-4">$99</div>
+            <p class="text-slate-300 text-sm mb-4">For teams and organizations</p>
+            
+            <div class="space-y-2 text-sm text-left">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Unlimited courses</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Premium AI voices</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-green-400">✓</span>
+                <span>Advanced analytics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex justify-between">
+        <button onclick="prevStep()" 
+                class="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-medium hover:bg-white/10">
+          Back
+        </button>
+        <button onclick="nextStep()" id="step2Next" disabled
+                class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed">
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: First Course Setup -->
+    <div id="step3" class="step-content hidden">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight mb-4">Create Your First Course</h1>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+          Upload a PowerPoint presentation to see CourseMaker in action, or skip this step and explore first.
+        </p>
+      </div>
+      
+      <div class="step-card rounded-2xl p-8 max-w-2xl mx-auto">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">📤</span>
+          </div>
+          <h2 class="text-xl font-semibold text-white mb-2">Upload Your PowerPoint</h2>
+          <p class="text-slate-400">We'll convert it into an interactive course with AI narration</p>
+        </div>
+        
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Course Title</label>
+            <input type="text" id="courseTitle" 
+                   class="w-full rounded-xl form-input p-3 text-sm" 
+                   placeholder="e.g., Introduction to Digital Marketing">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">PowerPoint File</label>
+            <div class="border-2 border-dashed border-slate-600 rounded-xl p-8 text-center hover:border-cyan-400/50 transition-colors cursor-pointer" 
+                 onclick="document.getElementById('pptFile').click()">
+              <input type="file" id="pptFile" accept=".ppt,.pptx" class="hidden" onchange="handleFileSelect(this)">
+              <div id="uploadArea">
+                <div class="text-4xl mb-2">📎</div>
+                <p class="text-slate-300 mb-1">Click to upload or drag and drop</p>
+                <p class="text-xs text-slate-400">Supports .ppt and .pptx files up to 200MB</p>
+              </div>
+              <div id="fileSelected" class="hidden">
+                <div class="text-4xl mb-2 text-green-400">✅</div>
+                <p class="text-green-400 font-medium" id="fileName"></p>
+                <p class="text-xs text-slate-400">File ready for upload</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-cyan-500/10 border border-cyan-400/20 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+              <span class="text-cyan-400 text-lg">💡</span>
+              <div>
+                <p class="text-cyan-300 font-medium text-sm">Pro Tip</p>
+                <p class="text-slate-300 text-sm">For best results, use presentations with clear slide titles and minimal text per slide.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-between mt-8">
+          <button onclick="prevStep()" 
+                  class="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-medium hover:bg-white/10">
+            Back
+          </button>
+          <div class="flex gap-3">
+            <button onclick="skipFirstCourse()" 
+                    class="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-medium hover:bg-white/10">
+              Skip for Now
+            </button>
+            <button onclick="createFirstCourse()" id="step3Create" disabled
+                    class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed">
+              Create Course
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Completion -->
+    <div id="step4" class="step-content hidden">
+      <div class="text-center">
+        <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        
+        <h1 class="text-4xl font-bold tracking-tight mb-4">
+          You're All Set! 🎉
+        </h1>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
+          Welcome to CourseMaker! Here are some helpful resources to get you started.
+        </p>
+        
+        <div class="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto mb-8">
+          <div class="step-card rounded-2xl p-6 text-left">
+            <div class="text-2xl mb-3">📚</div>
+            <h3 class="text-lg font-semibold text-white mb-2">Getting Started Guide</h3>
+            <p class="text-slate-300 text-sm mb-4">Learn the basics of creating engaging courses with CourseMaker.</p>
+            <a href="/help.html" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium">Read Guide →</a>
+          </div>
+          
+          <div class="step-card rounded-2xl p-6 text-left">
+            <div class="text-2xl mb-3">🎬</div>
+            <h3 class="text-lg font-semibold text-white mb-2">Video Tutorials</h3>
+            <p class="text-slate-300 text-sm mb-4">Watch step-by-step tutorials on course creation and AI narration.</p>
+            <a href="/tutorials.html" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium">Watch Videos →</a>
+          </div>
+          
+          <div class="step-card rounded-2xl p-6 text-left">
+            <div class="text-2xl mb-3">🎤</div>
+            <h3 class="text-lg font-semibold text-white mb-2">AI Voice Demo</h3>
+            <p class="text-slate-300 text-sm mb-4">Explore our AI voices and find the perfect narrator for your courses.</p>
+            <a href="/voice-demo.html" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium">Try Voices →</a>
+          </div>
+          
+          <div class="step-card rounded-2xl p-6 text-left">
+            <div class="text-2xl mb-3">💬</div>
+            <h3 class="text-lg font-semibold text-white mb-2">Community</h3>
+            <p class="text-slate-300 text-sm mb-4">Join other educators and share tips, templates, and best practices.</p>
+            <a href="/community.html" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium">Join Community →</a>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <button onclick="goToDashboard()" 
+                  class="rounded-xl bg-cyan-500 px-8 py-4 text-lg font-medium text-slate-900 hover:bg-cyan-400">
+            Go to Dashboard
+          </button>
+          
+          <div class="text-sm text-slate-400">
+            Need help? Email us at <a href="mailto:support@coursemaker.com" class="text-cyan-400 hover:text-cyan-300">support@coursemaker.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Onboarding state
+    let currentStepNum = 1;
+    let totalStepsNum = 4;
+    let selectedPlan = null;
+    let onboardingData = {};
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateProgress();
+      checkRequiredFields();
+      
+      // Add event listeners for form validation
+      document.getElementById('displayName').addEventListener('input', checkRequiredFields);
+      document.getElementById('userRole').addEventListener('change', checkRequiredFields);
+      document.getElementById('courseTitle').addEventListener('input', checkRequiredFields);
+    });
+
+    function updateProgress() {
+      const progress = (currentStepNum / totalStepsNum) * 100;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+      document.getElementById('currentStep').textContent = currentStepNum;
+      document.getElementById('totalSteps').textContent = totalStepsNum;
+    }
+
+    function showStep(step) {
+      // Hide all steps
+      document.querySelectorAll('.step-content').forEach(el => {
+        el.classList.add('hidden');
+      });
+      
+      // Show current step
+      document.getElementById(`step${step}`).classList.remove('hidden');
+      document.getElementById(`step${step}`).classList.add('fade-in');
+      
+      currentStepNum = step;
+      updateProgress();
+    }
+
+    function nextStep() {
+      if (currentStepNum === 1) {
+        // Save profile data
+        onboardingData.displayName = document.getElementById('displayName').value;
+        onboardingData.userRole = document.getElementById('userRole').value;
+        onboardingData.organization = document.getElementById('organization').value;
+        onboardingData.primaryGoal = document.getElementById('primaryGoal').value;
+      }
+      
+      if (currentStepNum < totalStepsNum) {
+        showStep(currentStepNum + 1);
+      }
+    }
+
+    function prevStep() {
+      if (currentStepNum > 1) {
+        showStep(currentStepNum - 1);
+      }
+    }
+
+    function checkRequiredFields() {
+      const step1Next = document.getElementById('step1Next');
+      const displayName = document.getElementById('displayName').value.trim();
+      const userRole = document.getElementById('userRole').value;
+      
+      step1Next.disabled = !displayName || !userRole;
+      
+      // Check step 3 requirements
+      if (document.getElementById('step3Create')) {
+        const step3Create = document.getElementById('step3Create');
+        const courseTitle = document.getElementById('courseTitle').value.trim();
+        const pptFile = document.getElementById('pptFile').files[0];
+        
+        step3Create.disabled = !courseTitle || !pptFile;
+      }
+    }
+
+    function selectPlan(plan) {
+      // Remove previous selection
+      document.querySelectorAll('.plan-option').forEach(el => {
+        el.classList.remove('selected');
+      });
+      
+      // Add selection
+      document.querySelector(`[data-plan="${plan}"]`).classList.add('selected');
+      selectedPlan = plan;
+      
+      // Enable next button
+      document.getElementById('step2Next').disabled = false;
+      
+      // Store plan selection
+      onboardingData.selectedPlan = plan;
+    }
+
+    function handleFileSelect(input) {
+      const file = input.files[0];
+      if (file) {
+        document.getElementById('uploadArea').classList.add('hidden');
+        document.getElementById('fileSelected').classList.remove('hidden');
+        document.getElementById('fileName').textContent = file.name;
+        checkRequiredFields();
+      }
+    }
+
+    async function createFirstCourse() {
+      const courseTitle = document.getElementById('courseTitle').value;
+      const pptFile = document.getElementById('pptFile').files[0];
+      
+      if (!courseTitle || !pptFile) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      const createBtn = document.getElementById('step3Create');
+      createBtn.disabled = true;
+      createBtn.textContent = 'Creating...';
+      
+      try {
+        // Apply plan first if not free
+        if (selectedPlan && selectedPlan !== 'free') {
+          await applyPlan(selectedPlan);
+        }
+        
+        // Create the course
+        const formData = new FormData();
+        formData.append('title', courseTitle);
+        formData.append('ppt', pptFile);
+        formData.append('isOnboarding', 'true');
+        
+        const response = await fetch('/api/user/create-course', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          // Store course creation success
+          onboardingData.firstCourseCreated = true;
+          onboardingData.firstCourseTitle = courseTitle;
+          
+          // Complete onboarding
+          await completeOnboarding();
+          
+          // Move to final step
+          showStep(4);
+        } else {
+          const error = await response.json();
+          alert('Failed to create course: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Course creation error:', error);
+        alert('Failed to create course. Please try again.');
+      } finally {
+        createBtn.disabled = false;
+        createBtn.textContent = 'Create Course';
+      }
+    }
+
+    async function skipFirstCourse() {
+      try {
+        // Apply plan if not free
+        if (selectedPlan && selectedPlan !== 'free') {
+          await applyPlan(selectedPlan);
+        }
+        
+        // Complete onboarding without course
+        onboardingData.firstCourseCreated = false;
+        await completeOnboarding();
+        
+        // Move to final step
+        showStep(4);
+      } catch (error) {
+        console.error('Onboarding completion error:', error);
+        alert('Failed to complete setup. Please try again.');
+      }
+    }
+
+    async function applyPlan(planType) {
+      if (planType === 'free') return;
+      
+      // For paid plans, redirect to checkout
+      window.location.href = `/checkout.html?plan=${planType}&billing=monthly&onboarding=true`;
+    }
+
+    async function completeOnboarding() {
+      try {
+        const response = await fetch('/api/user/complete-onboarding', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(onboardingData)
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to complete onboarding');
+        }
+      } catch (error) {
+        console.error('Onboarding completion error:', error);
+        // Don't block the user, just log the error
+      }
+    }
+
+    function goToDashboard() {
+      window.location.href = '/dashboard.html';
+    }
+
+    // Handle drag and drop for file upload
+    const uploadArea = document.querySelector('[onclick*="pptFile"]');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight(e) {
+      uploadArea.classList.add('border-cyan-400');
+    }
+    
+    function unhighlight(e) {
+      uploadArea.classList.remove('border-cyan-400');
+    }
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        document.getElementById('pptFile').files = files;
+        handleFileSelect(document.getElementById('pptFile'));
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Slide Maker · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    
+    .slide-canvas {
+      width: 800px;
+      height: 600px;
+      background: white;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      margin: 0 auto;
+    }
+    
+    .canvas-element {
+      position: absolute;
+      border: 2px solid transparent;
+      cursor: move;
+      user-select: none;
+    }
+    
+    .canvas-element.selected {
+      border-color: #06b6d4;
+      background: rgba(6, 182, 212, 0.1);
+    }
+    
+    .canvas-element.selected::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      bottom: -6px;
+      width: 12px;
+      height: 12px;
+      background: #06b6d4;
+      border-radius: 50%;
+      cursor: se-resize;
+    }
+    
+    .text-element {
+      min-width: 100px;
+      min-height: 30px;
+      padding: 8px;
+      word-wrap: break-word;
+      outline: none;
+    }
+    
+    .text-element[contenteditable="true"] {
+      border: 2px dashed #06b6d4;
+    }
+    
+    .image-element {
+      min-width: 50px;
+      min-height: 50px;
+    }
+    
+    .image-element img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    
+    .builder-toolbar {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+    
+    .toolbar-section {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .toolbar-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .font-selector {
+      background: rgba(51, 65, 85, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 0.5rem;
+      color: white;
+      width: 100%;
+    }
+    
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .color-picker {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+    }
+    
+    .size-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .size-input {
+      width: 60px;
+      background: rgba(51, 65, 85, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 0.25rem;
+      color: white;
+      text-align: center;
+    }
+    
+    .alignment-buttons {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    .alignment-btn {
+      padding: 0.5rem;
+      background: rgba(51, 65, 85, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .alignment-btn:hover, .alignment-btn.active {
+      background: rgba(6, 182, 212, 0.3);
+      border-color: #06b6d4;
+    }
+    
+    .layer-controls {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    .layer-btn {
+      padding: 0.25rem 0.5rem;
+      background: rgba(51, 65, 85, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    
+    .layer-btn:hover {
+      background: rgba(6, 182, 212, 0.3);
+    }
+    
+    .file-drop-area {
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: rgba(51, 65, 85, 0.2);
+      cursor: pointer;
+    }
+    
+    .file-drop-area:hover, .file-drop-area.dragover {
+      border-color: #06b6d4;
+      background: rgba(6, 182, 212, 0.1);
+    }
+    
+    .loading-spinner {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 2px solid #06b6d4;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Canvas grid background */
+    .slide-canvas::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(0,0,0,.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .canvas-element {
+      z-index: 2;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="#" id="btnBackToCourse">← Back to Course Builder</a>
+        <a class="hover:text-white" href="/dashboard.html">Dashboard</a>
+        <a class="hover:text-white" href="/courses.html">My Courses</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="badge" id="userPlan">Pro Plan</span>
+          <span class="text-sm text-slate-400" id="userEmail">user@example.com</span>
+        </div>
+        <button id="btnLogout" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="text-4xl">📄</div>
+        <h1 class="text-3xl font-bold tracking-tight">Standard Slide Maker</h1>
+      </div>
+      <p class="text-slate-400" id="courseInfo">Loading course information...</p>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="statusMessages" class="mb-6 space-y-2"></div>
+
+    <div class="grid gap-6 lg:grid-cols-4">
+      <!-- Canvas Area -->
+      <div class="lg:col-span-3">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Slide Canvas</h2>
+          <div class="flex items-center gap-3">
+            <button id="btnPreviewSlide" class="rounded-xl bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-400 disabled:opacity-50">
+              👁️ Preview
+            </button>
+            <button id="btnSaveSlide" class="rounded-xl bg-green-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-green-400 disabled:opacity-50">
+              💾 Save Slide
+            </button>
+          </div>
+        </div>
+        
+        <!-- Slide Canvas -->
+        <div class="flex justify-center mb-6">
+          <div id="slideCanvas" class="slide-canvas">
+            <!-- Elements will be added here dynamically -->
+          </div>
+        </div>
+        
+        <!-- Canvas Controls -->
+        <div class="builder-toolbar">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold">Canvas Controls</h3>
+            <div class="flex items-center gap-2">
+              <button id="btnClearCanvas" class="px-3 py-1 bg-red-500/20 text-red-300 border border-red-500/30 rounded text-sm hover:bg-red-500/30">
+                Clear All
+              </button>
+              <span class="text-sm text-slate-400">800 × 600px</span>
+            </div>
+          </div>
+          
+          <!-- Quick Add Buttons -->
+          <div class="flex items-center gap-2">
+            <button id="btnAddText" class="px-4 py-2 bg-cyan-500 text-slate-900 rounded hover:bg-cyan-400">
+              + Add Text
+            </button>
+            <label for="imageUpload" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-400 cursor-pointer">
+              + Add Image
+            </label>
+            <input type="file" id="imageUpload" accept="image/*" class="hidden">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Toolbar -->
+      <div class="builder-toolbar">
+        <h2 class="text-xl font-semibold mb-4">Properties</h2>
+        
+        <div id="noElementSelected" class="text-center text-slate-500 py-8">
+          <div class="text-4xl mb-2">🎯</div>
+          <p>Select an element to edit</p>
+          <p class="text-sm mt-1">Click on text or image to modify</p>
+        </div>
+        
+        <div id="elementProperties" class="hidden space-y-4">
+          <!-- Slide Settings -->
+          <div class="toolbar-section">
+            <h3 class="font-medium text-slate-300 mb-3">Slide Settings</h3>
+            <div class="space-y-2">
+              <div>
+                <label class="block text-sm text-slate-300 mb-1">Slide Title</label>
+                <input id="slideTitle" type="text" 
+                       class="w-full rounded border border-white/10 bg-slate-900 p-2 text-sm text-white" 
+                       placeholder="Enter slide title...">
+              </div>
+              <div>
+                <label class="block text-sm text-slate-300 mb-1">Background Color</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="backgroundColorPicker" class="color-picker" value="#ffffff">
+                  <span class="text-sm text-slate-300">Background</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Text Properties -->
+          <div id="textProperties" class="toolbar-section hidden">
+            <h3 class="font-medium text-slate-300 mb-3">Text Properties</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm text-slate-300 mb-1">Font Family</label>
+                <select id="fontFamily" class="font-selector">
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="'Times New Roman', serif">Times New Roman</option>
+                  <option value="'Courier New', monospace">Courier New</option>
+                  <option value="Helvetica, sans-serif">Helvetica</option>
+                  <option value="Georgia, serif">Georgia</option>
+                  <option value="Verdana, sans-serif">Verdana</option>
+                </select>
+              </div>
+              
+              <div class="size-control">
+                <label class="text-sm text-slate-300">Size:</label>
+                <input type="number" id="fontSize" class="size-input" min="8" max="120" value="16">
+                <span class="text-sm text-slate-400">px</span>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-slate-300 mb-1">Text Color</label>
+                <div class="color-picker-wrapper">
+                  <input type="color" id="textColorPicker" class="color-picker" value="#000000">
+                  <span class="text-sm text-slate-300">Color</span>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-slate-300 mb-1">Text Alignment</label>
+                <div class="alignment-buttons">
+                  <button class="alignment-btn" data-align="left">L</button>
+                  <button class="alignment-btn" data-align="center">C</button>
+                  <button class="alignment-btn" data-align="right">R</button>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-slate-300 mb-1">Text Style</label>
+                <div class="alignment-buttons">
+                  <button class="alignment-btn" id="btnBold"><strong>B</strong></button>
+                  <button class="alignment-btn" id="btnItalic"><em>I</em></button>
+                  <button class="alignment-btn" id="btnUnderline"><u>U</u></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Position Properties -->
+          <div id="positionProperties" class="toolbar-section">
+            <h3 class="font-medium text-slate-300 mb-3">Position & Size</h3>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <div class="size-control">
+                <label class="text-sm text-slate-300">X:</label>
+                <input type="number" id="elementX" class="size-input" min="0" max="800">
+              </div>
+              <div class="size-control">
+                <label class="text-sm text-slate-300">Y:</label>
+                <input type="number" id="elementY" class="size-input" min="0" max="600">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+              <div class="size-control">
+                <label class="text-sm text-slate-300">W:</label>
+                <input type="number" id="elementWidth" class="size-input" min="10">
+              </div>
+              <div class="size-control">
+                <label class="text-sm text-slate-300">H:</label>
+                <input type="number" id="elementHeight" class="size-input" min="10">
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-300 mb-1">Layer Order</label>
+              <div class="layer-controls">
+                <button class="layer-btn" id="btnBringForward">↑ Forward</button>
+                <button class="layer-btn" id="btnSendBackward">↓ Backward</button>
+                <button class="layer-btn" id="btnDeleteElement">🗑 Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Usage Info -->
+        <div class="mt-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+          <div class="text-sm text-blue-300 mb-1">Slide Usage</div>
+          <div class="text-xs text-slate-400" id="usageInfo">Loading usage information...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold">Slide Preview</h3>
+          <button id="btnClosePreview" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        
+        <div id="previewContent" class="bg-white rounded-lg overflow-hidden flex justify-center">
+          <!-- Preview content will be generated here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentCourse = null;
+    let selectedElement = null;
+    let isDragging = false;
+    let isResizing = false;
+    let dragOffset = { x: 0, y: 0 };
+    let slideElements = [];
+    let elementCounter = 0;
+    let isEditMode = false;
+    let editSlideId = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadCourseData();
+      setupEventListeners();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Load course data
+    async function loadCourseData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('courseId');
+      const slideId = urlParams.get('slideId');
+      
+      if (!courseId) {
+        showError('No course ID provided. Redirecting to dashboard...');
+        setTimeout(() => window.location.href = '/dashboard.html', 2000);
+        return;
+      }
+      
+      try {
+        const courseResponse = await fetch(`/api/user/course/${courseId}`, {
+          credentials: 'include'
+        });
+        
+        if (courseResponse.ok) {
+          currentCourse = await courseResponse.json();
+          document.getElementById('courseInfo').textContent = `Creating slide for: ${currentCourse.title}`;
+          document.getElementById('btnBackToCourse').href = `/course-builder.html?courseId=${courseId}`;
+        } else {
+          throw new Error('Course not found');
+        }
+
+        // If editing existing slide, load slide data
+        if (slideId) {
+          isEditMode = true;
+          editSlideId = slideId;
+          await loadExistingSlide(courseId, slideId);
+        }
+
+        // Load usage stats
+        const usageResponse = await fetch('/api/user/usage', {
+          credentials: 'include'
+        });
+        
+        if (usageResponse.ok) {
+          const usage = await usageResponse.json();
+          updateUsageDisplay(usage);
+        }
+        
+      } catch (error) {
+        console.error('Error loading course:', error);
+        showError('Failed to load course. Redirecting to dashboard...');
+        setTimeout(() => window.location.href = '/dashboard.html', 3000);
+      }
+    }
+
+    // Load existing slide for editing
+    async function loadExistingSlide(courseId, slideId) {
+      try {
+        const response = await fetch(`/api/user/course/${courseId}/slide/${slideId}/interactive`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const slideData = await response.json();
+          const slide = slideData.slide;
+          
+          // Set slide title
+          document.getElementById('slideTitle').value = slide.title || '';
+          
+          // Load slide content if it exists
+          if (slide.interactive_data && slide.interactive_data.elements) {
+            slideElements = slide.interactive_data.elements;
+            slideElements.forEach(element => {
+              createElement(element.type, element);
+            });
+          }
+          
+          // Set background color if specified
+          if (slide.interactive_data && slide.interactive_data.backgroundColor) {
+            const bgColor = slide.interactive_data.backgroundColor;
+            document.getElementById('backgroundColorPicker').value = bgColor;
+            document.getElementById('slideCanvas').style.backgroundColor = bgColor;
+          }
+          
+          showSuccess('Loaded existing slide for editing');
+        }
+      } catch (error) {
+        console.error('Error loading existing slide:', error);
+        showError('Failed to load existing slide data');
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+    }
+
+    // Update usage display
+    function updateUsageDisplay(usage) {
+      if (!currentUser || !currentUser.limits) return;
+      
+      const slidesUsed = usage.slides_created || 0;
+      const slidesLimit = currentUser.limits.max_slides_per_course;
+      
+      let usageText;
+      if (slidesLimit === -1) {
+        usageText = `${slidesUsed} slides created (Unlimited)`;
+      } else {
+        usageText = `Standard slides count toward your slide limit`;
+      }
+      
+      document.getElementById('usageInfo').textContent = usageText;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      
+      // Canvas controls
+      document.getElementById('btnAddText').addEventListener('click', () => addTextElement());
+      document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
+      document.getElementById('btnClearCanvas').addEventListener('click', clearCanvas);
+      document.getElementById('btnSaveSlide').addEventListener('click', saveSlide);
+      document.getElementById('btnPreviewSlide').addEventListener('click', previewSlide);
+      
+      // Preview modal
+      document.getElementById('btnClosePreview').addEventListener('click', closePreview);
+      
+      // Background color
+      document.getElementById('backgroundColorPicker').addEventListener('change', (e) => {
+        document.getElementById('slideCanvas').style.backgroundColor = e.target.value;
+      });
+      
+      // Text properties
+      document.getElementById('fontFamily').addEventListener('change', updateSelectedElement);
+      document.getElementById('fontSize').addEventListener('input', updateSelectedElement);
+      document.getElementById('textColorPicker').addEventListener('change', updateSelectedElement);
+      
+      // Text style buttons
+      document.getElementById('btnBold').addEventListener('click', () => toggleTextStyle('fontWeight', 'bold'));
+      document.getElementById('btnItalic').addEventListener('click', () => toggleTextStyle('fontStyle', 'italic'));
+      document.getElementById('btnUnderline').addEventListener('click', () => toggleTextStyle('textDecoration', 'underline'));
+      
+      // Alignment buttons
+      document.querySelectorAll('.alignment-btn[data-align]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (selectedElement && selectedElement.classList.contains('text-element')) {
+            selectedElement.style.textAlign = e.target.dataset.align;
+            updateAlignmentButtons(e.target.dataset.align);
+          }
+        });
+      });
+      
+      // Position controls
+      document.getElementById('elementX').addEventListener('input', updateElementPosition);
+      document.getElementById('elementY').addEventListener('input', updateElementPosition);
+      document.getElementById('elementWidth').addEventListener('input', updateElementSize);
+      document.getElementById('elementHeight').addEventListener('input', updateElementSize);
+      
+      // Layer controls
+      document.getElementById('btnBringForward').addEventListener('click', () => adjustLayer(1));
+      document.getElementById('btnSendBackward').addEventListener('click', () => adjustLayer(-1));
+      document.getElementById('btnDeleteElement').addEventListener('click', deleteSelectedElement);
+      
+      // Canvas click handler
+      document.getElementById('slideCanvas').addEventListener('click', (e) => {
+        if (e.target.id === 'slideCanvas') {
+          deselectElement();
+        }
+      });
+    }
+
+    // Add text element
+    function addTextElement() {
+      const elementData = {
+        type: 'text',
+        content: 'Double-click to edit text',
+        x: 50,
+        y: 50,
+        width: 200,
+        height: 50,
+        fontSize: 16,
+        fontFamily: 'Arial, sans-serif',
+        color: '#000000',
+        textAlign: 'left',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none'
+      };
+      
+      createElement('text', elementData);
+      slideElements.push(elementData);
+    }
+
+    // Handle image upload
+    async function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (file.size > 10 * 1024 * 1024) {
+        showError('Image file too large. Maximum size is 10MB.');
+        return;
+      }
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const uploadResponse = await fetch('/api/user/upload-interactive', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        
+        const uploadResult = await uploadResponse.json();
+        
+        if (!uploadResult.success) {
+          throw new Error('Failed to upload image: ' + (uploadResult.error || 'Unknown error'));
+        }
+        
+        // Create image element
+        const elementData = {
+          type: 'image',
+          src: uploadResult.fileUrl,
+          x: 100,
+          y: 100,
+          width: 200,
+          height: 150
+        };
+        
+        createElement('image', elementData);
+        slideElements.push(elementData);
+        
+        showSuccess('Image added to slide');
+        
+      } catch (error) {
+        console.error('Upload error:', error);
+        showError('Failed to upload image: ' + error.message);
+      }
+      
+      // Reset file input
+      event.target.value = '';
+    }
+
+    // Create element on canvas
+    function createElement(type, data) {
+      const canvas = document.getElementById('slideCanvas');
+      const element = document.createElement('div');
+      element.className = 'canvas-element';
+      element.dataset.type = type;
+      element.dataset.id = data.id || `element_${++elementCounter}`;
+      
+      // Set initial position and size
+      element.style.left = data.x + 'px';
+      element.style.top = data.y + 'px';
+      element.style.width = data.width + 'px';
+      element.style.height = data.height + 'px';
+      
+      if (type === 'text') {
+        element.className += ' text-element';
+        element.textContent = data.content || 'Double-click to edit';
+        element.style.fontSize = (data.fontSize || 16) + 'px';
+        element.style.fontFamily = data.fontFamily || 'Arial, sans-serif';
+        element.style.color = data.color || '#000000';
+        element.style.textAlign = data.textAlign || 'left';
+        element.style

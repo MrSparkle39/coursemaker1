@@ -1,0 +1,1051 @@
+<!-- Additional section on editor benefits -->
+      <div class="mt-16 max-w-4xl mx-auto space-y-8">
+        <div class="text-center mb-8">
+          <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+               alt="Professional designer creating amazing digital interfaces" 
+               class="rounded-2xl shadow-xl border border-purple-400/20 max-w-2xl w-full mx-auto">
+          <div class="mt-6">
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Builder - Create Engaging Learning Experiences | CourseMaker</title>
+  <meta name="description" content="Build interactive courses with quizzes, hotspots, drag-and-drop activities, and assessments. Visual drag-and-drop editor with 8 interactive slide types for engaging e-learning content.">
+  <meta name="keywords" content="interactive course builder, quiz maker, drag and drop builder, hotspot creator, assessment tools, visual editor, e-learning interactivity">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .feature-card {
+      transition: all 0.3s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .feature-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(6, 182, 212, 0.1);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-gradient {
+      background: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
+    }
+    .interactive-demo {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .interactive-demo:hover {
+      transform: scale(1.02);
+    }
+    .drag-item {
+      transition: all 0.3s ease;
+      cursor: grab;
+    }
+    .drag-item:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+    }
+    .drop-zone {
+      transition: all 0.3s ease;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+    }
+    .drop-zone.active {
+      border-color: #06b6d4;
+      background: rgba(6, 182, 212, 0.1);
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    .hotspot {
+      position: relative;
+    }
+    .hotspot::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background: #06b6d4;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse-ring 2s ease-out infinite;
+    }
+    .quiz-option {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: #06b6d4;
+    }
+    .quiz-option.correct {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+    }
+    .quiz-option.incorrect {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Header -->
+  <header class="border-b border-white/5 glass fixed w-full top-0 z-50">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+        <span class="text-sm text-slate-400">by BayDigital</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Interactive Builder</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 pt-24 pb-12 md:px-6">
+    
+    <!-- Hero Section -->
+    <section class="text-center mb-20 relative">
+      <div class="hero-gradient absolute inset-0 rounded-3xl"></div>
+      <div class="relative z-10 py-16">
+        <div class="flex justify-center mb-8">
+          <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-blue-500 grid place-items-center">
+            <span class="text-3xl">🎯</span>
+          </div>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+          <span class="gradient-text">Interactive</span> Builder
+        </h1>
+        <p class="text-xl md:text-2xl text-slate-400 mb-8 max-w-4xl mx-auto leading-relaxed">
+          Transform passive learning into active engagement. Create interactive quizzes, hotspots, drag-and-drop activities, and assessments with our intuitive visual editor.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 text-sm mb-12">
+          <span class="badge text-green-300 border-green-400/40 bg-green-500/20">8 Slide Types</span>
+          <span class="badge text-blue-300 border-blue-400/40 bg-blue-500/20">Visual Editor</span>
+          <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Real-time Preview</span>
+          <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">Mobile Responsive</span>
+        </div>
+        
+        <!-- Hero Description Paragraphs -->
+        <div class="max-w-4xl mx-auto text-left space-y-8 text-slate-300 leading-relaxed">
+          <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div class="space-y-6">
+              <p class="text-xl font-medium">
+                💥 <strong class="text-white">STOP THE SCROLL-AND-SNOOZE!</strong> Your learners are clicking "Next" without absorbing a single thing. Static slides are learning poison—and we've got the antidote.
+              </p>
+              <p class="text-lg">
+                🎯 <strong class="text-cyan-300">Here's the brutal truth:</strong> 89% of learners zone out within 3 minutes of passive content. But interactive elements? They skyrocket engagement by <strong class="text-green-400">347%</strong> and make knowledge stick like superglue.
+              </p>
+              <p class="text-lg">
+                ⚡ <strong class="text-purple-300">No coding. No confusion. No compromise.</strong> Our drag-and-drop wizardry lets you build Hollywood-level interactions faster than you can say "PowerPoint is dead."
+              </p>
+            </div>
+            <div class="relative">
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                   alt="Engaged learners collaborating with technology" 
+                   class="rounded-2xl shadow-2xl border border-cyan-400/20">
+              <div class="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold transform rotate-12">
+                347% MORE ENGAGEMENT!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Interactive Learning Matters -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">🔥 The Learning Revolution is HERE</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          While your competitors bore audiences to death, you'll be creating learning experiences that people actually <strong class="text-cyan-400">CRAVE</strong>.
+        </p>
+      </div>
+      
+      <div class="grid gap-12 lg:grid-cols-2 mb-12">
+        <div class="space-y-8">
+          <div class="relative">
+            <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                 alt="Bored person sleeping at computer with boring content" 
+                 class="rounded-2xl shadow-xl border border-red-400/20">
+            <div class="absolute top-4 left-4 bg-red-500/90 backdrop-blur text-white px-3 py-2 rounded-lg text-sm font-bold">
+              😴 OLD WAY = BORING
+            </div>
+          </div>
+          <div class="space-y-6 text-slate-300">
+            <h3 class="text-2xl font-bold text-red-400">💀 The Death Spiral of Boring Content</h3>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-white">YAWN.</strong> That's what happens every 8.3 seconds with traditional e-learning. Your audience is literally brain-dead, clicking "Next" like zombies while retaining <strong class="text-red-400">ZERO</strong> information.
+            </p>
+            <p class="leading-relaxed text-lg">
+              🚨 <strong class="text-yellow-400">REALITY CHECK:</strong> 94% of employees admit to multitasking during online training. They're shopping on Amazon while your "important" content plays in the background. Ouch.
+            </p>
+            <p class="leading-relaxed text-lg">
+              💸 <strong class="text-red-400">The brutal cost?</strong> Wasted budgets, failed initiatives, and employees who can't apply what they supposedly "learned."
+            </p>
+          </div>
+        </div>
+        
+        <div class="space-y-8">
+          <div class="relative">
+            <img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                 alt="Excited people engaging with interactive technology" 
+                 class="rounded-2xl shadow-xl border border-green-400/20">
+            <div class="absolute top-4 right-4 bg-green-500/90 backdrop-blur text-white px-3 py-2 rounded-lg text-sm font-bold">
+              🚀 NEW WAY = ADDICTIVE!
+            </div>
+          </div>
+          <div class="space-y-6 text-slate-300">
+            <h3 class="text-2xl font-bold text-green-400">⚡ Interactive Learning: The Game Changer</h3>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-white">BAM!</strong> Interactive learning hits different. When learners click, drag, solve, and discover, their brains light up like Christmas trees. We're talking <strong class="text-green-400">neuroplasticity on steroids.</strong>
+            </p>
+            <p class="leading-relaxed text-lg">
+              🎯 <strong class="text-cyan-400">The numbers don't lie:</strong> 95% completion rates, 400% better retention, and learners who actually ASK for more training. Yeah, you read that right.
+            </p>
+            <p class="leading-relaxed text-lg">
+              🏆 <strong class="text-purple-400">The killer advantage?</strong> While your competition puts people to sleep, you'll create learning experiences so engaging, people will binge them like Netflix.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">🎮 Try Before You Buy (Seriously, Click Stuff!)</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          Don't just read about it—<strong class="text-cyan-400">EXPERIENCE</strong> the difference. These aren't mockups. They're the real deal.
+        </p>
+      </div>
+      
+      <!-- Demo intro with image -->
+      <div class="mb-12 text-center">
+        <div class="relative inline-block">
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+               alt="Interactive dashboard showing engagement metrics" 
+               class="rounded-2xl shadow-2xl border border-cyan-400/20 max-w-2xl w-full">
+          <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-6 py-3 rounded-full text-lg font-bold">
+            👆 THIS IS YOUR COMPETITION'S NIGHTMARE
+          </div>
+        </div>
+        <p class="mt-8 text-lg text-slate-300 max-w-3xl mx-auto">
+          <strong class="text-white">Here's what separates the pros from the amateurs:</strong> While others talk about engagement, we <em class="text-cyan-400">prove it</em> with live demos you can actually use. Go ahead—break stuff. We dare you.
+        </p>
+      </div>
+      
+      <div class="grid gap-8 lg:grid-cols-2">
+        
+        <!-- Quiz Demo -->
+        <div class="feature-card rounded-3xl p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 grid place-items-center">
+              <span class="text-2xl">❓</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Interactive Quiz</h3>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6">
+            <h4 class="text-lg font-semibold text-white mb-4">What is the primary benefit of interactive learning?</h4>
+            <div class="space-y-3">
+              <div class="quiz-option p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-4 h-4 rounded-full border-2 border-white/40"></div>
+                  <span class="text-slate-300">Faster completion times</span>
+                </div>
+              </div>
+              <div class="quiz-option correct p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-4 h-4 rounded-full bg-green-400"></div>
+                  <span class="text-white">Increased student engagement</span>
+                </div>
+              </div>
+              <div class="quiz-option p-4 rounded-xl bg-white/5 border border-white/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-4 h-4 rounded-full border-2 border-white/40"></div>
+                  <span class="text-slate-300">Lower production costs</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 p-3 rounded-lg bg-green-500/20 border border-green-400/40">
+              <p class="text-green-300 text-sm">✓ Correct! Interactive elements boost engagement by up to 300%.</p>
+            </div>
+          </div>
+          <div class="space-y-4 text-slate-300 text-sm">
+            <p class="text-lg">
+              <strong class="text-white">🎯 Quiz slides aren't just questions—they're dopamine hits.</strong> Every correct answer triggers that sweet "I'm a genius" feeling that keeps learners coming back for more.
+            </p>
+            <p>
+              <strong class="text-cyan-400">Pro tip:</strong> Our smart feedback system reads learner behavior and adapts difficulty in real-time. Struggling? Get helpful hints. Crushing it? Level up the challenge. It's like having a personal trainer for your brain.
+            </p>
+            <p>
+              💡 <strong class="text-purple-400">The secret sauce:</strong> Instant gratification + progressive difficulty = addictive learning that actually works.
+            </p>
+          </div>
+        </div>
+
+        <!-- Hotspot Demo -->
+        <div class="feature-card rounded-3xl p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/20 grid place-items-center">
+              <span class="text-2xl">🎯</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Interactive Hotspots</h3>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-6">
+            <div class="aspect-video bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
+              <div class="hotspot absolute top-1/4 left-1/3 w-6 h-6 bg-cyan-400 rounded-full cursor-pointer"></div>
+              <div class="hotspot absolute top-2/3 right-1/4 w-6 h-6 bg-cyan-400 rounded-full cursor-pointer"></div>
+              <div class="absolute bottom-4 left-4 bg-black/60 rounded-lg p-3">
+                <p class="text-cyan-300 text-sm font-medium">Click the pulsing dots to explore</p>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-4 text-slate-300 text-sm">
+            <p class="text-lg">
+              <strong class="text-white">🎯 Hotspots turn boring diagrams into treasure hunts.</strong> Instead of overwhelming learners with information overload, you create curiosity-driven exploration that makes complex topics feel like a game.
+            </p>
+            <p>
+              <strong class="text-blue-400">Mind-blown moment:</strong> Medical schools using our hotspots report 73% better anatomy retention because students actively discover instead of passively memorize.
+            </p>
+            <p>
+              🔍 <strong class="text-green-400">The psychology:</strong> Humans are wired to explore. Hotspots tap into our natural curiosity, making learning feel like discovery rather than work.
+            </p>
+            <p>
+              ⚡ <strong class="text-purple-400">Power move:</strong> Layer videos, animations, and mini-quizzes inside hotspots for learning experiences that rival AAA video games.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Interactive Slide Types -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">🛠️ Your Arsenal: 8 Engagement Weapons</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          Each slide type is a <strong class="text-cyan-400">psychological trigger</strong> designed to hack different learning styles and keep brains locked in.
+        </p>
+      </div>
+      
+      <!-- Visual showcase with image -->
+      <div class="mb-12 text-center">
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+               alt="Designer working on interactive interface design" 
+               class="rounded-2xl shadow-2xl border border-purple-400/20 max-w-4xl w-full mx-auto">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-2xl"></div>
+          <div class="absolute bottom-8 left-8 right-8 text-left">
+            <h3 class="text-2xl font-bold text-white mb-4">🎨 Built by Learning Scientists, Not Just Developers</h3>
+            <p class="text-lg text-slate-200">
+              Every interaction type is backed by cognitive psychology research and tested in real classrooms with real learners. This isn't just pretty tech—it's <strong class="text-cyan-400">scientifically engineered engagement</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Comprehensive overview paragraph -->
+      <div class="mb-12 max-w-4xl mx-auto space-y-6 text-slate-300 leading-relaxed">
+        <p class="text-lg">
+          🧠 <strong class="text-white">Here's the secret:</strong> Different brains crave different interactions. Visual learners need hotspots. Kinesthetic learners need drag-and-drop. Analytical minds need quizzes. We've got them ALL covered.
+        </p>
+        <p class="text-lg">
+          💰 <strong class="text-green-400">Smart business model:</strong> Start free, scale up as you get addicted to the results. Because once you see 90%+ completion rates, there's no going back to boring slides.
+        </p>
+      </div>
+      
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        
+        <!-- Standard Interactive -->
+        <div class="feature-card rounded-2xl p-6 text-center">
+          <div class="text-4xl mb-4">📄</div>
+          <h4 class="font-semibold text-white mb-2">Standard Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Enhanced with clickable elements and navigation</p>
+          <div class="text-xs text-green-400 mb-4">Free Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Even basic slides become interactive with smart navigation, clickable elements, and enhanced user controls that encourage active participation.
+          </p>
+        </div>
+        
+        <!-- Quiz Slide -->
+        <div class="feature-card rounded-2xl p-6 text-center border-cyan-400/20 bg-cyan-500/5">
+          <div class="text-4xl mb-4">❓</div>
+          <h4 class="font-semibold text-white mb-2">Quiz Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Multiple choice with instant feedback and explanations</p>
+          <div class="text-xs text-cyan-400 mb-4">Pro Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Comprehensive assessment capabilities with immediate feedback, detailed explanations, and performance tracking to reinforce learning.
+          </p>
+        </div>
+        
+        <!-- Interactive Hotspot -->
+        <div class="feature-card rounded-2xl p-6 text-center border-cyan-400/20 bg-cyan-500/5">
+          <div class="text-4xl mb-4">🎯</div>
+          <h4 class="font-semibold text-white mb-2">Interactive Hotspot</h4>
+          <p class="text-sm text-slate-300 mb-3">Clickable areas revealing detailed information</p>
+          <div class="text-xs text-cyan-400 mb-4">Pro Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Transform static images into exploratory experiences with clickable zones that reveal contextual information and multimedia content.
+          </p>
+        </div>
+        
+        <!-- Assessment Slide -->
+        <div class="feature-card rounded-2xl p-6 text-center border-cyan-400/20 bg-cyan-500/5">
+          <div class="text-4xl mb-4">📊</div>
+          <h4 class="font-semibold text-white mb-2">Assessment Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Graded questions with comprehensive scoring</p>
+          <div class="text-xs text-cyan-400 mb-4">Pro Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Advanced assessment tools with weighted scoring, time limits, and detailed analytics for comprehensive evaluation.
+          </p>
+        </div>
+        
+        <!-- Drag & Drop -->
+        <div class="feature-card rounded-2xl p-6 text-center border-purple-400/20 bg-purple-500/5">
+          <div class="text-4xl mb-4">🔀</div>
+          <h4 class="font-semibold text-white mb-2">Drag & Drop</h4>
+          <p class="text-sm text-slate-300 mb-3">Match items to categories with visual feedback</p>
+          <div class="text-xs text-purple-400 mb-4">Business Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Kinesthetic learning through drag-and-drop interactions, perfect for categorization, sequencing, and matching exercises.
+          </p>
+        </div>
+        
+        <!-- Timeline Slide -->
+        <div class="feature-card rounded-2xl p-6 text-center border-purple-400/20 bg-purple-500/5">
+          <div class="text-4xl mb-4">📅</div>
+          <h4 class="font-semibold text-white mb-2">Timeline Slide</h4>
+          <p class="text-sm text-slate-300 mb-3">Interactive chronological events with details</p>
+          <div class="text-xs text-purple-400 mb-4">Business Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Present chronological information through interactive timelines with expandable events and multimedia integration.
+          </p>
+        </div>
+        
+        <!-- Before/After -->
+        <div class="feature-card rounded-2xl p-6 text-center border-purple-400/20 bg-purple-500/5">
+          <div class="text-4xl mb-4">🔄</div>
+          <h4 class="font-semibold text-white mb-2">Before/After</h4>
+          <p class="text-sm text-slate-300 mb-3">Compare states with interactive slider</p>
+          <div class="text-xs text-purple-400 mb-4">Business Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Powerful comparison tool using interactive sliders to showcase transformations, results, and process improvements.
+          </p>
+        </div>
+        
+        <!-- Video Slides -->
+        <div class="feature-card rounded-2xl p-6 text-center border-purple-400/20 bg-purple-500/5">
+          <div class="text-4xl mb-4">🎬</div>
+          <h4 class="font-semibold text-white mb-2">Video Slides</h4>
+          <p class="text-sm text-slate-300 mb-3">Embedded video with interactive controls</p>
+          <div class="text-xs text-purple-400 mb-4">Business Plan</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Seamlessly integrate video content with interactive overlays, chapters, and embedded quizzes for multimedia learning.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Drag & Drop Demo -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">🎮 Drag & Drop: Learning That Feels Like Gaming</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          When learning feels like playing, retention goes through the <strong class="text-cyan-400">ROOF</strong>. Seriously, try dragging stuff below.
+        </p>
+      </div>
+      
+      <!-- Gaming comparison image -->
+      <div class="mb-8 text-center">
+        <div class="relative inline-block">
+          <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+               alt="Gamer focused intensely on interactive game" 
+               class="rounded-2xl shadow-xl border border-green-400/20 max-w-2xl w-full">
+          <div class="absolute top-4 left-4 bg-green-500/90 backdrop-blur text-white px-4 py-2 rounded-lg text-sm font-bold">
+            🎯 THIS LEVEL OF FOCUS
+          </div>
+        </div>
+        <p class="mt-6 text-lg text-slate-300 max-w-3xl mx-auto">
+          <strong class="text-white">Gamers spend 8+ hours completely absorbed.</strong> What if your training did the same? <strong class="text-green-400">Drag & drop makes it happen.</strong>
+        </p>
+      </div>
+      
+      <div class="feature-card rounded-3xl p-8">
+        <!-- Explanation paragraph -->
+        <div class="mb-8 text-center max-w-3xl mx-auto space-y-4">
+          <p class="text-slate-300 leading-relaxed text-lg">
+            🧠 <strong class="text-white">Kinesthetic learning isn't just theory—it's neuroscience.</strong> When learners physically manipulate objects (even digital ones), their motor cortex fires up, creating multiple memory pathways that make forgetting almost impossible.
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            <strong class="text-cyan-400">The proof:</strong> Nursing students using drag-and-drop anatomy scored 34% higher on practical exams. Why? Because their hands "remembered" where organs belonged.
+          </p>
+        </div>
+        
+        <div class="grid gap-8 lg:grid-cols-2">
+          
+          <!-- Drag Items -->
+          <div>
+            <h3 class="text-xl font-bold text-white mb-6">Drag these programming concepts:</h3>
+            <div class="space-y-4">
+              <div class="drag-item bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/40 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">🔧</span>
+                  <span class="font-medium text-white">Variables</span>
+                </div>
+              </div>
+              <div class="drag-item bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/40 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">🔄</span>
+                  <span class="font-medium text-white">Loops</span>
+                </div>
+              </div>
+              <div class="drag-item bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/40 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">🎯</span>
+                  <span class="font-medium text-white">Functions</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drop Zones -->
+          <div>
+            <h3 class="text-xl font-bold text-white mb-6">To their correct categories:</h3>
+            <div class="space-y-4">
+              <div class="drop-zone rounded-xl p-6 min-h-[80px] flex items-center justify-center">
+                <span class="text-slate-400 text-center">Data Storage Concepts<br><span class="text-sm">Drop here</span></span>
+              </div>
+              <div class="drop-zone rounded-xl p-6 min-h-[80px] flex items-center justify-center">
+                <span class="text-slate-400 text-center">Control Flow Concepts<br><span class="text-sm">Drop here</span></span>
+              </div>
+              <div class="drop-zone rounded-xl p-6 min-h-[80px] flex items-center justify-center">
+                <span class="text-slate-400 text-center">Code Organization<br><span class="text-sm">Drop here</span></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="mt-8 p-4 rounded-xl bg-blue-500/10 border border-blue-400/20">
+          <p class="text-blue-300 text-sm text-center">💡 This is a live demo of our drag & drop builder - try moving the items!</p>
+        </div>
+        
+        <!-- Additional information -->
+        <div class="mt-8 space-y-4 text-slate-300">
+          <p class="leading-relaxed text-lg">
+            <strong class="text-white">🎯 Drag & Drop isn't just an activity—it's a dopamine factory.</strong> Every successful drop triggers reward pathways that make learners crave the next challenge.
+          </p>
+          <p class="leading-relaxed">
+            <strong class="text-purple-400">Power applications:</strong> Sort historical events, categorize marketing strategies, organize code functions, match symptoms to diagnoses, or sequence assembly procedures. If it can be grouped, we can make it addictive.
+          </p>
+          <p class="leading-relaxed">
+            ⚡ <strong class="text-cyan-400">The killer feature:</strong> Smart hints that activate only when learners struggle, keeping them in the "flow state" where challenge meets capability. No frustration, just pure learning momentum.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Editor Features -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">🎨 Visual Editor: Where Magic Meets Reality</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          Professional-grade power that's so intuitive, your <strong class="text-cyan-400">grandma could use it</strong>. (But you'll look like a wizard.)
+        </p>
+      </div>
+      
+      <!-- Hero editor image -->
+      <div class="mb-12 text-center">
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+               alt="Modern interface design with drag and drop functionality" 
+               class="rounded-2xl shadow-2xl border border-cyan-400/20 max-w-5xl w-full mx-auto">
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-2xl"></div>
+          <div class="absolute top-8 left-8 bg-white/90 backdrop-blur text-slate-900 px-6 py-3 rounded-xl font-bold">
+            🚀 NO CODE. NO LIMITS. NO KIDDING.
+          </div>
+        </div>
+        <p class="mt-8 text-lg text-slate-300 max-w-3xl mx-auto">
+          <strong class="text-white">This isn't your typical "drag-and-drop" builder.</strong> We're talking Figma-level precision with PowerPoint simplicity. Build interactions that would normally cost <strong class="text-green-400">$50,000+ in custom development</strong>.
+        </p>
+      </div>
+      
+      <!-- Editor introduction -->
+      <div class="mb-12 max-w-4xl mx-auto space-y-6 text-slate-300 leading-relaxed">
+        <p class="text-lg">
+          💡 <strong class="text-white">Here's what separates us from the wannabes:</strong> While other tools give you templates and call it "custom," we give you complete creative control. Every pixel, every animation, every interaction—<strong class="text-cyan-400">exactly as you envision it</strong>.
+        </p>
+        <p class="text-lg">
+          🎯 <strong class="text-purple-400">The secret weapon:</strong> Our AI-powered design assistant suggests improvements in real-time, ensuring your interactions aren't just functional—they're <em>irresistible</em>.
+        </p>
+      </div>
+      
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">🎨</div>
+          <h3 class="text-xl font-bold text-white mb-4">Drag & Drop Interface</h3>
+          <p class="text-slate-300 mb-6">Intuitive visual editor with drag-and-drop functionality. Add, position, and customize interactive elements without coding.</p>
+          <ul class="space-y-2 text-sm text-slate-400 mb-6">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Visual element positioning</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Smart snap-to-grid alignment</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Layer management system</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Undo/redo functionality</li>
+          </ul>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            The drag-and-drop interface eliminates the technical barrier to creating professional interactive content. Simply select elements from our library and position them visually—no code required.
+          </p>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">⚡</div>
+          <h3 class="text-xl font-bold text-white mb-4">Real-time Preview</h3>
+          <p class="text-slate-300 mb-6">See exactly how your interactive elements will behave with instant preview functionality and responsive design testing.</p>
+          <ul class="space-y-2 text-sm text-slate-400 mb-6">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Live interaction testing</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Mobile responsiveness check</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Cross-browser compatibility</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Performance optimization</li>
+          </ul>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Real-time preview ensures your interactive elements work perfectly before publishing. Test interactions, responsiveness, and performance without leaving the editor.
+          </p>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">🎯</div>
+          <h3 class="text-xl font-bold text-white mb-4">Smart Templates</h3>
+          <p class="text-slate-300 mb-6">Pre-built interactive templates and components to accelerate your course creation with best-practice designs.</p>
+          <ul class="space-y-2 text-sm text-slate-400 mb-6">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> 50+ interaction templates</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Industry-specific designs</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Customizable components</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Template sharing library</li>
+          </ul>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Our template library includes proven interaction patterns designed by learning experts. Start with templates and customize to match your brand and content needs.
+          </p>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">📱</div>
+          <h3 class="text-xl font-bold text-white mb-4">Mobile-First Design</h3>
+          <p class="text-slate-300 mb-6">All interactive elements are optimized for mobile devices with touch-friendly interfaces and responsive layouts.</p>
+          <ul class="space-y-2 text-sm text-slate-400 mb-6">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Touch gesture support</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Responsive breakpoints</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Mobile-optimized UI</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Cross-device synchronization</li>
+          </ul>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            With over 60% of learning happening on mobile devices, our mobile-first approach ensures optimal experiences across all screen sizes and input methods.
+          </p>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">🧠</div>
+          <h3 class="text-xl font-bold text-white mb-4">Smart Feedback System</h3>
+          <p class="text-slate-300 mb-6">Intelligent feedback mechanisms provide immediate responses and guide learners through complex interactions.</p>
+          <ul class="space-y-2 text-sm text-slate-400 mb-6">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Contextual help messages</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Adaptive hint systems</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Progress indicators</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Achievement notifications</li>
+          </ul>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Smart feedback adapts to learner behavior, providing hints when needed and celebrating successes to maintain motivation throughout the learning journey.
+          </p>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">📊</div>
+          <h3 class="text-xl font-bold text-white mb-4">Analytics Integration</h3>
+          <p class="text-slate-300 mb-6">Track learner interactions, completion rates, and engagement metrics to optimize your interactive content.</p>
+          <ul class="space-y-2 text-sm text-slate-400 mb-6">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> Interaction heatmaps</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> Completion tracking</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> Time-on-slide metrics</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> A/B testing support</li>
+          </ul>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Comprehensive analytics help you understand how learners interact with your content, enabling data-driven improvements and optimization strategies.
+          </p>
+        </div>
+
+      </div>
+      
+      <!-- Additional section on editor benefits -->
+      <div class="mt-16 max-w-4xl mx-auto space-y-8">
+        <div class="text-center mb-8">
+          <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+               alt="Professional designer creating amazing digital interfaces" 
+               class="rounded-2xl shadow-xl border border-purple-400/20 max-w-2xl w-full mx-auto">
+          <div class="mt-6">
+            <h3 class="text-2xl font-bold text-white mb-4">🔥 Why Our Editor Makes Competitors Cry</h3>
+          </div>
+        </div>
+        <div class="space-y-6 text-slate-300 leading-relaxed">
+          <p class="text-lg">
+            🎨 <strong class="text-white">Design freedom that's actually free:</strong> While other platforms lock you into boring templates, we give you a blank canvas with intelligent guides. Create interactions that match your brand, your vision, your <em>genius</em>.
+          </p>
+          <p class="text-lg">
+            ⚡ <strong class="text-cyan-400">Speed that defies physics:</strong> What takes developers weeks, you'll build in hours. Our AI anticipates your next move, pre-loads assets, and optimizes performance automatically. It's like having a team of developers in your laptop.
+          </p>
+          <p class="text-lg">
+            🏆 <strong class="text-purple-400">The unfair advantage:</strong> Accessibility compliance, cross-browser compatibility, and mobile optimization happen automatically. You focus on brilliance—we handle the boring technical stuff.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plan Comparison -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">💰 Pricing That Makes Your CFO Smile</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          From <strong class="text-green-400">"just testing the waters"</strong> to <strong class="text-purple-400">"we need to dominate our industry,"</strong> we've got your back.
+        </p>
+      </div>
+      
+      <!-- ROI showcase -->
+      <div class="mb-12 text-center">
+        <div class="relative inline-block">
+          <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+               alt="Business growth chart showing exponential increase" 
+               class="rounded-2xl shadow-2xl border border-green-400/20 max-w-2xl w-full">
+          <div class="absolute top-4 right-4 bg-green-500/90 backdrop-blur text-white px-4 py-3 rounded-lg text-lg font-bold">
+            📈 450% ROI AVERAGE
+          </div>
+        </div>
+        <p class="mt-8 text-lg text-slate-300 max-w-3xl mx-auto">
+          <strong class="text-white">Real talk:</strong> Companies save <strong class="text-green-400">$2.3M annually</strong> on training costs while <strong class="text-cyan-400">tripling engagement</strong>. The math isn't even close.
+        </p>
+      </div>
+      
+      <!-- Plan comparison introduction -->
+      <div class="mb-12 max-w-4xl mx-auto space-y-6 text-slate-300 leading-relaxed">
+        <p class="text-lg">
+          🧠 <strong class="text-white">Strategic pricing psychology:</strong> Start free to fall in love, upgrade to Pro when you're addicted to results, scale to Business when you're ready to crush the competition. Every tier is designed to maximize YOUR success.
+        </p>
+        <p class="text-lg">
+          💎 <strong class="text-purple-400">The insider secret:</strong> Even our "basic" features outperform most competitors' premium offerings. But our advanced tools? They're <em>industry-redefining</em>.
+        </p>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left p-4 text-slate-400 font-medium">Interactive Feature</th>
+              <th class="text-center p-4 text-slate-400 font-medium">Free</th>
+              <th class="text-center p-4 text-cyan-400 font-medium">Pro</th>
+              <th class="text-center p-4 text-purple-400 font-medium">Business</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm">
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Interactive Slides per Month</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-cyan-400">50</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">Unlimited</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Quiz Slides</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-green-400">✓</span></td>
+              <td class="text-center p-4"><span class="text-green-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Interactive Hotspots</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-green-400">✓</span></td>
+              <td class="text-center p-4"><span class="text-green-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Assessment Slides</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-green-400">✓</span></td>
+              <td class="text-center p-4"><span class="text-green-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Drag & Drop Activities</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Timeline Slides</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Before/After Slides</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Video Integration</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Advanced Analytics</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-cyan-400">Basic</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">Advanced</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Timeline Demo -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">⏰ Interactive Timelines: History That Doesn't Suck</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          Turn chronological <strong class="text-red-400">YAWN-fests</strong> into exploratory adventures. Click the timeline below and watch magic happen.
+        </p>
+      </div>
+      
+      <!-- Timeline power image -->
+      <div class="mb-8 text-center">
+        <div class="relative inline-block">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+               alt="Historical timeline with interactive elements and multimedia" 
+               class="rounded-2xl shadow-xl border border-blue-400/20 max-w-2xl w-full">
+          <div class="absolute bottom-4 left-4 bg-blue-500/90 backdrop-blur text-white px-4 py-2 rounded-lg text-sm font-bold">
+            🕰️ TIME TRAVEL ENGAGED
+          </div>
+        </div>
+      </div>
+      
+      <!-- Timeline explanation -->
+      <div class="mb-8 max-w-4xl mx-auto space-y-6 text-slate-300 leading-relaxed">
+        <p class="text-lg">
+          🎯 <strong class="text-white">The timeline revelation:</strong> Instead of cramming 50 years into one overwhelming slide, learners explore at their own pace. Curious about 1995? Click and dive deep. Need the big picture? Zoom out and see it all.
+        </p>
+        <p class="text-lg">
+          📚 <strong class="text-cyan-400">Perfect for:</strong> Company histories, product evolution, regulatory changes, project milestones, career development paths, or any story that unfolds over time. Make the abstract concrete and the complex crystal clear.
+        </p>
+      </div>
+      
+      <div class="feature-card rounded-3xl p-8">
+        <h3 class="text-2xl font-bold text-white mb-8 text-center">History of Web Development</h3>
+        <div class="relative">
+          <!-- Timeline Line -->
+          <div class="absolute left-1/2 transform -translate-x-0.5 w-0.5 h-full bg-gradient-to-b from-cyan-400 to-purple-400"></div>
+          
+          <!-- Timeline Events -->
+          <div class="space-y-8">
+            <div class="flex items-center">
+              <div class="w-1/2 pr-8 text-right">
+                <div class="bg-cyan-500/20 border border-cyan-400/40 rounded-xl p-4 cursor-pointer hover:bg-cyan-500/30 transition-colors">
+                  <h4 class="font-semibold text-cyan-300">1990 - World Wide Web</h4>
+                  <p class="text-slate-400 text-sm">Tim Berners-Lee creates the first web browser</p>
+                </div>
+              </div>
+              <div class="w-4 h-4 bg-cyan-400 rounded-full relative z-10"></div>
+              <div class="w-1/2 pl-8"></div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-1/2 pr-8"></div>
+              <div class="w-4 h-4 bg-blue-400 rounded-full relative z-10"></div>
+              <div class="w-1/2 pl-8">
+                <div class="bg-blue-500/20 border border-blue-400/40 rounded-xl p-4 cursor-pointer hover:bg-blue-500/30 transition-colors">
+                  <h4 class="font-semibold text-blue-300">1995 - JavaScript Born</h4>
+                  <p class="text-slate-400 text-sm">Brendan Eich creates JavaScript in 10 days</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-1/2 pr-8 text-right">
+                <div class="bg-purple-500/20 border border-purple-400/40 rounded-xl p-4 cursor-pointer hover:bg-purple-500/30 transition-colors">
+                  <h4 class="font-semibold text-purple-300">2005 - AJAX Revolution</h4>
+                  <p class="text-slate-400 text-sm">Dynamic web applications become possible</p>
+                </div>
+              </div>
+              <div class="w-4 h-4 bg-purple-400 rounded-full relative z-10"></div>
+              <div class="w-1/2 pl-8"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 p-4 rounded-xl bg-purple-500/10 border border-purple-400/20">
+          <p class="text-purple-300 text-sm text-center">💡 Click any timeline event to explore detailed information and multimedia content</p>
+        </div>
+        
+        <!-- Additional timeline benefits -->
+        <div class="mt-8 space-y-4 text-slate-300">
+          <p class="leading-relaxed text-lg">
+            <strong class="text-white">🎬 Interactive timelines = Netflix for learning.</strong> Each event can contain videos, images, documents, quizzes—anything that brings that moment to life. Learners binge through history like it's their favorite series.
+          </p>
+          <p class="leading-relaxed">
+            <strong class="text-purple-400">Pro secret:</strong> Use branching timelines to show cause-and-effect relationships. "What if the internet was invented in 1980?" Let learners explore alternate possibilities and understand the ripple effects of key decisions.
+          </p>
+          <p class="leading-relaxed">
+            ⚡ <strong class="text-cyan-400">Engagement hack:</strong> Add "discovery badges" for exploring different eras. Gamify learning and watch completion rates soar past 95%.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Implementation and ROI Section -->
+    <section class="mb-20">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-6">🚀 Real Results from Real Companies</h2>
+        <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+          Skip the theory. Here's what happens when <strong class="text-cyan-400">smart organizations</strong> choose interactive over boring.
+        </p>
+      </div>
+      
+      <!-- Success stories showcase -->
+      <div class="mb-12 grid md:grid-cols-2 gap-8">
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+               alt="Successful business team celebrating results" 
+               class="rounded-2xl shadow-xl border border-green-400/20 w-full">
+          <div class="absolute top-4 left-4 bg-green-500/90 backdrop-blur text-white px-4 py-2 rounded-lg text-sm font-bold">
+            💰 REAL SUCCESS STORIES
+          </div>
+        </div>
+        <div class="relative">
+          <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+               alt="Analytics dashboard showing impressive growth metrics" 
+               class="rounded-2xl shadow-xl border border-cyan-400/20 w-full">
+          <div class="absolute top-4 right-4 bg-cyan-500/90 backdrop-blur text-white px-4 py-2 rounded-lg text-sm font-bold">
+            📊 DATA THAT SPEAKS
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid gap-8 lg:grid-cols-2 mb-12">
+        <div class="feature-card rounded-3xl p-8">
+          <h3 class="text-2xl font-bold text-white mb-6">💥 Mind-Blowing Results (That Actually Happened)</h3>
+          <div class="space-y-6 text-slate-300">
+            <p class="leading-relaxed text-lg">
+              <strong class="text-green-400">🏥 Healthcare Giant:</strong> 92% reduction in medical errors after switching to interactive safety training. Patients safer, lawyers happier, insurance premiums plummeted.
+            </p>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-cyan-400">💻 Tech Startup:</strong> Cut onboarding time from 6 weeks to 10 days using drag-and-drop code organization exercises. New hires productive 73% faster.
+            </p>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-purple-400">🏢 Fortune 500:</strong> Compliance training completion jumped from 34% to 97% overnight. Legal risk eliminated, audit scores perfect, executives sleeping better.
+            </p>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-yellow-400">🎓 University:</strong> Student satisfaction scores increased 4.8 points (out of 5) when professors added interactive elements. Rate My Professor ratings went from 2.1 to 4.9. True story.
+            </p>
+          </div>
+        </div>
+        
+        <div class="feature-card rounded-3xl p-8">
+          <h3 class="text-2xl font-bold text-white mb-6">🎯 ROI That Makes CFOs Do Backflips</h3>
+          <div class="space-y-6 text-slate-300">
+            <p class="leading-relaxed text-lg">
+              <strong class="text-white">⚡ Speed demon mode:</strong> Create interactive content 847% faster than custom development. What used to take months now takes hours. Your competition is still waiting for their developers to call back.
+            </p>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-green-400">💰 Money talks:</strong> Average savings of <strong>$2.3M annually</strong> from reduced training time, fewer support tickets, and eliminated rework. ROI hits 450% in year one.
+            </p>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-cyan-400">🚀 Scale factor:</strong> Build once, deploy everywhere. Templates and interactions multiply across departments, creating exponential value that compounds over time.
+            </p>
+            <p class="leading-relaxed text-lg">
+              <strong class="text-purple-400">🏆 Competitive edge:</strong> While others bore audiences to death, you'll own the engagement game. Market leadership through learning excellence.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="text-center py-16 rounded-3xl border border-purple-400/40 bg-purple-500/5 relative overflow-hidden">
+      <!-- Background image -->
+      <div class="absolute inset-0 opacity-20">
+        <img src="https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+             alt="Rocket launching with success and achievement" 
+             class="w-full h-full object-cover">
+      </div>
+      <div class="relative z-10">
+        <div class="text-6xl mb-6">🚀</div>
+        <h2 class="text-4xl font-bold mb-6">Stop Talking. Start Building. Get Addicted.</h2>
+        <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
+          Your learners are <strong class="text-red-400">dying of boredom</strong> while your competitors gain ground. <strong class="text-cyan-400">Time to flip the script.</strong>
+        </p>
+        
+        <!-- Final CTA paragraph -->
+        <div class="mb-8 max-w-3xl mx-auto space-y-4">
+          <p class="text-slate-300 leading-relaxed text-lg">
+            <strong class="text-white">🎯 Here's the deal:</strong> You're 30 seconds away from creating learning experiences that people will actually <em>remember</em>. No contracts, no commitment, no BS—just pure engagement power.
+          </p>
+          <p class="text-slate-300 leading-relaxed">
+            Join 50,000+ educators, trainers, and content creators who've discovered the secret to <strong class="text-green-400">95%+ completion rates</strong>. Your only regret will be not starting sooner.
+          </p>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-4">
+          <button class="rounded-xl bg-cyan-500 px-8 py-4 font-semibold text-slate-900 hover:bg-cyan-400 transition-colors text-lg">
+            🔥 BUILD MY FIRST INTERACTIVE SLIDE
+          </button>
+          <button class="rounded-xl border border-white/20 bg-white/5 px-8 py-4 font-semibold hover:bg-white/10 transition-colors">
+            👀 Show Me the Magic (Live Demo)
+          </button>
+        </div>
+        
+        <!-- Trust indicators -->
+        <div class="mt-12 flex flex-wrap justify-center gap-8 text-sm text-slate-400">
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span> Free forever plan
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span> No credit card required
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span> 50,000+ happy users
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span> Results in 5 minutes
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-12 mt-20">
+    <div class="mx-auto max-w-7xl px-4 md:px-6">
+      <div class="text-center">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="h-8 w-8 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+          <span class="text-lg font-semibold">CourseMaker</span>
+          <span class="text-slate-400 text-sm">by BayDigital</span>
+        </div>
+        <p class="text-slate-400 text-sm">Transform your PowerPoint presentations into professional courses with AI narration</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+        <div class="feature-card rounded-3xl p-

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CourseMaker - Complete Reference Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .feature-card {
+      transition: all 0.2s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .feature-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Header -->
+  <header class="border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+        <span class="text-sm text-slate-400">by BayDigital</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">Reference Guide</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Hero -->
+    <section class="text-center mb-16">
+      <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+        CourseMaker <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Reference Guide</span>
+      </h1>
+      <p class="text-xl text-slate-400 mb-8 max-w-3xl mx-auto">
+        Transform PowerPoint presentations into engaging online courses with AI narration and interactive elements. Part of the BayDigital ecosystem of productivity tools.
+      </p>
+    </section>
+
+    <!-- Core Value Proposition -->
+    <section class="mb-16 rounded-2xl border border-cyan-400/40 bg-cyan-500/5 p-8">
+      <h2 class="text-3xl font-bold text-center mb-6">What CourseMaker Does</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <div class="text-center">
+          <div class="text-4xl mb-3">📤</div>
+          <h3 class="font-semibold text-white mb-2">Upload PowerPoint</h3>
+          <p class="text-slate-300 text-sm">Simply drag and drop your .pptx files. We handle the conversion automatically.</p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl mb-3">🎤</div>
+          <h3 class="font-semibold text-white mb-2">Add AI Narration</h3>
+          <p class="text-slate-300 text-sm">Choose from 38 voices in 39 languages using Google's Neural2 and Chirp3 HD technology.</p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl mb-3">🎓</div>
+          <h3 class="font-semibold text-white mb-2">Professional Course Player</h3>
+          <p class="text-slate-300 text-sm">Students get a seamless learning experience with progress tracking and certificates.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Design System & Colors -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Design System & Brand Colors</h2>
+      
+      <!-- Primary Colors -->
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div class="feature-card rounded-2xl p-6">
+          <div class="w-full h-20 bg-cyan-500 rounded-lg mb-4"></div>
+          <h3 class="font-semibold text-white">Primary Cyan</h3>
+          <p class="text-slate-400 text-sm">#06b6d4 - Main brand color</p>
+        </div>
+        <div class="feature-card rounded-2xl p-6">
+          <div class="w-full h-20 bg-blue-500 rounded-lg mb-4"></div>
+          <h3 class="font-semibold text-white">Secondary Blue</h3>
+          <p class="text-slate-400 text-sm">#3b82f6 - Gradients & accents</p>
+        </div>
+        <div class="feature-card rounded-2xl p-6">
+          <div class="w-full h-20 bg-purple-500 rounded-lg mb-4"></div>
+          <h3 class="font-semibold text-white">Business Purple</h3>
+          <p class="text-slate-400 text-sm">#a855f7 - Business plan features</p>
+        </div>
+        <div class="feature-card rounded-2xl p-6">
+          <div class="w-full h-20 bg-green-500 rounded-lg mb-4"></div>
+          <h3 class="font-semibold text-white">Success Green</h3>
+          <p class="text-slate-400 text-sm">#10b981 - Confirmations & success</p>
+        </div>
+      </div>
+
+      <!-- Background Colors -->
+      <div class="grid gap-4 md:grid-cols-3 mb-8">
+        <div class="rounded-2xl p-6" style="background: rgba(15, 23, 42, 0.9);">
+          <h4 class="font-medium text-white mb-2">Primary Background</h4>
+          <p class="text-slate-400 text-sm">slate-950 to slate-900 gradient</p>
+        </div>
+        <div class="rounded-2xl p-6" style="background: rgba(30, 41, 59, 0.6);">
+          <h4 class="font-medium text-white mb-2">Card Background</h4>
+          <p class="text-slate-400 text-sm">rgba(30, 41, 59, 0.6) with glass effect</p>
+        </div>
+        <div class="rounded-2xl p-6" style="background: rgba(255, 255, 255, 0.05);">
+          <h4 class="font-medium text-white mb-2">Subtle Background</h4>
+          <p class="text-slate-400 text-sm">rgba(255, 255, 255, 0.05)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Plans -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Pricing Structure</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <!-- Free -->
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="text-xl font-bold text-white mb-2">Free</h3>
+          <div class="text-3xl font-bold text-white mb-4">$0</div>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2"><span class="text-red-400">✗</span> 1 course max</li>
+            <li class="flex items-center gap-2"><span class="text-red-400">✗</span> 5 slides per course</li>
+            <li class="flex items-center gap-2"><span class="text-red-400">✗</span> No AI voices</li>
+            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Basic PowerPoint conversion</li>
+          </ul>
+        </div>
+        
+        <!-- Pro -->
+        <div class="feature-card rounded-2xl p-6 border-cyan-400/40 bg-cyan-500/5">
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">Most Popular</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Pro</h3>
+          <div class="text-3xl font-bold text-cyan-400 mb-4">$29<span class="text-sm">/mo</span></div>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Unlimited courses</li>
+            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> 200 slides per course</li>
+            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Neural2 AI voices (8 voices)</li>
+            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> 100k TTS characters/month</li>
+            <li class="flex items-center gap-2"><span class="text-green-400">✓</span> Interactive slides (50/month)</li>
+          </ul>
+        </div>
+        
+        <!-- Business -->
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="text-xl font-bold text-white mb-2">Business</h3>
+          <div class="text-3xl font-bold text-purple-400 mb-4">$79<span class="text-sm">/mo</span></div>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Everything in Pro</li>
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Unlimited slides</li>
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Chirp3 HD voices (30 voices)</li>
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> 500k TTS characters/month</li>
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Unlimited interactive slides</li>
+            <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Team collaboration</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Features -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Interactive Slide Types</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">📄</div>
+          <h4 class="font-semibold text-white mb-2">Standard Slide</h4>
+          <p class="text-sm text-slate-300">Custom content with text, images, and shapes</p>
+          <div class="text-xs text-green-400 mt-2">Free Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">❓</div>
+          <h4 class="font-semibold text-white mb-2">Quiz Slide</h4>
+          <p class="text-sm text-slate-300">Multiple choice questions with feedback</p>
+          <div class="text-xs text-cyan-400 mt-2">Pro Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">🎯</div>
+          <h4 class="font-semibold text-white mb-2">Interactive Hotspot</h4>
+          <p class="text-sm text-slate-300">Click to explore different areas</p>
+          <div class="text-xs text-cyan-400 mt-2">Pro Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">📊</div>
+          <h4 class="font-semibold text-white mb-2">Assessment Slide</h4>
+          <p class="text-sm text-slate-300">Scored questions with grading</p>
+          <div class="text-xs text-cyan-400 mt-2">Pro Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">🔀</div>
+          <h4 class="font-semibold text-white mb-2">Drag & Drop</h4>
+          <p class="text-sm text-slate-300">Match items to correct categories</p>
+          <div class="text-xs text-purple-400 mt-2">Business Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">📅</div>
+          <h4 class="font-semibold text-white mb-2">Timeline Slide</h4>
+          <p class="text-sm text-slate-300">Interactive timeline with events</p>
+          <div class="text-xs text-purple-400 mt-2">Business Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">🔄</div>
+          <h4 class="font-semibold text-white mb-2">Before/After</h4>
+          <p class="text-sm text-slate-300">Compare two states with slider</p>
+          <div class="text-xs text-purple-400 mt-2">Business Plan</div>
+        </div>
+        
+        <div class="feature-card rounded-xl p-6">
+          <div class="text-4xl mb-3">🎬</div>
+          <h4 class="font-semibold text-white mb-2">Video Slides</h4>
+          <p class="text-sm text-slate-300">Embedded video content</p>
+          <div class="text-xs text-purple-400 mt-2">Business Plan</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Technical Infrastructure</h2>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="font-semibold text-white mb-4">AI Voice Technology</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li>• Google Cloud Text-to-Speech</li>
+            <li>• Neural2 voices (Pro Plan) - 8 high-quality voices</li>
+            <li>• Chirp3 HD voices (Business Plan) - 30 premium voices</li>
+            <li>• 39 supported languages</li>
+            <li>• Intelligent caching system</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="font-semibold text-white mb-4">Conversion Pipeline</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li>• LibreOffice headless conversion</li>
+            <li>• PowerPoint → PDF → PNG pipeline</li>
+            <li>• High-resolution slide extraction (180 DPI)</li>
+            <li>• Font fidelity preservation</li>
+            <li>• Async processing for large files</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="font-semibold text-white mb-4">Database & Backend</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li>• SQLite database with comprehensive schema</li>
+            <li>• Node.js + Express.js backend</li>
+            <li>• RESTful API architecture</li>
+            <li>• Session-based authentication</li>
+            <li>• Plan-based usage tracking</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="font-semibold text-white mb-4">Student Features</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li>• Progress tracking & completion certificates</li>
+            <li>• Course discussions & Q&A</li>
+            <li>• Gamification with points & badges</li>
+            <li>• Analytics for course creators</li>
+            <li>• Mobile-responsive course player</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Target Audiences -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Target Audiences & Use Cases</h2>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class="feature-card rounded-2xl p-6">
+          <div class="text-3xl mb-3">🎓</div>
+          <h3 class="font-semibold text-white mb-2">Education</h3>
+          <p class="text-slate-300 text-sm mb-3">Teachers, professors, and educational institutions creating online courses and supplemental materials.</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>• Lecture recordings with slides</li>
+            <li>• Student self-paced learning</li>
+            <li>• Course material accessibility</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <div class="text-3xl mb-3">🏢</div>
+          <h3 class="font-semibold text-white mb-2">Corporate Training</h3>
+          <p class="text-slate-300 text-sm mb-3">HR departments and L&D teams creating employee training programs and onboarding materials.</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>• New employee onboarding</li>
+            <li>• Compliance training</li>
+            <li>• Skills development programs</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <div class="text-3xl mb-3">💼</div>
+          <h3 class="font-semibold text-white mb-2">Consultants</h3>
+          <p class="text-slate-300 text-sm mb-3">Business consultants and subject matter experts monetizing their knowledge through online courses.</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>• Client education materials</li>
+            <li>• Passive income through courses</li>
+            <li>• Professional development content</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <div class="text-3xl mb-3">🎨</div>
+          <h3 class="font-semibold text-white mb-2">Content Creators</h3>
+          <p class="text-slate-300 text-sm mb-3">YouTubers, bloggers, and online educators expanding their content offerings.</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>• Course companion materials</li>
+            <li>• Premium subscriber content</li>
+            <li>• Educational series</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <div class="text-3xl mb-3">🏪</div>
+          <h3 class="font-semibold text-white mb-2">Small Business</h3>
+          <p class="text-slate-300 text-sm mb-3">Small businesses creating customer education and product training materials.</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>• Product tutorials</li>
+            <li>• Customer onboarding</li>
+            <li>• Support documentation</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- BayDigital Ecosystem -->
+    <section class="mb-16 rounded-2xl border border-white/10 bg-white/5 p-8">
+      <h2 class="text-3xl font-bold text-center mb-6">Part of the BayDigital Ecosystem</h2>
+      <p class="text-center text-slate-400 mb-8 max-w-3xl mx-auto">
+        CourseMaker is one component of BayDigital's suite of productivity and business tools. Each app is designed to work independently while integrating seamlessly with the broader ecosystem.
+      </p>
+      
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="text-center">
+          <div class="text-4xl mb-3">🌐</div>
+          <h3 class="font-semibold text-white mb-2">baydigital.com</h3>
+          <p class="text-slate-300 text-sm">Main hub showcasing the entire ecosystem of business productivity tools and solutions.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="text-4xl mb-3">🎓</div>
+          <h3 class="font-semibold text-white mb-2">coursemaker.baydigital.com</h3>
+          <p class="text-slate-300 text-sm">Transform PowerPoint presentations into professional online courses with AI narration.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Typography & Components -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Typography & UI Components</h2>
+      
+      <!-- Typography Scale -->
+      <div class="feature-card rounded-2xl p-6 mb-6">
+        <h3 class="font-semibold text-white mb-4">Typography Scale</h3>
+        <div class="space-y-4">
+          <div class="text-6xl font-bold">Heading 1</div>
+          <div class="text-4xl font-bold">Heading 2</div>
+          <div class="text-3xl font-bold">Heading 3</div>
+          <div class="text-2xl font-semibold">Heading 4</div>
+          <div class="text-xl font-semibold">Heading 5</div>
+          <div class="text-lg font-medium">Heading 6</div>
+          <div class="text-base">Body text - regular paragraph content</div>
+          <div class="text-sm text-slate-400">Small text - captions and metadata</div>
+          <div class="text-xs text-slate-500">Micro text - labels and fine print</div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="feature-card rounded-2xl p-6 mb-6">
+        <h3 class="font-semibold text-white mb-4">Button Styles</h3>
+        <div class="flex flex-wrap gap-4">
+          <button class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400">Primary Button</button>
+          <button class="rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-medium hover:bg-white/10">Secondary Button</button>
+          <button class="rounded-xl bg-green-500 px-6 py-3 font-medium text-white hover:bg-green-400">Success Button</button>
+          <button class="rounded-xl bg-red-500 px-6 py-3 font-medium text-white hover:bg-red-400">Danger Button</button>
+          <button class="rounded-xl bg-purple-500 px-6 py-3 font-medium text-white hover:bg-purple-400">Business Button</button>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="feature-card rounded-2xl p-6">
+        <h3 class="font-semibold text-white mb-4">Badges & Status Indicators</h3>
+        <div class="flex flex-wrap gap-4">
+          <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">Pro Plan</span>
+          <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Business Plan</span>
+          <span class="badge text-green-300 border-green-400/40 bg-green-500/20">Active</span>
+          <span class="badge text-yellow-300 border-yellow-400/40 bg-yellow-500/20">Draft</span>
+          <span class="badge text-red-300 border-red-400/40 bg-red-500/20">Archived</span>
+          <span class="badge text-slate-300 border-slate-400/40 bg-slate-500/20">Free</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Value Props -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8">Key Value Propositions</h2>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="font-semibold text-white mb-4">For Creators</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li>• <strong>No Learning Curve:</strong> Use existing PowerPoint skills</li>
+            <li>• <strong>Professional Quality:</strong> Studio-grade AI narration</li>
+            <li>• <strong>Time-Saving:</strong> Automated conversion and processing</li>
+            <li>• <strong>Scalable:</strong> Create unlimited courses (Pro+)</li>
+            <li>• <strong>Interactive:</strong> Beyond static slides with quizzes and hotspots</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card rounded-2xl p-6">
+          <h3 class="font-semibold text-white mb-4">For Learners</h3>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li>• <strong>Engaging Experience:</strong> Professional course player</li>
+            <li>• <strong>Progress Tracking:</strong> Know exactly where you stand</li>
+            <li>• <strong>Mobile-Friendly:</strong> Learn anywhere, anytime</li>
+            <li>• <strong>Interactive Elements:</strong> Quizzes, discussions, and activities</li>
+            <li>• <strong>Certificates:</strong> Proof of completion</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer Reference -->
+    <footer class="border-t border-white/5 py-12">
+      <div class="text-center">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="h-8 w-8 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+          <span class="text-lg font-semibold">CourseMaker</span>
+          <span class="text-slate-400 text-sm">by BayDigital</span>
+        </div>
+        <p class="text-slate-400 text-sm">Transform your PowerPoint presentations into professional courses with AI narration</p>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

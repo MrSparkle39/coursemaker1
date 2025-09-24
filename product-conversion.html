@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PowerPoint to Course Conversion - Transform Presentations to E-Learning | CourseMaker</title>
+  <meta name="description" content="Convert PowerPoint presentations to professional online courses instantly. High-fidelity conversion preserves formatting, fonts, and layouts. Upload .pptx files and create engaging e-learning content.">
+  <meta name="keywords" content="PowerPoint to course, PPTX conversion, presentation to e-learning, slide conversion, online course creation, LibreOffice conversion">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .feature-card {
+      transition: all 0.3s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .feature-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(6, 182, 212, 0.1);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-gradient {
+      background: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
+    }
+    .process-step {
+      position: relative;
+    }
+    .process-step::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -2rem;
+      width: 3rem;
+      height: 2px;
+      background: linear-gradient(to right, #06b6d4, #3b82f6);
+      transform: translateY(-50%);
+    }
+    .process-step:last-child::after {
+      display: none;
+    }
+    @keyframes upload-bounce {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .upload-animation {
+      animation: upload-bounce 2s ease-in-out infinite;
+    }
+    @keyframes progress-fill {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    .progress-bar {
+      animation: progress-fill 3s ease-in-out infinite;
+    }
+    .conversion-demo {
+      background: linear-gradient(45deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1));
+      border: 2px dashed rgba(6, 182, 212, 0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Header -->
+  <header class="border-b border-white/5 glass fixed w-full top-0 z-50">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+        <span class="text-sm text-slate-400">by BayDigital</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="badge text-blue-300 border-blue-400/40 bg-blue-500/20">PowerPoint Conversion</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 pt-24 pb-12 md:px-6">
+    
+    <!-- Hero Section -->
+    <section class="text-center mb-20 relative">
+      <div class="hero-gradient absolute inset-0 rounded-3xl"></div>
+      <div class="relative z-10 py-16">
+        <div class="flex justify-center mb-8">
+          <div class="upload-animation">
+            <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-500 grid place-items-center">
+              <span class="text-3xl">📤</span>
+            </div>
+          </div>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+          <span class="gradient-text">PowerPoint</span> to Course
+        </h1>
+        <p class="text-xl md:text-2xl text-slate-400 mb-8 max-w-4xl mx-auto leading-relaxed">
+          Transform any PowerPoint presentation into a professional online course in seconds. Our advanced conversion engine preserves formatting, fonts, and layouts while optimizing for web delivery.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 text-sm">
+          <span class="badge text-green-300 border-green-400/40 bg-green-500/20">180 DPI Quality</span>
+          <span class="badge text-blue-300 border-blue-400/40 bg-blue-500/20">Font Preservation</span>
+          <span class="badge text-purple-300 border-purple-400/40 bg-purple-500/20">Instant Processing</span>
+          <span class="badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20">100 MB Max</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conversion Demo -->
+    <section class="mb-20">
+      <div class="conversion-demo rounded-3xl p-8 mb-12">
+        <h2 class="text-3xl font-bold text-center mb-8">See the Conversion in Action</h2>
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          
+          <!-- Before -->
+          <div class="text-center">
+            <div class="w-full max-w-sm mx-auto mb-6">
+              <div class="aspect-[4/3] rounded-2xl bg-white/10 border-2 border-dashed border-white/20 grid place-items-center">
+                <div class="text-center">
+                  <div class="text-6xl mb-4">📄</div>
+                  <h3 class="text-xl font-bold text-white mb-2">Your PowerPoint</h3>
+                  <p class="text-slate-400 text-sm">.pptx file with slides, text, and images</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-slate-400">
+              <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
+              <span class="text-sm">Original Format</span>
+            </div>
+          </div>
+
+          <!-- Arrow -->
+          <div class="text-center">
+            <div class="text-6xl mb-4">→</div>
+            <div class="bg-cyan-500/20 rounded-xl p-4 border border-cyan-400/40">
+              <div class="h-2 bg-white/20 rounded-full overflow-hidden mb-2">
+                <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full progress-bar"></div>
+              </div>
+              <p class="text-cyan-300 text-sm font-medium">Converting...</p>
+            </div>
+          </div>
+
+          <!-- After -->
+          <div class="text-center md:col-start-2">
+            <div class="w-full max-w-sm mx-auto mb-6">
+              <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400/40 grid place-items-center">
+                <div class="text-center">
+                  <div class="text-6xl mb-4">🎓</div>
+                  <h3 class="text-xl font-bold text-white mb-2">Professional Course</h3>
+                  <p class="text-cyan-300 text-sm">Interactive web-based learning experience</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-cyan-400">
+              <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+              <span class="text-sm">Course Format</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Conversion Process -->
+    <section class="mb-20">
+      <h2 class="text-4xl font-bold text-center mb-12">How the Conversion Works</h2>
+      <div class="grid gap-8 md:grid-cols-4">
+        
+        <div class="process-step text-center">
+          <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40 mx-auto mb-6">
+            <span class="text-2xl">📤</span>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-3">1. Upload</h3>
+          <p class="text-slate-400 text-sm">Drag and drop your .pptx file or browse to select. Files up to 100 MB supported.</p>
+        </div>
+
+        <div class="process-step text-center">
+          <div class="w-16 h-16 rounded-2xl bg-blue-500/20 grid place-items-center ring-1 ring-blue-400/40 mx-auto mb-6">
+            <span class="text-2xl">⚙️</span>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-3">2. Process</h3>
+          <p class="text-slate-400 text-sm">LibreOffice headless engine converts slides to high-quality images at 180 DPI.</p>
+        </div>
+
+        <div class="process-step text-center">
+          <div class="w-16 h-16 rounded-2xl bg-purple-500/20 grid place-items-center ring-1 ring-purple-400/40 mx-auto mb-6">
+            <span class="text-2xl">🎨</span>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-3">3. Optimize</h3>
+          <p class="text-slate-400 text-sm">Automatic font preservation, layout optimization, and web-ready formatting.</p>
+        </div>
+
+        <div class="process-step text-center">
+          <div class="w-16 h-16 rounded-2xl bg-green-500/20 grid place-items-center ring-1 ring-green-400/40 mx-auto mb-6">
+            <span class="text-2xl">🚀</span>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-3">4. Deploy</h3>
+          <p class="text-slate-400 text-sm">Your course is ready with professional player, progress tracking, and sharing options.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Technical Capabilities -->
+    <section class="mb-20">
+      <h2 class="text-4xl font-bold text-center mb-12">Technical Excellence</h2>
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">🎯</div>
+          <h3 class="text-xl font-bold text-white mb-4">High-Fidelity Conversion</h3>
+          <p class="text-slate-300 mb-6">Preserves original formatting, fonts, colors, and layouts with 180 DPI image quality for crisp, professional results.</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> 180 DPI image resolution</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Font fidelity preservation</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Color accuracy maintained</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-cyan-400 rounded-full"></span> Layout integrity guaranteed</li>
+          </ul>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">⚡</div>
+          <h3 class="text-xl font-bold text-white mb-4">Lightning Fast Processing</h3>
+          <p class="text-slate-300 mb-6">Advanced async processing delivers conversion results in under 30 seconds for most presentations.</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Under 30 second conversion</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Async batch processing</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Real-time progress updates</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-400 rounded-full"></span> Queue management system</li>
+          </ul>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">📁</div>
+          <h3 class="text-xl font-bold text-white mb-4">Advanced File Handling</h3>
+          <p class="text-slate-300 mb-6">Supports complex PowerPoint features including animations, transitions, embedded objects, and custom themes.</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Complex slide layouts</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Embedded images & shapes</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Custom fonts & themes</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-400 rounded-full"></span> Master slide preservation</li>
+          </ul>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">🔧</div>
+          <h3 class="text-xl font-bold text-white mb-4">LibreOffice Engine</h3>
+          <p class="text-slate-300 mb-6">Powered by LibreOffice's proven conversion technology, ensuring compatibility with all PowerPoint versions and features.</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> PowerPoint 2007-2021 support</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Office 365 compatibility</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Cross-platform consistency</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span> Headless server processing</li>
+          </ul>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">🛡️</div>
+          <h3 class="text-xl font-bold text-white mb-4">Secure Processing</h3>
+          <p class="text-slate-300 mb-6">Your files are processed securely and automatically deleted after conversion. No data is retained on our servers.</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> SSL/TLS encryption</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Automatic file deletion</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> GDPR compliant</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Zero data retention</li>
+          </ul>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8">
+          <div class="text-4xl mb-6">📊</div>
+          <h3 class="text-xl font-bold text-white mb-4">Quality Optimization</h3>
+          <p class="text-slate-300 mb-6">Intelligent optimization ensures perfect web display while maintaining visual fidelity and fast loading times.</p>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> Automatic image compression</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> Web-optimized formats</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> Progressive loading</li>
+            <li class="flex items-center gap-2"><span class="w-2 h-2 bg-red-400 rounded-full"></span> CDN delivery</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Supported Features -->
+    <section class="mb-20">
+      <h2 class="text-4xl font-bold text-center mb-12">Supported PowerPoint Features</h2>
+      <div class="grid gap-8 md:grid-cols-2">
+        
+        <!-- Fully Supported -->
+        <div class="feature-card rounded-3xl p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-green-500/20 grid place-items-center">
+              <span class="text-2xl">✅</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Fully Supported</h3>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <ul class="space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Text formatting & fonts
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Images & graphics
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Shapes & SmartArt
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Tables & charts
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Background images
+              </li>
+            </ul>
+            <ul class="space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Master slides
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Custom themes
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Color schemes
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Slide layouts
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-green-400 rounded-full"></span>
+                Embedded objects
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Converted/Adapted -->
+        <div class="feature-card rounded-3xl p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-yellow-500/20 grid place-items-center">
+              <span class="text-2xl">🔄</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Converted & Adapted</h3>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <ul class="space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Animations → Static frames
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Transitions → Slide progression
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Videos → Placeholder frames
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Audio → Text extraction
+              </li>
+            </ul>
+            <ul class="space-y-3 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Speaker notes → Course content
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Hyperlinks → Interactive elements
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Comments → Course annotations
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                Hidden slides → Optional content
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- File Specifications -->
+    <section class="mb-20">
+      <h2 class="text-4xl font-bold text-center mb-12">File Requirements & Specifications</h2>
+      <div class="grid gap-8 md:grid-cols-3">
+        
+        <div class="feature-card rounded-3xl p-8 text-center">
+          <div class="text-4xl mb-6">📄</div>
+          <h3 class="text-xl font-bold text-white mb-4">Supported Formats</h3>
+          <div class="space-y-3">
+            <div class="bg-cyan-500/10 rounded-xl p-4 border border-cyan-400/20">
+              <div class="font-semibold text-cyan-400">.PPTX</div>
+              <div class="text-sm text-slate-400">PowerPoint 2007+</div>
+            </div>
+            <div class="bg-blue-500/10 rounded-xl p-4 border border-blue-400/20">
+              <div class="font-semibold text-blue-400">.PPT</div>
+              <div class="text-sm text-slate-400">Legacy PowerPoint</div>
+            </div>
+            <div class="bg-purple-500/10 rounded-xl p-4 border border-purple-400/20">
+              <div class="font-semibold text-purple-400">.ODP</div>
+              <div class="text-sm text-slate-400">OpenOffice/LibreOffice</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8 text-center">
+          <div class="text-4xl mb-6">📏</div>
+          <h3 class="text-xl font-bold text-white mb-4">Size Limits</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <span class="text-slate-300">Maximum File Size</span>
+              <span class="text-cyan-400 font-semibold">100 MB</span>
+            </div>
+            <div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <span class="text-slate-300">Slides per File</span>
+              <span class="text-green-400 font-semibold">500 max</span>
+            </div>
+            <div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <span class="text-slate-300">Processing Time</span>
+              <span class="text-blue-400 font-semibold">< 30 sec</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card rounded-3xl p-8 text-center">
+          <div class="text-4xl mb-6">🎨</div>
+          <h3 class="text-xl font-bold text-white mb-4">Output Quality</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <span class="text-slate-300">Image Resolution</span>
+              <span class="text-purple-400 font-semibold">180 DPI</span>
+            </div>
+            <div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <span class="text-slate-300">Output Format</span>
+              <span class="text-yellow-400 font-semibold">PNG/JPEG</span>
+            </div>
+            <div class="flex justify-between items-center p-4 rounded-xl bg-white/5 border border-white/10">
+              <span class="text-slate-300">Color Depth</span>
+              <span class="text-red-400 font-semibold">24-bit</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Plan Limitations -->
+    <section class="mb-20">
+      <h2 class="text-4xl font-bold text-center mb-12">Conversion Limits by Plan</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left p-4 text-slate-400 font-medium">Feature</th>
+              <th class="text-center p-4 text-slate-400 font-medium">Free</th>
+              <th class="text-center p-4 text-cyan-400 font-medium">Pro</th>
+              <th class="text-center p-4 text-purple-400 font-medium">Business</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm">
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Courses per Account</td>
+              <td class="text-center p-4"><span class="text-slate-400">1</span></td>
+              <td class="text-center p-4"><span class="text-cyan-400">Unlimited</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">Unlimited</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Slides per Course</td>
+              <td class="text-center p-4"><span class="text-slate-400">5</span></td>
+              <td class="text-center p-4"><span class="text-cyan-400">200</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">Unlimited</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">File Size Limit</td>
+              <td class="text-center p-4"><span class="text-slate-400">25 MB</span></td>
+              <td class="text-center p-4"><span class="text-cyan-400">100 MB</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">100 MB</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Batch Upload</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-cyan-400">✓</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">Priority Processing</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+            <tr class="border-b border-white/5">
+              <td class="p-4 text-white font-medium">API Access</td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-red-400">✗</span></td>
+              <td class="text-center p-4"><span class="text-purple-400">✓</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Best Practices -->
+    <section class="mb-20">
+      <h2 class="text-4xl font-bold text-center mb-12">Conversion Best Practices</h2>
+      <div class="grid gap-8 md:grid-cols-2">
+        
+        <!-- Preparation Tips -->
+        <div class="feature-card rounded-3xl p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-green-500/20 grid place-items-center">
+              <span class="text-2xl">💡</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Preparation Tips</h3>
+          </div>
+          <ul class="space-y-4 text-sm text-slate-300">
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Use Web-Safe Fonts:</strong> Stick to common fonts like Arial, Calibri, or Times New Roman for best compatibility
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Optimize Images:</strong> Use high-resolution images (300 DPI) for best results in conversion
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Simplify Animations:</strong> Complex animations will be converted to static frames
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Check Speaker Notes:</strong> Include detailed speaker notes for AI narration text
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Optimization Guidelines -->
+        <div class="feature-card rounded-3xl p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/20 grid place-items-center">
+              <span class="text-2xl">⚡</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Optimization Guidelines</h3>
+          </div>
+          <ul class="space-y-4 text-sm text-slate-300">
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Consistent Layout:</strong> Use master slides and consistent formatting for professional appearance
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Readable Text Size:</strong> Use minimum 18pt font for online readability
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>High Contrast:</strong> Ensure good contrast between text and background colors
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></span>
+              <div>
+                <strong>Logical Flow:</strong> Structure content in logical learning sequences
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="text-center py-16 rounded-3xl border border-cyan-400/40 bg-cyan-500/5">
+      <div class="text-6xl mb-6">🚀</div>
+      <h2 class="text-4xl font-bold mb-6">Ready to Convert Your First Presentation?</h2>
+      <p class="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
+        Transform your PowerPoint files into professional online courses in seconds. Start your free trial today.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button class="rounded-xl bg-cyan-500 px-8 py-4 font-semibold text-slate-900 hover:bg-cyan-400 transition-colors">
+          Upload PowerPoint Now
+        </button>
+        <button class="rounded-xl border border-white/20 bg-white/5 px-8 py-4 font-semibold hover:bg-white/10 transition-colors">
+          View Demo Conversion
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-12 mt-20">
+    <div class="mx-auto max-w-7xl px-4 md:px-6">
+      <div class="text-center">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="h-8 w-8 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+          <span class="text-lg font-semibold">CourseMaker</span>
+          <span class="text-slate-400 text-sm">by BayDigital</span>
+        </div>
+        <p class="text-slate-400 text-sm">Transform your PowerPoint presentations into professional courses with AI narration</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>

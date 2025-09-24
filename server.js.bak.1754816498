@@ -1,0 +1,102 @@
+const express = require('express');
+const multer = require('multer');
+const { exec } = require('child_process');
+const fs = require('fs');
+const cors = require('cors');
+
+const textToSpeech = require('@google-cloud/text-to-speech');
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+// Google Cloud TTS Client
+const ttsClient = new textToSpeech.TextToSpeechClient({
+  keyFilename: './google-cloud-key.json'
+});
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const upload = multer({ dest: 'uploads/' });
+app.use('/audio', express.static('generated_audio'));
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+// TTS Generation Endpoint
+app.post('/api/generate-tts', async (req, res) => {
+  try {
+    const { text, voice } = req.body;
+    
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Text is required' 
+      });
+    }
+    
+    const audioId = uuidv4();
+    const filename = `tts_${audioId}.mp3`;
+    const outputPath = path.join('./generated_audio', filename);
+    
+    const request = {
+      input: { text: text.trim() },
+      voice: {
+        languageCode: voice.split('-').slice(0, 2).join('-'),
+        name: voice,
+      },
+      audioConfig: {
+        audioEncoding: 'MP3',
+        speakingRate: 1.0,
+        pitch: 0.0,
+      },
+    };
+    
+    const [response] = await ttsClient.synthesizeSpeech(request);
+    require('fs').writeFileSync(outputPath, response.audioContent, 'binary');
+    
+    res.json({
+      success: true,
+      audioUrl: `/audio/${filename}`,
+      charactersUsed: text.length
+    });
+    
+  } catch (error) {
+    console.error('TTS Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'TTS generation failed'
+    });
+  }
+});
+app.post('/convert', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        
+        const outputDir = `converted/${Date.now()}`;
+        
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const cmd = `libreoffice --headless --convert-to "png:PNG Export:{"Resolution":{"Value":"300","Unit":"DPI"}}" --outdir ${outputDir} "${req.file.path}"`;
+        
+        exec(cmd, (error, stdout, stderr) => {
+            if (error) {
+                return res.status(500).json({ error: error.message });
+            }
+            
+            setTimeout(() => {
+                const files = fs.readdirSync(outputDir);
+                res.json({ success: true, files: files });
+            }, 2000);
+        });
+        
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.listen(80, () => {
+    console.log('PowerPoint converter running on port 80');
+});

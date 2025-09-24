@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz Builder · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    
+    .builder-toolbar {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+    
+    .question-card {
+      background: rgba(51, 65, 85, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+    
+    .question-card:hover {
+      background: rgba(51, 65, 85, 1);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    
+    .question-card.selected {
+      border-color: rgba(56, 189, 248, 0.6);
+      background: rgba(56, 189, 248, 0.1);
+    }
+    
+    .option-input {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: white;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+    
+    .option-input:focus {
+      border-color: rgba(56, 189, 248, 0.6);
+      outline: none;
+    }
+    
+    .option-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .correct-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    
+    .correct-indicator.selected {
+      background: #10b981;
+      border-color: #10b981;
+    }
+    
+    .correct-indicator.selected::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .question-type-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+    
+    .type-option {
+      padding: 0.75rem;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(51, 65, 85, 0.5);
+      font-size: 0.875rem;
+    }
+    
+    .type-option:hover, .type-option.selected {
+      border-color: #06b6d4;
+      background: rgba(6, 182, 212, 0.2);
+    }
+    
+    .loading-spinner {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 2px solid #06b6d4;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .quiz-preview {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="#" id="btnBackToCourse">← Back to Course Builder</a>
+        <a class="hover:text-white" href="/dashboard.html">Dashboard</a>
+        <a class="hover:text-white" href="/courses.html">My Courses</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="badge" id="userPlan">Pro Plan</span>
+          <span class="text-sm text-slate-400" id="userEmail">user@example.com</span>
+        </div>
+        <button id="btnLogout" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="text-4xl">❓</div>
+        <h1 class="text-3xl font-bold tracking-tight">Interactive Quiz Builder</h1>
+      </div>
+      <p class="text-slate-400" id="courseInfo">Loading course information...</p>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="statusMessages" class="mb-6 space-y-2"></div>
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- Quiz Configuration -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Quiz Configuration</h2>
+          <div class="flex items-center gap-3">
+            <button id="btnPreviewQuiz" class="rounded-xl bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-400 disabled:opacity-50" disabled>
+              👁️ Preview
+            </button>
+            <button id="btnSaveQuiz" class="rounded-xl bg-green-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-green-400 disabled:opacity-50" disabled>
+              💾 Save Quiz
+            </button>
+          </div>
+        </div>
+        
+        <!-- Quiz Basic Info -->
+        <div class="builder-toolbar mb-6">
+          <h3 class="text-lg font-semibold mb-4">Quiz Details</h3>
+          
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Quiz Title *</label>
+              <input id="quizTitle" type="text" 
+                     class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white" 
+                     placeholder="e.g., Chapter 1 Knowledge Check">
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Quiz Type</label>
+              <select id="quizType" class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white">
+                <option value="quiz">Practice Quiz</option>
+                <option value="assessment">Graded Assessment</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <label class="block text-sm text-slate-300 mb-2">Instructions</label>
+            <textarea id="quizInstructions" 
+                      class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white h-20" 
+                      placeholder="Instructions for students taking this quiz..."></textarea>
+          </div>
+          
+          <div class="grid gap-4 md:grid-cols-3 mt-4">
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Time Limit (minutes)</label>
+              <input id="quizTimeLimit" type="number" min="0" max="120" value="0"
+                     class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white" 
+                     placeholder="0 = No limit">
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Passing Score (%)</label>
+              <input id="quizPassingScore" type="number" min="0" max="100" value="70"
+                     class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white" 
+                     placeholder="70">
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Max Attempts</label>
+              <input id="quizMaxAttempts" type="number" min="1" max="10" value="3"
+                     class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white" 
+                     placeholder="3">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Questions List -->
+        <div class="builder-toolbar">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Questions (<span id="questionCount">0</span>)</h3>
+            <button id="btnAddQuestion" class="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+              ➕ Add Question
+            </button>
+          </div>
+          
+          <div id="questionsList" class="space-y-4">
+            <div class="text-center text-slate-500 py-8">
+              <div class="text-4xl mb-2">❓</div>
+              <p>No questions added yet</p>
+              <p class="text-sm mt-1">Click "Add Question" to get started</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Question Editor -->
+      <div class="builder-toolbar">
+        <h2 class="text-xl font-semibold mb-4">Question Editor</h2>
+        
+        <div id="questionEditor" class="hidden">
+          <div class="space-y-4">
+            <!-- Question Type -->
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Question Type</label>
+              <div class="question-type-selector">
+                <div class="type-option selected" data-type="multiple_choice">Multiple Choice</div>
+                <div class="type-option" data-type="true_false">True/False</div>
+                <div class="type-option" data-type="short_answer">Short Answer</div>
+              </div>
+            </div>
+            
+            <!-- Question Text -->
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Question Text *</label>
+              <textarea id="questionText" 
+                        class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white h-24" 
+                        placeholder="Enter your question here..."></textarea>
+            </div>
+            
+            <!-- Answer Options -->
+            <div id="answerOptions">
+              <!-- Options will be dynamically generated based on question type -->
+            </div>
+            
+            <!-- Explanation -->
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Explanation (Optional)</label>
+              <textarea id="questionExplanation" 
+                        class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white h-16" 
+                        placeholder="Explain why this is the correct answer..."></textarea>
+            </div>
+            
+            <!-- Points -->
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Points</label>
+              <input id="questionPoints" type="number" min="1" max="10" value="1"
+                     class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white">
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-2 pt-4">
+              <button id="btnSaveQuestion" class="flex-1 px-4 py-2 bg-green-500 text-slate-900 rounded-lg hover:bg-green-400">
+                ✅ Save Question
+              </button>
+              <button id="btnCancelQuestion" class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500">
+                ❌ Cancel
+              </button>
+              <button id="btnDeleteQuestion" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400 hidden">
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div id="noQuestionSelected" class="text-center text-slate-500 py-8">
+          <div class="text-4xl mb-2">📝</div>
+          <p>Select a question to edit</p>
+          <p class="text-sm mt-1">or add a new question</p>
+        </div>
+        
+        <!-- Usage Info -->
+        <div class="mt-6 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+          <div class="text-sm text-purple-300 mb-1">Interactive Slide Usage</div>
+          <div class="text-xs text-slate-400" id="usageInfo">Loading usage information...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold">Quiz Preview</h3>
+          <button id="btnClosePreview" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        
+        <div id="previewContent" class="quiz-preview">
+          <!-- Preview content will be generated here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentCourse = null;
+    let questions = [];
+    let selectedQuestionIndex = -1;
+    let currentQuestionType = 'multiple_choice';
+    let isEditMode = false;
+    let editSlideId = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadCourseData();
+      setupEventListeners();
+      enableSaveButton();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Load course data from URL parameter
+    async function loadCourseData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('courseId');
+      const slideId = urlParams.get('slideId');
+      
+      if (!courseId) {
+        showError('No course ID provided. Redirecting to dashboard...');
+        setTimeout(() => window.location.href = '/dashboard.html', 2000);
+        return;
+      }
+      
+      try {
+        const courseResponse = await fetch(`/api/user/course/${courseId}`, {
+          credentials: 'include'
+        });
+        
+        if (courseResponse.ok) {
+          currentCourse = await courseResponse.json();
+          document.getElementById('courseInfo').textContent = `Creating quiz for: ${currentCourse.title}`;
+          document.getElementById('btnBackToCourse').href = `/course-builder.html?courseId=${courseId}`;
+        } else {
+          throw new Error('Course not found');
+        }
+
+        // If editing existing quiz, load quiz data
+        if (slideId) {
+          isEditMode = true;
+          editSlideId = slideId;
+          await loadExistingQuiz(courseId, slideId);
+        }
+
+        // Load usage stats
+        const usageResponse = await fetch('/api/user/usage', {
+          credentials: 'include'
+        });
+        
+        if (usageResponse.ok) {
+          const usage = await usageResponse.json();
+          updateUsageDisplay(usage);
+        }
+        
+      } catch (error) {
+        console.error('Error loading course:', error);
+        showError('Failed to load course. Redirecting to dashboard...');
+        setTimeout(() => window.location.href = '/dashboard.html', 3000);
+      }
+    }
+
+    // Load existing quiz for editing
+    async function loadExistingQuiz(courseId, slideId) {
+      try {
+        const response = await fetch(`/api/user/course/${courseId}/slide/${slideId}/interactive`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const slideData = await response.json();
+          console.log('Loaded quiz data:', slideData);
+          
+          const slide = slideData.slide;
+          
+          // Populate form fields
+          document.getElementById('quizTitle').value = slide.title || '';
+          document.getElementById('quizInstructions').value = slide.content || '';
+          
+          // Load quiz settings from interactive_data
+          if (slide.interactive_data) {
+            const settings = slide.interactive_data;
+            if (settings.timeLimit) document.getElementById('quizTimeLimit').value = settings.timeLimit;
+            if (settings.passingScore) document.getElementById('quizPassingScore').value = settings.passingScore;
+            if (settings.maxAttempts) document.getElementById('quizMaxAttempts').value = settings.maxAttempts;
+          }
+          
+          // Load questions
+          const questionsData = slideData.slide.questions || slideData.questions || [];
+          if (questionsData.length > 0) {
+            questions = questionsData.map(q => ({
+              id: q.id,
+              text: q.question_text || q.text,
+              type: q.question_type || q.type || 'multiple_choice',
+              correctAnswer: Array.isArray(q.correct_answer) ? q.correct_answer : JSON.parse(q.correct_answer || '[]'),
+              options: Array.isArray(q.options) ? q.options : JSON.parse(q.options || '[]'),
+              explanation: q.explanation || '',
+              points: q.points_value || q.points || 1
+            }));
+            
+            updateQuestionsList();
+          }
+          
+          showSuccess('Loaded existing quiz for editing');
+        } else {
+          throw new Error('Failed to load quiz data');
+        }
+      } catch (error) {
+        console.error('Error loading existing quiz:', error);
+        showError('Failed to load existing quiz data');
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+    }
+
+    // Update usage display
+    function updateUsageDisplay(usage) {
+      if (!currentUser || !currentUser.limits) return;
+      
+      const interactiveUsed = usage.interactive_slides_created || 0;
+      const interactiveLimit = currentUser.limits.max_interactive_slides;
+      
+      let usageText;
+      if (interactiveLimit === -1) {
+        usageText = `${interactiveUsed} interactive slides used this month (Unlimited)`;
+      } else {
+        usageText = `${interactiveUsed} / ${interactiveLimit} interactive slides used this month`;
+      }
+      
+      document.getElementById('usageInfo').textContent = usageText;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      
+      // Quiz management
+      document.getElementById('btnAddQuestion').addEventListener('click', addNewQuestion);
+      document.getElementById('btnSaveQuestion').addEventListener('click', saveCurrentQuestion);
+      document.getElementById('btnCancelQuestion').addEventListener('click', cancelQuestionEdit);
+      document.getElementById('btnDeleteQuestion').addEventListener('click', deleteCurrentQuestion);
+      document.getElementById('btnSaveQuiz').addEventListener('click', saveQuiz);
+      document.getElementById('btnPreviewQuiz').addEventListener('click', previewQuiz);
+      
+      // Preview modal
+      document.getElementById('btnClosePreview').addEventListener('click', closePreview);
+      
+      // Question type selection
+      document.querySelectorAll('.type-option').forEach(option => {
+        option.addEventListener('click', () => selectQuestionType(option.dataset.type, option));
+      });
+      
+      // Auto-save quiz title/settings
+      document.getElementById('quizTitle').addEventListener('input', enableSaveButton);
+    }
+
+    // Enable save button when there's content
+    function enableSaveButton() {
+      const title = document.getElementById('quizTitle').value.trim();
+      const hasQuestions = questions.length > 0;
+      
+      document.getElementById('btnSaveQuiz').disabled = !title || !hasQuestions;
+      document.getElementById('btnPreviewQuiz').disabled = !title || !hasQuestions;
+    }
+
+    // Add new question
+    function addNewQuestion() {
+      selectedQuestionIndex = -1;
+      currentQuestionType = 'multiple_choice';
+      
+      // Reset form
+      document.getElementById('questionText').value = '';
+      document.getElementById('questionExplanation').value = '';
+      document.getElementById('questionPoints').value = '1';
+      
+      // Show editor
+      document.getElementById('questionEditor').classList.remove('hidden');
+      document.getElementById('noQuestionSelected').classList.add('hidden');
+      document.getElementById('btnDeleteQuestion').classList.add('hidden');
+      
+      // Reset question type
+      document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+      document.querySelector('.type-option[data-type="multiple_choice"]').classList.add('selected');
+      
+      generateAnswerOptions('multiple_choice');
+    }
+
+    // Select question type
+    function selectQuestionType(type, element) {
+      document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+      element.classList.add('selected');
+      currentQuestionType = type;
+      generateAnswerOptions(type);
+    }
+
+    // Generate answer options based on question type
+    function generateAnswerOptions(type) {
+      const container = document.getElementById('answerOptions');
+      
+      switch (type) {
+        case 'multiple_choice':
+          container.innerHTML = `
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Answer Options * (Select the correct answer)</label>
+              <div id="optionsList">
+                ${generateMultipleChoiceOptions(4)}
+              </div>
+              <button type="button" id="btnAddOption" class="mt-2 text-sm text-cyan-400 hover:text-cyan-300">+ Add Option</button>
+            </div>
+          `;
+          
+          // Add event listeners
+          document.getElementById('btnAddOption').addEventListener('click', addMultipleChoiceOption);
+          setupMultipleChoiceListeners();
+          break;
+          
+        case 'true_false':
+          container.innerHTML = `
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Correct Answer *</label>
+              <div class="space-y-2">
+                <div class="option-container">
+                  <div class="correct-indicator selected" data-value="true"></div>
+                  <span class="text-white">True</span>
+                </div>
+                <div class="option-container">
+                  <div class="correct-indicator" data-value="false"></div>
+                  <span class="text-white">False</span>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          setupTrueFalseListeners();
+          break;
+          
+        case 'short_answer':
+          container.innerHTML = `
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Acceptable Answers * (One per line)</label>
+              <textarea id="shortAnswerList" 
+                        class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-white h-24" 
+                        placeholder="Enter acceptable answers, one per line..."></textarea>
+              <p class="text-xs text-slate-400 mt-1">Answers are case-insensitive</p>
+            </div>
+          `;
+          break;
+      }
+    }
+
+    // Generate multiple choice options HTML
+    function generateMultipleChoiceOptions(count, existingOptions = [], correctIndex = -1) {
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        const value = existingOptions[i] || '';
+        const isCorrect = i === correctIndex;
+        html += `
+          <div class="option-container">
+            <div class="correct-indicator ${isCorrect ? 'selected' : ''}" data-index="${i}"></div>
+            <input type="text" class="option-input" placeholder="Option ${i + 1}" value="${value}" data-index="${i}">
+            ${count > 2 ? `<button type="button" class="text-red-400 hover:text-red-300 text-sm" onclick="removeOption(${i})">Remove</button>` : ''}
+          </div>
+        `;
+      }
+      return html;
+    }
+
+    // Setup multiple choice event listeners
+    function setupMultipleChoiceListeners() {
+      document.querySelectorAll('.correct-indicator').forEach(indicator => {
+        indicator.addEventListener('click', function() {
+          document.querySelectorAll('.correct-indicator').forEach(ind => ind.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+    }
+
+    // Setup true/false event listeners
+    function setupTrueFalseListeners() {
+      document.querySelectorAll('.correct-indicator').forEach(indicator => {
+        indicator.addEventListener('click', function() {
+          document.querySelectorAll('.correct-indicator').forEach(ind => ind.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+    }
+
+    // Add multiple choice option
+    function addMultipleChoiceOption() {
+      const optionsList = document.getElementById('optionsList');
+      const currentCount = optionsList.children.length;
+      
+      if (currentCount >= 6) {
+        showError('Maximum 6 options allowed');
+        return;
+      }
+      
+      const newOption = document.createElement('div');
+      newOption.className = 'option-container';
+      newOption.innerHTML = `
+        <div class="correct-indicator" data-index="${currentCount}"></div>
+        <input type="text" class="option-input" placeholder="Option ${currentCount + 1}" data-index="${currentCount}">
+        <button type="button" class="text-red-400 hover:text-red-300 text-sm" onclick="removeOption(${currentCount})">Remove</button>
+      `;
+      
+      optionsList.appendChild(newOption);
+      
+      // Add event listener to the new indicator
+      newOption.querySelector('.correct-indicator').addEventListener('click', function() {
+        document.querySelectorAll('.correct-indicator').forEach(ind => ind.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    }
+
+    // Remove option
+    function removeOption(index) {
+      const optionsList = document.getElementById('optionsList');
+      if (optionsList.children.length <= 2) {
+        showError('Minimum 2 options required');
+        return;
+      }
+      
+      optionsList.children[index].remove();
+      
+      // Re-index remaining options
+      Array.from(optionsList.children).forEach((option, newIndex) => {
+        const indicator = option.querySelector('.correct-indicator');
+        const input = option.querySelector('.option-input');
+        const button = option.querySelector('button');
+        
+        if (indicator) indicator.setAttribute('data-index', newIndex);
+        if (input) {
+          input.setAttribute('data-index', newIndex);
+          input.placeholder = `Option ${newIndex + 1}`;
+        }
+        if (button) button.setAttribute('onclick', `removeOption(${newIndex})`);
+      });
+      
+      setupMultipleChoiceListeners();
+    }
+
+    // Save current question
+    function saveCurrentQuestion() {
+      const questionText = document.getElementById('questionText').value.trim();
+      const explanation = document.getElementById('questionExplanation').value.trim();
+      const points = parseInt(document.getElementById('questionPoints').value) || 1;
+      
+      if (!questionText) {
+        showError('Question text is required');
+        return;
+      }
+      
+      let correctAnswer = [];
+      let options = [];
+      
+      // Collect answer data based on question type
+      switch (currentQuestionType) {
+        case 'multiple_choice':
+          const optionInputs = document.querySelectorAll('.option-input');
+          const selectedIndicator = document.querySelector('.correct-indicator.selected');
+          
+          if (!selectedIndicator) {
+            showError('Please select the correct answer');
+            return;
+          }
+          
+          options = Array.from(optionInputs).map(input => input.value.trim()).filter(val => val);
+          
+          if (options.length < 2) {
+            showError('At least 2 options are required');
+            return;
+          }
+          
+          const correctIndex = parseInt(selectedIndicator.getAttribute('data-index'));
+          correctAnswer = [correctIndex];
+          break;
+          
+        case 'true_false':
+          const tfSelected = document.querySelector('.correct-indicator.selected');
+          if (!tfSelected) {
+            showError('Please select True or False');
+            return;
+          }
+          
+          options = ['True', 'False'];
+          correctAnswer = [tfSelected.getAttribute('data-value') === 'true' ? 0 : 1];
+          break;
+          
+        case 'short_answer':
+          const answerList = document.getElementById('shortAnswerList').value.trim();
+          if (!answerList) {
+            showError('Please provide at least one acceptable answer');
+            return;
+          }
+          
+          options = answerList.split('\n').map(ans => ans.trim()).filter(ans => ans);
+          correctAnswer = options; // All listed answers are correct for short answer
+          break;
+      }
+      
+      const question = {
+        id: selectedQuestionIndex >= 0 ? questions[selectedQuestionIndex].id : Date.now(),
+        text: questionText,
+        type: currentQuestionType,
+        options: options,
+        correctAnswer: correctAnswer,
+        explanation: explanation,
+        points: points
+      };
+      
+      if (selectedQuestionIndex >= 0) {
+        // Update existing question
+        questions[selectedQuestionIndex] = question;
+        showSuccess('Question updated');
+      } else {
+        // Add new question
+        questions.push(question);
+        showSuccess('Question added');
+      }
+      
+      updateQuestionsList();
+      cancelQuestionEdit();
+      enableSaveButton();
+    }
+
+    // Cancel question edit
+    function cancelQuestionEdit() {
+      selectedQuestionIndex = -1;
+      document.getElementById('questionEditor').classList.add('hidden');
+      document.getElementById('noQuestionSelected').classList.remove('hidden');
+      
+      // Clear selection in questions list
+      document.querySelectorAll('.question-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+    }
+
+    // Delete current question
+    function deleteCurrentQuestion() {
+      if (selectedQuestionIndex < 0) return;
+      
+      if (confirm('Are you sure you want to delete this question?')) {
+        questions.splice(selectedQuestionIndex, 1);
+        updateQuestionsList();
+        cancelQuestionEdit();
+        enableSaveButton();
+        showSuccess('Question deleted');
+      }
+    }
+
+    // Update questions list display
+    function updateQuestionsList() {
+      const list = document.getElementById('questionsList');
+      const count = document.getElementById('questionCount');
+      
+      count.textContent = questions.length;
+      
+      if (questions.length === 0) {
+        list.innerHTML = `
+          <div class="text-center text-slate-500 py-8">
+            <div class="text-4xl mb-2">❓</div>
+            <p>No questions added yet</p>
+            <p class="text-sm mt-1">Click "Add Question" to get started</p>
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = questions.map((question, index) => `
+        <div class="question-card ${selectedQuestionIndex === index ? 'selected' : ''}" 
+             onclick="editQuestion(${index})">
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded">${question.type.replace('_', ' ').toUpperCase()}</span>
+                <span class="text-xs text-slate-400">${question.points} point${question.points !== 1 ? 's' : ''}</span>
+              </div>
+              <div class="font-medium text-white mb-1">${question.text.substring(0, 100)}${question.text.length > 100 ? '...' : ''}</div>
+              <div class="text-sm text-slate-400">
+                ${question.type === 'multiple_choice' ? `${question.options.length} options` : 
+                  question.type === 'true_false' ? 'True/False' : 
+                  `${question.correctAnswer.length} acceptable answer${question.correctAnswer.length !== 1 ? 's' : ''}`}
+              </div>
+            </div>
+            <div class="text-lg">Q${index + 1}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Edit question
+    function editQuestion(index) {
+      selectedQuestionIndex = index;
+      const question = questions[index];
+      
+      // Update question cards selection
+      document.querySelectorAll('.question-card').forEach((card, i) => {
+        card.classList.toggle('selected', i === index);
+      });
+      
+      // Show editor
+      document.getElementById('questionEditor').classList.remove('hidden');
+      document.getElementById('noQuestionSelected').classList.add('hidden');
+      document.getElementById('btnDeleteQuestion').classList.remove('hidden');
+      
+      // Populate form
+      document.getElementById('questionText').value = question.text;
+      document.getElementById('questionExplanation').value = question.explanation;
+      document.getElementById('questionPoints').value = question.points;
+      
+      // Set question type
+      currentQuestionType = question.type;
+      document.querySelectorAll('.type-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.type === question.type);
+      });
+      
+      // Generate and populate answer options
+      generateAnswerOptions(question.type);
+      
+      // Populate answer data
+      setTimeout(() => {
+        switch (question.type) {
+          case 'multiple_choice':
+            const optionInputs = document.querySelectorAll('.option-input');
+            question.options.forEach((option, i) => {
+              if (optionInputs[i]) optionInputs[i].value = option;
+            });
+            
+            const correctIndex = question.correctAnswer[0];
+            const indicators = document.querySelectorAll('.correct-indicator');
+            if (indicators[correctIndex]) {
+              indicators.forEach(ind => ind.classList.remove('selected'));
+              indicators[correctIndex].classList.add('selected');
+            }
+            break;
+            
+          case 'true_false':
+            const tfIndicators = document.querySelectorAll('.correct-indicator');
+            const tfCorrect = question.correctAnswer[0] === 0 ? 'true' : 'false';
+            tfIndicators.forEach(ind => {
+              ind.classList.toggle('selected', ind.getAttribute('data-value') === tfCorrect);
+            });
+            break;
+            
+          case 'short_answer':
+            document.getElementById('shortAnswerList').value = question.correctAnswer.join('\n');
+            break;
+        }
+      }, 50);
+    }
+
+    // Preview quiz
+    function previewQuiz() {
+      const title = document.getElementById('quizTitle').value.trim();
+      const instructions = document.getElementById('quizInstructions').value.trim();
+      
+      if (!title || questions.length === 0) {
+        showError('Please add a title and at least one question');
+        return;
+      }
+      
+      const previewContent = document.getElementById('previewContent');
+      
+      previewContent.innerHTML = `
+        <div class="bg-white text-slate-800 rounded-lg p-6">
+          <div class="mb-6 border-b border-slate-200 pb-4">
+            <h2 class="text-2xl font-bold mb-2">${title}</h2>
+            ${instructions ? `<p class="text-slate-600">${instructions}</p>` : ''}
+            <div class="text-sm text-slate-500 mt-2">
+              ${questions.length} question${questions.length !== 1 ? 's' : ''} • 
+              ${questions.reduce((sum, q) => sum + q.points, 0)} total points
+            </div>
+          </div>
+          
+          <div class="space-y-6">
+            ${questions.map((question, index) => generateQuestionPreview(question, index)).join('')}
+          </div>
+          
+          <div class="mt-8 pt-6 border-t border-slate-200">
+            <button class="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600">
+              Submit Quiz
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('previewModal').classList.remove('hidden');
+    }
+
+    // Generate question preview HTML
+    function generateQuestionPreview(question, index) {
+      let optionsHtml = '';
+      
+      switch (question.type) {
+        case 'multiple_choice':
+          optionsHtml = question.options.map((option, i) => `
+            <div class="flex items-center gap-2">
+              <input type="radio" name="q${index}" id="q${index}_${i}" class="w-4 h-4">
+              <label for="q${index}_${i}" class="flex-1">${option}</label>
+            </div>
+          `).join('');
+          break;
+          
+        case 'true_false':
+          optionsHtml = `
+            <div class="flex items-center gap-2">
+              <input type="radio" name="q${index}" id="q${index}_true" class="w-4 h-4">
+              <label for="q${index}_true" class="flex-1">True</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="radio" name="q${index}" id="q${index}_false" class="w-4 h-4">
+              <label for="q${index}_false" class="flex-1">False</label>
+            </div>
+          `;
+          break;
+          
+        case 'short_answer':
+          optionsHtml = `
+            <input type="text" class="w-full border border-slate-300 rounded-lg p-3" placeholder="Enter your answer here...">
+          `;
+          break;
+      }
+      
+      return `
+        <div class="border border-slate-200 rounded-lg p-4">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-medium text-lg">Question ${index + 1}</h3>
+            <span class="text-sm text-slate-500">${question.points} point${question.points !== 1 ? 's' : ''}</span>
+          </div>
+          <p class="text-slate-700 mb-4">${question.text}</p>
+          <div class="space-y-2">
+            ${optionsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // Close preview modal
+    function closePreview() {
+      document.getElementById('previewModal').classList.add('hidden');
+    }
+
+    // Save quiz
+    async function saveQuiz() {
+      const title = document.getElementById('quizTitle').value.trim();
+      const instructions = document.getElementById('quizInstructions').value.trim();
+      const quizType = document.getElementById('quizType').value;
+      const timeLimit = parseInt(document.getElementById('quizTimeLimit').value) || 0;
+      const passingScore = parseInt(document.getElementById('quizPassingScore').value) || 70;
+      const maxAttempts = parseInt(document.getElementById('quizMaxAttempts').value) || 3;
+      
+      // Validation
+      if (!title) {
+        showError('Please enter a quiz title');
+        return;
+      }
+      
+      if (questions.length === 0) {
+        showError('Please add at least one question');
+        return;
+      }
+      
+      const saveButton = document.getElementById('btnSaveQuiz');
+      const originalText = saveButton.textContent;
+      
+      try {
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<div class="loading-spinner"></div> Saving...';
+        
+        const quizData = {
+          slideType: quizType,
+          data: {
+            title: title,
+            content: instructions,
+            imageUrl: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
+              <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+                <rect width="800" height="600" fill="#f8fafc"/>
+                <rect x="50" y="50" width="700" height="500" fill="white" stroke="#e2e8f0" stroke-width="2" rx="12"/>
+                <text x="400" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1e293b">${title.replace(/[<>&"']/g, function(m) { return {'<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'}[m]; })}</text>
+                <text x="400" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#64748b">${questions.length} Question${questions.length !== 1 ? 's' : ''}</text>
+                <text x="400" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#64748b">${questions.reduce((sum, q) => sum + q.points, 0)} Total Points</text>
+                <circle cx="400" cy="350" r="60" fill="#3b82f6" opacity="0.1"/>
+                <text x="400" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" fill="#3b82f6">?</text>
+              </svg>
+            `),
+            pointsValue: questions.reduce((sum, q) => sum + q.points, 0),
+            interactiveData: {
+              timeLimit: timeLimit,
+              passingScore: passingScore,
+              maxAttempts: maxAttempts,
+              questionCount: questions.length
+            },
+            questions: questions.map(q => ({
+              text: q.text,
+              type: q.type,
+              correctAnswer: q.correctAnswer,
+              options: q.options,
+              explanation: q.explanation,
+              points: q.points
+            }))
+          }
+        };
+        
+        let apiUrl;
+        let method;
+        
+        if (isEditMode && editSlideId) {
+          apiUrl = `/api/user/course/${currentCourse.id}/slide/${editSlideId}/interactive`;
+          method = 'PUT';
+        } else {
+          apiUrl = `/api/user/course/${currentCourse.id}/interactive-slide`;
+          method = 'POST';
+        }
+        
+        const response = await fetch(apiUrl, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(quizData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          showSuccess(`Quiz ${isEditMode ? 'updated' : 'created'} successfully!`);
+          
+          saveButton.innerHTML = 'Saved!';
+          saveButton.classList.add('bg-green-600');
+          
+          setTimeout(() => {
+            window.location.href = `/course-builder.html?courseId=${currentCourse.id}`;
+          }, 2000);
+        } else {
+          throw new Error(result.error || 'Failed to save quiz');
+        }
+      } catch (error) {
+        console.error('Save quiz error:', error);
+        showError('Failed to save quiz: ' + error.message);
+        
+        saveButton.disabled = false;
+        saveButton.textContent = originalText;
+        saveButton.classList.remove('bg-green-600');
+      }
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const statusMessages = document.getElementById('statusMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-green-300';
+      messageDiv.textContent = message;
+      
+      statusMessages.innerHTML = '';
+      statusMessages.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+
+    // Show error message
+    function showError(message) {
+      const statusMessages = document.getElementById('statusMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-300';
+      messageDiv.textContent = message;
+      
+      statusMessages.innerHTML = '';
+      statusMessages.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+
+    // Logout function
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Make functions available globally for onclick handlers
+    window.editQuestion = editQuestion;
+    window.removeOption = removeOption;
+  </script>
+</body>
+</html>

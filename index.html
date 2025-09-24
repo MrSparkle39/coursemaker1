@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CourseMaker · PPT → Course with AI Voice</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="universal-header.js"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .btn{border-radius:.75rem;padding:.5rem .9rem}
+    .fullscreen-course {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+    }
+    .cached-indicator {
+      font-size: 0.7rem;
+      color: #10b981;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  <!-- Universal Header will be inserted here by universal-header.js -->
+
+  <!-- Hero -->
+  <section class="relative">
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div class="mx-auto h-[420px] max-w-6xl bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent blur-3xl"></div>
+    </div>
+    <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+      <div class="max-w-3xl">
+        <p class="badge">⚡ Turn PowerPoints into interactive courses in minutes</p>
+        <h1 class="mt-3 text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
+          Upload a PPT. Get a <span class="text-cyan-300">polished course</span> with <span class="text-cyan-300">AI voice-over</span>.
+        </h1>
+        <p class="mt-4 max-w-xl text-slate-300">
+          Drag-and-drop your slides and let CourseMaker handle conversion, slide organization, and studio-quality text-to-speech. No complex setup. No dev required.
+        </p>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <a href="/register.html" class="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 font-medium text-slate-900 hover:bg-cyan-400">
+            Start free →
+          </a>
+          <a href="#how" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 hover:bg-white/10">
+            See how it works
+          </a>
+        </div>
+        <div class="mt-6 flex items-center gap-4 text-xs text-slate-400">
+          <div class="flex items-center gap-2">✅ Google Cloud TTS</div>
+          <div class="flex items-center gap-2">✅ Auto slide extraction</div>
+          <div class="flex items-center gap-2">✅ Student-ready player</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workbench -->
+  <section id="try" class="mx-auto grid max-w-7xl gap-6 px-4 pb-8 md:grid-cols-2 md:px-6">
+    <!-- Left: PPT Upload -->
+    <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">📤 PPT to Course</h2>
+        <span class="text-xs text-slate-400">.ppt / .pptx • up to 200MB</span>
+      </div>
+      <p class="mt-1 text-sm text-slate-300">Upload your PowerPoint and we'll extract crisp slide images automatically.</p>
+
+      <form id="pptForm" class="mt-4 space-y-3">
+        <input id="pptFile" type="file" accept=".ppt,.pptx" class="block w-full rounded-lg border border-white/10 bg-slate-950 p-3 text-sm" />
+        <button id="btnUpload" type="submit" class="rounded-xl bg-cyan-500 px-4 py-2 font-medium text-slate-900 hover:bg-cyan-400">Convert to Course</button>
+        <span id="upMsg" class="ml-3 text-sm text-slate-400"></span>
+      </form>
+
+      <div id="slidesWrap" class="mt-5 hidden">
+        <div class="text-sm text-slate-300">Slides (<span id="slideCount">0</span>)</div>
+        <div id="slidesGrid" class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4"></div>
+        <button id="btnPreviewCourse" class="mt-4 w-full rounded-xl bg-green-500 px-4 py-2 font-medium text-slate-900 hover:bg-green-400">🎓 Preview Course (Student View)</button>
+      </div>
+    </div>
+
+    <!-- Right: TTS Tester -->
+    <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">🎤 AI Voice Testing</h2>
+        <span class="text-xs text-slate-400">30 voices • 39 languages</span>
+      </div>
+
+      <div class="mt-4 grid gap-3 sm:grid-cols-2">
+        <div>
+          <label class="text-sm text-slate-300">Quality</label>
+          <select id="tier" class="mt-1 w-full rounded-lg border border-white/10 bg-slate-950 p-2 text-sm">
+            <option value="neural2">Neural2 (~$16 / 1M chars)</option>
+            <option value="chirp3">Chirp3 HD (~$30 / 1M chars)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-sm text-slate-300">Language</label>
+          <select id="langSelect" class="mt-1 w-full rounded-lg border border-white/10 bg-slate-950 p-2 text-sm"></select>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-sm text-slate-300">Voice</label>
+        <select id="voiceSelect" class="mt-1 w-full rounded-lg border border-white/10 bg-slate-950 p-2 text-sm"></select>
+      </div>
+
+      <div class="mt-3">
+        <label class="text-sm text-slate-300">Speaking Rate: <span id="rateDisplay">1.0x</span></label>
+        <input id="speakingRate" type="range" min="0.25" max="2" step="0.05" value="1" class="mt-1 w-full accent-cyan-400">
+      </div>
+
+      <div class="mt-3">
+        <label class="text-sm text-slate-300">Test Text</label>
+        <textarea id="ttsText" class="mt-1 h-20 w-full rounded-lg border border-white/10 bg-slate-950 p-3 text-sm" placeholder="Type something to test the voice...">Welcome to this course. In this lesson, we'll explore the key concepts you need to understand.</textarea>
+        <div class="mt-1 text-right text-xs text-slate-500"><span id="charCount">0</span>/5000</div>
+      </div>
+
+      <div class="mt-4 flex items-center gap-2">
+        <button id="btnGenerate" class="flex-1 rounded-xl bg-cyan-500 px-4 py-2 font-medium text-slate-900 hover:bg-cyan-400">Test Voice</button>
+        <button id="btnQuickTest" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Quick Test</button>
+      </div>
+
+      <div id="resultBox" class="mt-5 hidden rounded-lg border border-white/10 bg-slate-900/60 p-4">
+        <div class="text-sm text-slate-300">Generated Audio</div>
+        <div id="resultText" class="mt-1 text-xs text-slate-400"></div>
+        <audio id="player" class="mt-3 w-full" controls></audio>
+      </div>
+    </div>
+
+    <!-- Demo Course Button -->
+    <div class="md:col-span-2 text-center">
+      <button id="btnDemoCourse" class="rounded-xl bg-purple-500 px-6 py-3 font-medium text-white hover:bg-purple-400">
+        🎬 Try Demo Course (Full Student Experience)
+      </button>
+      <p class="mt-2 text-sm text-slate-400">Experience how students will see your course</p>
+    </div>
+  </section>
+
+  <!-- Full Screen Course Viewer -->
+  <div id="courseViewer" class="hidden fullscreen-course">
+    <!-- Course Header with Progress -->
+    <div class="bg-slate-800/90 border-b border-white/10 p-4 shadow-lg">
+      <div class="flex items-center justify-between max-w-6xl mx-auto">
+        <div class="flex items-center gap-6">
+          <div>
+            <h1 class="text-xl font-semibold text-white" id="courseTitle">Demo Course: Introduction to CourseMaker</h1>
+            <div class="text-sm text-slate-300 mt-1">Professional online course platform</div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex flex-col">
+              <div class="text-xs text-slate-400 mb-1">Course Progress</div>
+              <div class="w-64 h-3 bg-slate-700 rounded-full overflow-hidden">
+                <div id="courseProgress" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500" style="width: 20%"></div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="text-sm font-medium text-white" id="courseProgressText">Slide 1 of 5</div>
+              <div class="text-xs text-slate-400" id="courseProgressPercent">20% Complete</div>
+            </div>
+          </div>
+        </div>
+        <button id="btnExitCourse" class="rounded-xl bg-slate-700 px-4 py-2 text-sm hover:bg-slate-600 text-white">✕ Exit Course</button>
+      </div>
+    </div>
+
+    <!-- Main Course Content -->
+    <div class="flex-1 flex items-center justify-center p-8 bg-slate-900">
+      <div class="max-w-4xl w-full">
+        <div id="courseSlideContainer" class="bg-white rounded-xl shadow-2xl overflow-hidden mb-6">
+          <div id="courseSlideContent" class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+            Welcome to CourseMaker
+            <div class="text-base font-normal mt-4 block">Transform your PowerPoints into professional courses</div>
+          </div>
+        </div>
+        
+        <!-- Course Controls -->
+        <div class="bg-slate-800/60 rounded-xl border border-white/10 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <button id="btnCoursePrev" class="rounded-xl bg-slate-700 px-6 py-3 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+← Previous Lesson
+           </button>
+           
+           <div class="flex items-center gap-4">
+             <button id="btnCoursePlay" class="rounded-xl bg-green-500 px-6 py-3 text-sm font-medium text-slate-900 hover:bg-green-400 flex items-center gap-2">
+               <span id="playIcon">▶</span> Play Audio
+             </button>
+             <div class="text-center">
+               <div class="text-xs text-slate-400">Press SPACEBAR to play/pause</div>
+             </div>
+           </div>
+           
+           <button id="btnCourseNext" class="rounded-xl bg-cyan-500 px-6 py-3 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+             Next Lesson →
+           </button>
+         </div>
+
+         <!-- Audio Generation Section -->
+         <div class="border-t border-white/10 pt-4">
+           <div class="flex items-center gap-4 flex-wrap">
+             <label class="text-sm text-slate-300 font-medium">Course Narration:</label>
+             <select id="courseVoice" class="bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+               <option value="en-US-Neural2-A">Neural2-A (Male)</option>
+               <option value="en-US-Neural2-C">Neural2-C (Female)</option>
+               <option value="en-US-Neural2-D">Neural2-D (Male)</option>
+               <option value="en-US-Neural2-F">Neural2-F (Female)</option>
+             </select>
+             <input id="courseText" type="text" placeholder="Enter narration for this slide..." 
+                    class="flex-1 bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" 
+                    value="Welcome to CourseMaker! This powerful platform transforms your PowerPoint presentations into engaging, interactive courses with professional AI narration.">
+             <button id="btnGenerateCourseAudio" class="bg-cyan-500 text-slate-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-cyan-400">
+               Generate Narration
+             </button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+
+ <!-- Features -->
+ <section id="features" class="mx-auto max-w-7xl px-4 py-16 md:px-6">
+   <h2 class="text-center text-2xl font-semibold md:text-3xl">Everything you need to ship a course fast</h2>
+   <p class="mx-auto mt-3 max-w-2xl text-center text-slate-300">No plugins. No hacks. CourseMaker handles conversion, media, and hosting so you can focus on content.</p>
+   <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+     <div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-cyan-300 mb-2">📤</div><h3 class="font-semibold">PPT → Slides</h3><p class="text-sm text-slate-300 mt-1">LibreOffice rendering → PDF → PNG with font fidelity.</p></div>
+     <div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-cyan-300 mb-2">🎧</div><h3 class="font-semibold">Google AI TTS</h3><p class="text-sm text-slate-300 mt-1">Neural2 & Chirp 3 HD. 30 voices, 39 languages.</p></div>
+     <div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-cyan-300 mb-2">🧩</div><h3 class="font-semibold">Course Builder</h3><p class="text-sm text-slate-300 mt-1">Professional course player with progress tracking.</p></div>
+     <div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-cyan-300 mb-2">⏱️</div><h3 class="font-semibold">Fast Processing</h3><p class="text-sm text-slate-300 mt-1">Async jobs keep conversions off the request path.</p></div>
+     <div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-cyan-300 mb-2">🔒</div><h3 class="font-semibold">Secure</h3><p class="text-sm text-slate-300 mt-1">Least-privilege keys & private storage.</p></div>
+     <div class="rounded-2xl border border-white/10 bg-white/5 p-5"><div class="text-cyan-300 mb-2">✨</div><h3 class="font-semibold">Student Ready</h3><p class="text-sm text-slate-300 mt-1">Professional course player with completion tracking.</p></div>
+   </div>
+ </section>
+
+ <!-- How it works -->
+ <section id="how" class="mx-auto max-w-7xl px-4 pb-8 md:px-6">
+   <div class="rounded-3xl border border-white/10 bg-gradient-to-b from-slate-800/40 to-slate-900/60 p-6 md:p-10">
+     <h2 class="text-2xl font-semibold md:text-3xl">How it works</h2>
+     <ol class="mt-6 grid gap-4 md:grid-cols-3">
+       <li class="rounded-2xl border border-white/10 bg-white/5 p-5">
+         <div class="flex items-center gap-3"><div class="grid h-8 w-8 place-items-center rounded-lg bg-cyan-500/20 text-cyan-300 font-semibold">1</div><h3 class="text-base font-semibold">Upload your deck</h3></div>
+         <p class="mt-2 text-sm text-slate-300">We convert PPTX → PDF → PNG. Fonts preserved. Crisp slides.</p>
+       </li>
+       <li class="rounded-2xl border border-white/10 bg-white/5 p-5">
+         <div class="flex items-center gap-3"><div class="grid h-8 w-8 place-items-center rounded-lg bg-cyan-500/20 text-cyan-300 font-semibold">2</div><h3 class="text-base font-semibold">Add AI narration</h3></div>
+         <p class="mt-2 text-sm text-slate-300">Choose from 30 voices in 39 languages. Generate professional narration.</p>
+       </li>
+       <li class="rounded-2xl border border-white/10 bg-white/5 p-5">
+         <div class="flex items-center gap-3"><div class="grid h-8 w-8 place-items-center rounded-lg bg-cyan-500/20 text-cyan-300 font-semibold">3</div><h3 class="text-base font-semibold">Share your course</h3></div>
+         <p class="mt-2 text-sm text-slate-300">Professional course player with progress tracking and completion certificates.</p>
+       </li>
+     </ol>
+     <div class="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+       <a href="#try" class="inline-flex items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 font-medium text-slate-900 hover:bg-cyan-400">Build my first course →</a>
+       <button id="btnTryDemo" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 hover:bg-white/10">View demo course</button>
+     </div>
+   </div>
+ </section>
+
+ <!-- Pricing -->
+ <section id="pricing" class="mx-auto max-w-7xl px-4 py-16 md:px-6">
+   <div class="flex items-center justify-center gap-3">
+     <h2 class="text-center text-2xl font-semibold md:text-3xl">Simple pricing, generous limits</h2>
+     <div class="ml-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1 text-xs">
+      <label class="cursor-pointer flex items-center gap-2">
+        <input id="billToggle" type="checkbox" class="h-4 w-4 accent-cyan-500">
+        <span>Bill annually <span class="text-cyan-300">(save 2 months)</span></span>
+      </label>
+    </div>
+  </div>
+  <p class="mx-auto mt-3 max-w-2xl text-center text-slate-300">Start free. Upgrade when you're ready to create professional courses.</p>
+
+  <div class="mt-10 grid gap-4 md:grid-cols-3">
+    <!-- Free -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="flex items-baseline justify-between">
+        <h3 class="text-lg font-semibold">Free</h3>
+        <span class="text-2xl font-bold" id="price-free">$0<span id="unit-free" class="ms-1 text-sm font-normal text-slate-400">/mo</span></span>
+      </div>
+      <p class="mt-1 text-sm text-slate-300">Very limited - for testing only</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="text-red-400">• 1 course max</li>
+        <li class="text-red-400">• 5 slides per course max</li>
+        <li class="text-red-400">• <span class="line-through opacity-60">AI voice-over</span> (not included)</li>
+        <li class="text-red-400">• <span class="line-through opacity-60">Course sharing</span> (not included)</li>
+        <li class="text-red-400">• Large watermarks on exports</li>
+        <li>• Basic PowerPoint conversion</li>
+      </ul>
+      <a href="/register.html" class="mt-5 block w-full text-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-medium hover:bg-white/10">Try Free (Limited)</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="rounded-2xl border border-cyan-400/40 bg-cyan-500/5 p-6">
+      <div class="flex items-baseline justify-between">
+        <h3 class="text-lg font-semibold">Pro</h3>
+        <span class="text-2xl font-bold"><span id="price-pro">$29</span><span id="unit-pro" class="ms-1 text-sm font-normal text-slate-400">/mo</span></span>
+      </div>
+      <p class="mt-1 text-sm text-slate-300">For course creators</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="text-green-400">• <strong>Unlimited courses</strong></li>
+        <li class="text-green-400">• <strong>Up to 200 slides per course</strong></li>
+        <li class="text-green-400">• <strong>Google Neural2 AI voices</strong></li>
+        <li class="text-green-400">• Course sharing & embedding</li>
+        <li class="text-green-400">• Progress tracking</li>
+        <li class="text-green-400">• No watermarks</li>
+        <li>• Email support</li>
+      </ul>
+      <a href="/register.html" class="mt-5 block w-full text-center rounded-xl bg-cyan-500 px-4 py-2 font-medium text-slate-900 hover:bg-cyan-400">Start Pro</a>
+    </div>
+
+    <!-- Business -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="flex items-baseline justify-between">
+        <h3 class="text-lg font-semibold">Business</h3>
+        <span class="text-2xl font-bold"><span id="price-biz">$79</span><span id="unit-biz" class="ms-1 text-sm font-normal text-slate-400">/mo</span></span>
+      </div>
+      <p class="mt-1 text-sm text-slate-300">Teams & organizations</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="text-purple-400">• <strong>Everything in Pro</strong></li>
+        <li class="text-purple-400">• <strong>Google Chirp3 HD voices (30 voices)</strong></li>
+        <li class="text-purple-400">• <strong>Team seats & collaboration</strong></li>
+        <li class="text-purple-400">• White-label branding</li>
+        <li class="text-purple-400">• Advanced analytics</li>
+        <li class="text-purple-400">• Priority processing queue</li>
+        <li>• Priority support & SLA</li>
+      </ul>
+      <a href="/register.html" class="mt-5 block w-full text-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-medium hover:bg-white/10">Choose Business</a>
+    </div>
+  </div>
+  <p class="mt-4 text-center text-xs text-slate-400">Annual billing shows yearly totals (2 months free).</p>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-white/5 bg-slate-900/50">
+  <div class="mx-auto max-w-7xl px-4 py-16 md:px-6">
+    
+    <!-- Main Footer Content -->
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-6 mb-12">
+      
+      <!-- BayDigital Apps -->
+      <div class="lg:col-span-1">
+        <h3 class="text-lg font-semibold text-white mb-4">BayDigital Apps</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="https://baydigital.com" class="text-slate-400 hover:text-white transition-colors">baydigital.com</a></li>
+          <li><a href="https://coursemaker.baydigital.com" class="text-slate-400 hover:text-white transition-colors">coursemaker.baydigital.com</a></li>
+          <li><a href="/ecosystem/" class="text-slate-400 hover:text-white transition-colors">Ecosystem Overview</a></li>
+          <li><a href="/roadmap/" class="text-slate-400 hover:text-white transition-colors">Product Roadmap</a></li>
+        </ul>
+      </div>
+
+      <!-- Product -->
+      <div class="lg:col-span-1">
+        <h3 class="text-lg font-semibold text-white mb-4">Product</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="/features/" class="text-slate-400 hover:text-white transition-colors">Features</a></li>
+          <li><a href="/ai-narration/" class="text-slate-400 hover:text-white transition-colors">AI Narration</a></li>
+          <li><a href="/powerpoint-to-course/" class="text-slate-400 hover:text-white transition-colors">PowerPoint to Course</a></li>
+          <li><a href="/interactive-course-builder/" class="text-slate-400 hover:text-white transition-colors">Interactive Builder</a></li>
+          <li><a href="/course-templates/" class="text-slate-400 hover:text-white transition-colors">Course Templates</a></li>
+          <li><a href="/voice-library/" class="text-slate-400 hover:text-white transition-colors">Voice Library</a></li>
+        </ul>
+      </div>
+
+      <!-- Solutions -->
+      <div class="lg:col-span-1">
+        <h3 class="text-lg font-semibold text-white mb-4">Solutions</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="/education/" class="text-slate-400 hover:text-white transition-colors">Education</a></li>
+          <li><a href="/corporate-training/" class="text-slate-400 hover:text-white transition-colors">Corporate Training</a></li>
+          <li><a href="/consultants/" class="text-slate-400 hover:text-white transition-colors">Consultants</a></li>
+          <li><a href="/content-creators/" class="text-slate-400 hover:text-white transition-colors">Content Creators</a></li>
+          <li><a href="/small-business/" class="text-slate-400 hover:text-white transition-colors">Small Business</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div class="lg:col-span-1">
+        <h3 class="text-lg font-semibold text-white mb-4">Resources</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="/blog/" class="text-slate-400 hover:text-white transition-colors">Blog</a></li>
+          <li><a href="/guides/course-creation/" class="text-slate-400 hover:text-white transition-colors">Course Creation Guide</a></li>
+          <li><a href="/guides/powerpoint-best-practices/" class="text-slate-400 hover:text-white transition-colors">PowerPoint Best Practices</a></li>
+          <li><a href="/case-studies/" class="text-slate-400 hover:text-white transition-colors">Case Studies</a></li>
+          <li><a href="/free-templates/" class="text-slate-400 hover:text-white transition-colors">Free Templates</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="lg:col-span-1">
+        <h3 class="text-lg font-semibold text-white mb-4">Support</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="/help/" class="text-slate-400 hover:text-white transition-colors">Help Center</a></li>
+          <li><a href="/tutorials/" class="text-slate-400 hover:text-white transition-colors">Tutorials</a></li>
+          <li><a href="/support/" class="text-slate-400 hover:text-white transition-colors">Contact Support</a></li>
+          <li><a href="/status/" class="text-slate-400 hover:text-white transition-colors">System Status</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div class="lg:col-span-1">
+        <h3 class="text-lg font-semibold text-white mb-4">Company</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="/about/" class="text-slate-400 hover:text-white transition-colors">About</a></li>
+          <li><a href="/contact/" class="text-slate-400 hover:text-white transition-colors">Contact</a></li>
+          <li><a href="/privacy/" class="text-slate-400 hover:text-white transition-colors">Privacy Policy</a></li>
+          <li><a href="/terms/" class="text-slate-400 hover:text-white transition-colors">Terms of Service</a></li>
+          <li><a href="/security/" class="text-slate-400 hover:text-white transition-colors">Security</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Newsletter Signup -->
+    <div class="border-t border-white/10 pt-8 mb-8">
+      <div class="max-w-md mx-auto text-center">
+        <h3 class="text-lg font-semibold text-white mb-2">Stay Updated</h3>
+        <p class="text-slate-400 mb-4">Get the latest CourseMaker updates and course creation tips</p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Enter your email" 
+                 class="flex-1 rounded-lg border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white placeholder-slate-400 focus:border-cyan-400 focus:outline-none">
+          <button class="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400 transition-colors">
+            Subscribe
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-white/10 pt-8">
+      <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+          <span class="font-semibold text-white">CourseMaker</span>
+          <span class="text-slate-400 text-sm">by BayDigital</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-slate-400">
+          <span>© <span id="yr"></span> BayDigital. All rights reserved.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Footer year
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // ---- CORRECTED Voice Data - Only working voices ----
+  const NEURAL2 = {
+    "en-US": [
+      { id:"en-US-Neural2-A", label:"Neural2-A (Male)" },
+      { id:"en-US-Neural2-C", label:"Neural2-C (Female)" },
+      { id:"en-US-Neural2-D", label:"Neural2-D (Male)" },
+      { id:"en-US-Neural2-F", label:"Neural2-F (Female)" },
+    ],
+    "en-GB": [
+      { id:"en-GB-Neural2-A", label:"Neural2-A (Female)" },
+      { id:"en-GB-Neural2-B", label:"Neural2-B (Male)" },
+    ],
+    "en-AU": [
+      { id:"en-AU-Neural2-A", label:"Neural2-A (Female)" },
+      { id:"en-AU-Neural2-B", label:"Neural2-B (Male)" },
+    ],
+  };
+
+  // All 30 Chirp3 HD voices with correct genders from documentation
+  const CHIRP3_VOICES = [
+    { name:"Achernar", gender:"Female" }, { name:"Achird", gender:"Male" },
+    { name:"Algenib", gender:"Male" }, { name:"Algieba", gender:"Male" },
+    { name:"Alnilam", gender:"Male" }, { name:"Aoede", gender:"Female" },
+    { name:"Autonoe", gender:"Female" }, { name:"Callirrhoe", gender:"Female" },
+    { name:"Charon", gender:"Male" }, { name:"Despina", gender:"Female" },
+    { name:"Enceladus", gender:"Male" }, { name:"Erinome", gender:"Female" },
+    { name:"Fenrir", gender:"Male" }, { name:"Gacrux", gender:"Female" },
+    { name:"Iapetus", gender:"Male" }, { name:"Kore", gender:"Female" },
+    { name:"Laomedeia", gender:"Female" }, { name:"Leda", gender:"Female" },
+    { name:"Orus", gender:"Male" }, { name:"Pulcherrima", gender:"Female" },
+    { name:"Puck", gender:"Male" }, { name:"Rasalgethi", gender:"Male" },
+    { name:"Sadachbia", gender:"Male" }, { name:"Sadaltager", gender:"Male" },
+    { name:"Schedar", gender:"Male" }, { name:"Sulafat", gender:"Female" },
+    { name:"Umbriel", gender:"Male" }, { name:"Vindemiatrix", gender:"Female" },
+    { name:"Zephyr", gender:"Female" }, { name:"Zubenelgenubi", gender:"Male" }
+  ];
+
+  // All 39 supported languages
+  const LANG_LABELS = {
+    'ar-XA': 'Arabic (Generic)',
+    'bn-IN': 'Bengali (India)',
+    'cmn-CN': 'Mandarin Chinese (China)',
+    'da-DK': 'Danish (Denmark)',
+    'de-DE': 'German (Germany)',
+    'en-AU': 'English (Australia)',
+    'en-GB': 'English (United Kingdom)',
+    'en-IN': 'English (India)',
+    'en-US': 'English (United States)',
+    'es-ES': 'Spanish (Spain)',
+    'es-US': 'Spanish (United States)',
+    'fi-FI': 'Finnish (Finland)',
+    'fr-CA': 'French (Canada)',
+    'fr-FR': 'French (France)',
+    'gu-IN': 'Gujarati (India)',
+    'hi-IN': 'Hindi (India)',
+    'id-ID': 'Indonesian (Indonesia)',
+    'it-IT': 'Italian (Italy)',
+    'ja-JP': 'Japanese (Japan)',
+    'kn-IN': 'Kannada (India)',
+    'ko-KR': 'Korean (South Korea)',
+    'ml-IN': 'Malayalam (India)',
+    'mr-IN': 'Marathi (India)',
+    'nb-NO': 'Norwegian Bokmål (Norway)',
+    'nl-BE': 'Dutch (Belgium)',
+    'nl-NL': 'Dutch (Netherlands)',
+    'pl-PL': 'Polish (Poland)',
+    'pt-BR': 'Portuguese (Brazil)',
+    'ru-RU': 'Russian (Russia)',
+    'sw-KE': 'Swahili (Kenya)',
+    'sv-SE': 'Swedish (Sweden)',
+    'ta-IN': 'Tamil (India)',
+    'te-IN': 'Telugu (India)',
+    'th-TH': 'Thai (Thailand)',
+    'tr-TR': 'Turkish (Turkey)',
+    'uk-UA': 'Ukrainian (Ukraine)',
+    'ur-IN': 'Urdu (India)',
+    'vi-VN': 'Vietnamese (Vietnam)'
+  };
+
+  // Elements
+  const tierEl = document.getElementById('tier');
+  const langEl = document.getElementById('langSelect');
+  const voiceEl = document.getElementById('voiceSelect');
+  const textEl = document.getElementById('ttsText');
+  const btnGen = document.getElementById('btnGenerate');
+  const btnQuick = document.getElementById('btnQuickTest');
+  const player = document.getElementById('player');
+  const box = document.getElementById('resultBox');
+  const info = document.getElementById('resultText');
+  const count = document.getElementById('charCount');
+  const speakingRateEl = document.getElementById('speakingRate');
+  const rateDisplay = document.getElementById('rateDisplay');
+
+  // Course viewer elements
+  const courseViewer = document.getElementById('courseViewer');
+  const courseProgress = document.getElementById('courseProgress');
+  const courseProgressText = document.getElementById('courseProgressText');
+  const courseProgressPercent = document.getElementById('courseProgressPercent');
+  const courseSlideContent = document.getElementById('courseSlideContent');
+  const btnExitCourse = document.getElementById('btnExitCourse');
+  const btnCoursePrev = document.getElementById('btnCoursePrev');
+  const btnCourseNext = document.getElementById('btnCourseNext');
+  const btnCoursePlay = document.getElementById('btnCoursePlay');
+  const playIcon = document.getElementById('playIcon');
+  const courseVoice = document.getElementById('courseVoice');
+  const courseText = document.getElementById('courseText');
+  const btnGenerateCourseAudio = document.getElementById('btnGenerateCourseAudio');
+
+  // Course state
+  let courseSlides = [];
+  let currentSlideIndex = 0;
+  let courseAudio = null;
+
+  // Demo slides data
+  const demoSlides = [
+    {
+      title: "Welcome to CourseMaker",
+      content: "Transform your PowerPoints into professional courses",
+      gradient: "from-blue-500 to-purple-600"
+    },
+    {
+      title: "Upload Your Presentation",
+      content: "Simply drag and drop your .pptx files",
+      gradient: "from-green-500 to-teal-600"
+    },
+    {
+      title: "Add AI Narration",
+      content: "Choose from 30 voices in 39 languages",
+      gradient: "from-purple-500 to-pink-600"
+    },
+    {
+      title: "Professional Course Player",
+      content: "Students get a seamless learning experience",
+      gradient: "from-orange-500 to-red-600"
+    },
+    {
+      title: "Share & Track Progress",
+      content: "Monitor student completion and engagement",
+      gradient: "from-cyan-500 to-blue-600"
+    }
+  ];
+
+  function languagesForTier() {
+    if (tierEl.value === "neural2") {
+      return Object.keys(NEURAL2);
+    } else {
+      return Object.keys(LANG_LABELS);
+    }
+  }
+
+  function fillLanguages() {
+    langEl.innerHTML = "";
+    languagesForTier().forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = LANG_LABELS[code] || code;
+      langEl.appendChild(opt);
+    });
+    fillVoices();
+  }
+
+  function fillVoices() {
+    voiceEl.innerHTML = "";
+
+    if (tierEl.value === "neural2") {
+      const voices = NEURAL2[langEl.value] || [];
+      voices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.id; 
+        opt.textContent = `${v.label} • Neural2`;
+        voiceEl.appendChild(opt);
+      });
+    } else {
+      // Chirp3 - all voices available for all languages
+      CHIRP3_VOICES.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = `Chirp3-HD:${langEl.value}:${v.name}`;
+        opt.textContent = `${v.name} (${v.gender}) • Chirp3 HD`;
+        voiceEl.appendChild(opt);
+      });
+    }
+
+    if (!voiceEl.options.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'No voices available';
+      voiceEl.appendChild(opt);
+    }
+  }
+
+  // Initialize
+  fillLanguages();
+  tierEl.addEventListener('change', fillLanguages);
+  langEl.addEventListener('change', fillVoices);
+  textEl.addEventListener('input', () => count.textContent = textEl.value.length);
+  speakingRateEl.addEventListener('input', () => {
+    rateDisplay.textContent = `${Number(speakingRateEl.value).toFixed(2)}x`;
+  });
+
+  // Enhanced TTS API call with caching feedback
+  async function callTTS(text, voice, speakingRate = 1.0) {
+    const r = await fetch('/api/generate-tts', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ text, voice, speakingRate })
+    });
+    return r.json();
+  }
+
+  // Quick test with improved feedback
+  btnQuick.addEventListener('click', async () => {
+    btnQuick.disabled = true; 
+    btnQuick.textContent = 'Testing...';
+    try {
+      const data = await callTTS('Hello! This is a quick backend test for CourseMaker.', 'en-US-Neural2-A');
+      if (data.success) {
+        box.classList.remove('hidden');
+        const cacheStatus = data.cached ? ' (cached)' : ' (generated)';
+        info.innerHTML = `${data.model} • ${data.voice} • ${data.charactersUsed} chars • ${data.speakingRate}x speed${data.cached ? '<span class="cached-indicator"> ⚡ Cached</span>' : ''}`;
+        player.src = data.audioUrl; 
+        player.play().catch(()=>{});
+      } else {
+        alert('TTS Error: ' + data.error);
+      }
+    } catch (e) { 
+      alert('Connection failed: ' + e.message); 
+    }
+    finally { 
+      btnQuick.disabled = false; 
+      btnQuick.textContent = 'Quick Test'; 
+    }
+  });
+
+  // Generate TTS with improved feedback
+  btnGen.addEventListener('click', async () => {
+    const text = textEl.value.trim();
+    if (!text) { alert('Type something first'); return; }
+    if (!voiceEl.value) { alert('Please select a voice'); return; }
+    
+    btnGen.disabled = true; 
+    btnGen.textContent = 'Generating...';
+    try {
+      const data = await callTTS(text, voiceEl.value, Number(speakingRateEl.value));
+      if (data.success) {
+        box.classList.remove('hidden');
+        info.innerHTML = `${data.model} • ${data.voice} • ${data.charactersUsed} chars • ${data.speakingRate}x speed${data.cached ? '<span class="cached-indicator"> ⚡ Cached</span>' : ''}`;
+        player.src = data.audioUrl; 
+        player.play().catch(()=>{});
+      } else {
+        alert('TTS Error: ' + data.error);
+      }
+    } catch (e) { 
+      alert('Connection failed: ' + e.message); 
+    }
+    finally { 
+      btnGen.disabled = false; 
+      btnGen.textContent = 'Test Voice'; 
+    }
+  });
+
+  // Enhanced PPT uploader with better error handling
+  const form = document.getElementById('pptForm');
+  const fileInput = document.getElementById('pptFile');
+  const upMsg = document.getElementById('upMsg');
+  const wrap = document.getElementById('slidesWrap');
+  const grid = document.getElementById('slidesGrid');
+  const slideCount = document.getElementById('slideCount');
+  const btnPreviewCourse = document.getElementById('btnPreviewCourse');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = fileInput.files?.[0];
+    if (!f) { 
+      alert("Choose a .ppt or .pptx file first"); 
+      return; 
+    }
+    
+    // Client-side file validation
+    const validTypes = ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
+    const validExts = ['.ppt', '.pptx'];
+    const ext = f.name.toLowerCase().substring(f.name.lastIndexOf('.'));
+    
+    if (!validTypes.includes(f.type) && !validExts.includes(ext)) {
+      alert('Please select a valid PowerPoint file (.ppt or .pptx)');
+      return;
+    }
+    
+    if (f.size > 200 * 1024 * 1024) {
+      alert('File too large. Maximum size is 200MB.');
+      return;
+    }
+    
+    upMsg.textContent = "Converting PowerPoint to course slides...";
+    upMsg.className = "ml-3 text-sm text-blue-400";
+    
+    const fd = new FormData();
+    fd.append("ppt", f);
+    
+    try {
+      const r = await fetch('/api/upload-ppt', { method: 'POST', body: fd });
+      const data = await r.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || "Conversion failed");
+      }
+
+      upMsg.textContent = data.message || `Course ready! ${data.count} slide(s) extracted.`;
+      upMsg.className = "ml-3 text-sm text-green-400";
+      
+      grid.innerHTML = "";
+      data.slides.forEach((url, index) => {
+        const card = document.createElement('div');
+        card.className = "rounded-lg border border-white/10 bg-slate-900/60 p-2 relative group";
+        card.innerHTML = `
+          <img class="w-full rounded transition-transform group-hover:scale-105" src="${url}" alt="Slide ${index + 1}" />
+          <div class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">${index + 1}</div>
+        `;
+        grid.appendChild(card);
+      });
+      slideCount.textContent = data.count;
+      wrap.classList.remove('hidden');
+
+      // Update course slides for preview
+      courseSlides = data.slides.slice();
+      currentSlideIndex = 0;
+      
+    } catch (err) {
+      console.error(err);
+      upMsg.textContent = err.message || "Conversion failed.";
+      upMsg.className = "ml-3 text-sm text-red-400";
+    }
+  });
+
+  // Course viewer functions (unchanged)
+  function updateCourseDisplay() {
+    const isDemo = courseSlides.length === 0;
+    const slides = isDemo ? demoSlides : courseSlides;
+    const total = slides.length;
+    
+    if (currentSlideIndex >= total) currentSlideIndex = 0;
+    if (currentSlideIndex < 0) currentSlideIndex = total -1
+
+const progress = ((currentSlideIndex + 1) / total) * 100;
+    courseProgress.style.width = `${progress}%`;
+    courseProgressText.textContent = `Slide ${currentSlideIndex + 1} of ${total}`;
+    courseProgressPercent.textContent = `${Math.round(progress)}% Complete`;
+
+    if (isDemo) {
+      const slide = slides[currentSlideIndex];
+      courseSlideContent.innerHTML = `
+        <div class="aspect-video bg-gradient-to-br ${slide.gradient} flex flex-col items-center justify-center text-white p-8">
+          <h1 class="text-4xl font-bold mb-4 text-center">${slide.title}</h1>
+          <p class="text-xl text-center opacity-90">${slide.content}</p>
+        </div>
+      `;
+    } else {
+      courseSlideContent.innerHTML = `<img class="w-full h-full object-contain" src="${slides[currentSlideIndex]}" alt="Course slide ${currentSlideIndex + 1}" />`;
+    }
+
+    btnCoursePrev.disabled = currentSlideIndex === 0;
+    btnCourseNext.disabled = currentSlideIndex === total - 1;
+  }
+
+  function showCourseViewer() {
+    courseViewer.classList.remove('hidden');
+    updateCourseDisplay();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideCourseViewer() {
+    courseViewer.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    if (courseAudio) {
+      courseAudio.pause();
+      courseAudio = null;
+    }
+  }
+
+  // Course navigation
+  btnCoursePrev.addEventListener('click', () => {
+    if (currentSlideIndex > 0) {
+      currentSlideIndex--;
+      updateCourseDisplay();
+    }
+  });
+
+  btnCourseNext.addEventListener('click', () => {
+    const total = courseSlides.length || demoSlides.length;
+    if (currentSlideIndex < total - 1) {
+      currentSlideIndex++;
+      updateCourseDisplay();
+    }
+  });
+
+  btnExitCourse.addEventListener('click', hideCourseViewer);
+
+  // Enhanced course audio with caching feedback
+  btnGenerateCourseAudio.addEventListener('click', async () => {
+    const text = courseText.value.trim();
+    if (!text) { alert('Enter some text for narration'); return; }
+    
+    btnGenerateCourseAudio.disabled = true;
+    btnGenerateCourseAudio.textContent = 'Generating...';
+    
+    try {
+      const data = await callTTS(text, courseVoice.value, 1.0);
+      if (data.success) {
+        courseAudio = new Audio(data.audioUrl);
+        btnCoursePlay.innerHTML = '<span id="playIcon">▶</span> Play Generated Audio';
+        const cacheStatus = data.cached ? ' (from cache)' : '';
+        alert(`Audio generated successfully!${cacheStatus}`);
+      } else {
+        alert('TTS Error: ' + data.error);
+      }
+    } catch (e) {
+      alert('Connection failed: ' + e.message);
+    } finally {
+      btnGenerateCourseAudio.disabled = false;
+      btnGenerateCourseAudio.textContent = 'Generate Narration';
+    }
+  });
+
+  btnCoursePlay.addEventListener('click', () => {
+    if (courseAudio) {
+      if (courseAudio.paused) {
+        courseAudio.play();
+        playIcon.textContent = '⏸';
+        btnCoursePlay.innerHTML = '<span id="playIcon">⏸</span> Pause Audio';
+      } else {
+        courseAudio.pause();
+        playIcon.textContent = '▶';
+        btnCoursePlay.innerHTML = '<span id="playIcon">▶</span> Play Audio';
+      }
+    } else {
+      alert('Generate audio first to test the course player');
+    }
+  });
+
+  // Demo course buttons
+  document.getElementById('btnDemoCourse').addEventListener('click', () => {
+    courseSlides = []; // Use demo slides
+    currentSlideIndex = 0;
+    showCourseViewer();
+  });
+
+  document.getElementById('btnTryDemo').addEventListener('click', () => {
+    courseSlides = [];
+    currentSlideIndex = 0;
+    showCourseViewer();
+  });
+
+  btnPreviewCourse.addEventListener('click', () => {
+    if (courseSlides.length > 0) {
+      currentSlideIndex = 0;
+      showCourseViewer();
+    } else {
+      alert('Upload a PowerPoint file first to preview your course');
+    }
+  });
+
+  // Keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (courseViewer.classList.contains('hidden')) return;
+    
+    if (e.code === 'Space' && courseAudio && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      btnCoursePlay.click();
+    } else if (e.code === 'Escape') {
+      hideCourseViewer();
+    } else if (e.code === 'ArrowLeft') {
+      btnCoursePrev.click();
+    } else if (e.code === 'ArrowRight') {
+      btnCourseNext.click();
+    }
+  });
+
+  // Pricing toggle
+  const billToggle = document.getElementById('billToggle');
+  const priceFree = document.getElementById('price-free');
+  const unitFree = document.getElementById('unit-free');
+  const pricePro = document.getElementById('price-pro');
+  const unitPro = document.getElementById('unit-pro');
+  const priceBiz = document.getElementById('price-biz');
+  const unitBiz = document.getElementById('unit-biz');
+
+  const base = { pro: 29, biz: 79 };
+  function renderPrices() {
+    const annual = billToggle.checked;
+    if (annual) {
+      pricePro.textContent = `$${base.pro * 10}`;
+      priceBiz.textContent = `$${base.biz * 10}`;
+      unitPro.textContent = '/yr';
+      unitBiz.textContent = '/yr';
+      unitFree.textContent = '/yr';
+    } else {
+      pricePro.textContent = `$${base.pro}`;
+      priceBiz.textContent = `$${base.biz}`;
+      unitPro.textContent = '/mo';
+      unitBiz.textContent = '/mo';
+      unitFree.textContent = '/mo';
+    }
+  }
+  billToggle.addEventListener('change', renderPrices);
+  renderPrices();
+
+  // Initialize character count
+  count.textContent = textEl.value.length;
+  rateDisplay.textContent = `${Number(speakingRateEl.value).toFixed(2)}x`;
+</script>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Course Builder · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    
+    .ai-generating {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    .slide-preview {
+      transition: all 0.3s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .slide-preview:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6);
+      background-size: 200% 100%;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .typing-animation {
+      overflow: hidden;
+      border-right: 2px solid #06b6d4;
+      white-space: nowrap;
+      animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+    
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #06b6d4; }
+    }
+
+    .motion-rise { 
+      transition: all 400ms ease;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    .motion-rise.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .motion-fade { 
+      transition: all 400ms ease;
+      opacity: 0;
+    }
+    .motion-fade.revealed {
+      opacity: 1;
+    }
+    
+    .motion-pop { 
+      transition: all 400ms ease;
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    .motion-pop.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">🤖</div>
+        <span class="text-xl font-semibold tracking-tight">AI Course Builder</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="/dashboard.html">← Back to Dashboard</a>
+        <a class="hover:text-white" href="/course-builder.html">Manual Builder</a>
+        <a class="hover:text-white" href="/courses.html">My Courses</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div id="root" class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    <!-- React app will be rendered here -->
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // -----------------------------
+    // 1) Course Generation API
+    // -----------------------------
+    async function generateCourseWithAI(courseData) {
+      try {
+        const response = await fetch('/api/ai/generate-course-advanced', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(courseData)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Course generation failed');
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error('Course generation error:', error);
+        throw error;
+      }
+    }
+
+    // -----------------------------
+    // 2) Animation helpers
+    // -----------------------------
+    function Animate({ children, show, motion = "fade" }) {
+      const [isVisible, setIsVisible] = useState(false);
+      
+      useEffect(() => {
+        if (show) {
+          const timer = setTimeout(() => setIsVisible(true), 50);
+          return () => clearTimeout(timer);
+        } else {
+          setIsVisible(false);
+        }
+      }, [show]);
+
+      return (
+        <div className={`motion-${motion} ${isVisible ? 'revealed' : ''}`}>
+          {children}
+        </div>
+      );
+    }
+
+    // -----------------------------
+    // 3) Slide Components
+    // -----------------------------
+    function Heading({ text, motion, revealed }) {
+      return (
+        <Animate show={revealed} motion={motion}>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{text}</h1>
+        </Animate>
+      );
+    }
+
+    function Subheading({ text, motion, revealed }) {
+      return (
+        <Animate show={revealed} motion={motion}>
+          <p className="text-lg md:text-xl text-gray-600">{text}</p>
+        </Animate>
+      );
+    }
+
+    function Bullets({ items, motion, revealCount = 0 }) {
+      return (
+        <div>
+          <ul className="list-disc pl-6 space-y-2 text-gray-800">
+            {items.map((item, i) => (
+              <Animate key={i} show={i < revealCount} motion={motion}>
+                <li>{item}</li>
+              </Animate>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    function Callout({ title, body, motion, revealed }) {
+      return (
+        <Animate show={revealed} motion={motion}>
+          <div className="rounded-2xl border p-4 bg-white shadow-sm">
+            <div className="text-sm font-semibold text-gray-500">{title}</div>
+            <div className="text-lg md:text-xl text-gray-900 mt-1">{body}</div>
+          </div>
+        </Animate>
+      );
+    }
+
+    function ImageBlock({ url, caption, motion, revealed }) {
+      return (
+        <Animate show={revealed} motion={motion}>
+          <figure className="rounded-2xl overflow-hidden shadow">
+            {url && <img src={url} alt={caption || "image"} className="w-full h-56 object-cover" />}        
+            {caption && <figcaption className="text-sm text-gray-500 p-2 bg-gray-50">{caption}</figcaption>}
+          </figure>
+        </Animate>
+      );
+    }
+
+    function Timeline({ items, motion, revealCount = 0 }) {
+      return (
+        <ol className="relative border-l pl-4 space-y-3">
+          {items.map((item, i) => (
+            <Animate key={i} show={i < revealCount} motion={motion}>
+              <li className="ml-2">
+                <div className="text-gray-900 font-semibold">{item.label}</div>
+                <div className="text-gray-600 text-sm">{item.summary}</div>
+              </li>
+            </Animate>
+          ))}
+        </ol>
+      );
+    }
+
+    // -----------------------------
+    // 4) Slide Renderer
+    // -----------------------------
+    function SlideView({ slide, reveals, theme }) {
+      const bg = theme?.bg || "#ffffff";
+      const primary = theme?.primary || "#0ea5e9";
+      const shown = (id) => typeof reveals[id] === "number" ? reveals[id] > 0 : !!reveals[id];
+      const countFor = (id) => (typeof reveals[id] === "number" ? reveals[id] : (reveals[id] ? 999 : 0));
+
+      // Debug: Log slide data
+      console.log('SlideView rendering:', slide);
+      console.log('Elements:', slide.elements);
+      console.log('Reveals:', reveals);
+
+      return (
+        <div className="w-full h-full p-6 md:p-10 rounded-3xl shadow-xl" style={{ background: bg }}>
+          {/* Accent bar */}
+          <div className="h-1 w-24 rounded" style={{ background: primary }} />
+
+          {/* Debug: Show raw slide data */}
+          <div className="mb-4 p-2 bg-yellow-100 rounded text-xs">
+            <strong>Debug:</strong> Layout: {slide.layout}, Elements: {slide.elements ? slide.elements.length : 'none'}
+          </div>
+
+          {/* Layouts */}
+          {slide.layout === "HeroLeft" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mt-6">
+              <div className="space-y-4">
+                <Heading text={slide.elements?.find((e) => e.id === "h1")?.text || "No heading found"} motion={slide.elements?.find((e) => e.id === "h1")?.motion || "rise"} revealed={shown("h1")} />
+                <Subheading text={slide.elements?.find((e) => e.id === "sub1")?.text || "No subheading found"} motion={slide.elements?.find((e) => e.id === "sub1")?.motion || "fade"} revealed={shown("sub1")} />
+              </div>
+              <ImageBlock url={slide.elements?.find((e) => e.id === "img1")?.url} caption={slide.elements?.find((e) => e.id === "img1")?.caption} motion={slide.elements?.find((e) => e.id === "img1")?.motion || "pop"} revealed={true} />
+            </div>
+          )}
+
+          {slide.layout === "TwoCol" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+              <div className="space-y-4">
+                <Heading text={slide.elements?.find((e) => e.id === "h2")?.text || "No heading found"} motion={slide.elements?.find((e) => e.id === "h2")?.motion || "rise"} revealed={shown("h2")} />
+                <Bullets items={slide.elements?.find((e) => e.id === "b1")?.items || []} motion={slide.elements?.find((e) => e.id === "b1")?.motion || "fade"} revealCount={countFor("b1")} />
+              </div>
+              <ImageBlock url={slide.elements?.find((e) => e.id === "img2")?.url} caption={slide.elements?.find((e) => e.id === "img2")?.caption} motion={slide.elements?.find((e) => e.id === "img2")?.motion || "pop"} revealed={true} />
+            </div>
+          )}
+
+          {slide.layout === "Checklist" && (
+            <div className="space-y-6 mt-6">
+              <Heading text={slide.elements?.find((e) => e.id === "h3")?.text || "No heading found"} motion={slide.elements?.find((e) => e.id === "h3")?.motion || "rise"} revealed={shown("h3")} />
+              <Bullets items={slide.elements?.find((e) => e.id === "chk1")?.items || []} motion={slide.elements?.find((e) => e.id === "chk1")?.motion || "fade"} revealCount={countFor("chk1")} />
+            </div>
+          )}
+
+          {slide.layout === "ProcessTimeline" && (
+            <div className="space-y-6 mt-6">
+              <Heading text={slide.elements?.find((e) => e.id === "h4")?.text || "No heading found"} motion={slide.elements?.find((e) => e.id === "h4")?.motion || "rise"} revealed={shown("h4")} />
+              <Timeline items={slide.elements?.find((e) => e.id === "tl1")?.items || []} motion={slide.elements?.find((e) => e.id === "tl1")?.motion || "fade"} revealCount={countFor("tl1")} />
+            </div>
+          )}
+
+          {slide.layout === "ImageFocus" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 items-start">
+              <div className="space-y-6">
+                <Heading text={slide.elements?.find((e) => e.id === "h5")?.text || "No heading found"} motion={slide.elements?.find((e) => e.id === "h5")?.motion || "rise"} revealed={shown("h5")} />
+                <Callout title={slide.elements?.find((e) => e.id === "call1")?.title} body={slide.elements?.find((e) => e.id === "call1")?.body} motion={slide.elements?.find((e) => e.id === "call1")?.motion || "pop"} revealed={shown("call1")} />
+              </div>
+              <ImageBlock url={slide.elements?.find((e) => e.id === "img5")?.url} caption={slide.elements?.find((e) => e.id === "img5")?.caption} motion={slide.elements?.find((e) => e.id === "img5")?.motion || "pop"} revealed={true} />
+            </div>
+          )}
+
+          {/* Fallback: Show all elements if no specific layout */}
+          {!slide.layout && slide.elements && (
+            <div className="space-y-4 mt-6">
+              {slide.elements.map((element, index) => (
+                <div key={index} className="p-4 border rounded">
+                  <div className="text-sm text-gray-500">Element {index + 1}: {element.type}</div>
+                  {element.type === 'heading' && <Heading text={element.text} motion={element.motion || "rise"} revealed={shown(element.id)} />}
+                  {element.type === 'subheading' && <Subheading text={element.text} motion={element.motion || "fade"} revealed={shown(element.id)} />}
+                  {element.type === 'bullets' && <Bullets items={element.items || []} motion={element.motion || "fade"} revealCount={countFor(element.id)} />}
+                  {element.type === 'image' && <ImageBlock url={element.url} caption={element.caption} motion={element.motion || "pop"} revealed={shown(element.id)} />}
+                  {element.type === 'callout' && <Callout title={element.title} body={element.body} motion={element.motion || "pop"} revealed={shown(element.id)} />}
+                  {element.type === 'timeline' && <Timeline items={element.items || []} motion={element.motion || "fade"} revealCount={countFor(element.id)} />}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // -----------------------------
+    // 5) Main App Component
+    // -----------------------------
+    function App() {
+      const [step, setStep] = useState('input'); // 'input', 'generating', 'preview', 'player'
+      const [courseData, setCourseData] = useState({
+        topic: '',
+        audience: '',
+        slideCount: 5,
+        duration: 'medium',
+        style: 'professional'
+      });
+      const [generatedCourse, setGeneratedCourse] = useState(null);
+      const [currentSlide, setCurrentSlide] = useState(0);
+      const [reveals, setReveals] = useState({});
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [currentTime, setCurrentTime] = useState(0);
+      const [duration, setDuration] = useState(0);
+      const audioRef = useRef(null);
+
+      // Course generation form
+      if (step === 'input') {
+        return (
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold tracking-tight mb-4">AI Course Builder</h1>
+              <p className="text-xl text-slate-400">Describe your course idea and watch AI create a complete, professional learning experience</p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setStep('generating');
+                try {
+                  const result = await generateCourseWithAI(courseData);
+                  setGeneratedCourse(result.course);
+                  setStep('preview');
+                } catch (error) {
+                  alert('Failed to generate course: ' + error.message);
+                  setStep('input');
+                }
+              }} className="space-y-6">
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">What is your course about?</label>
+                  <textarea 
+                    value={courseData.topic}
+                    onChange={(e) => setCourseData({...courseData, topic: e.target.value})}
+                    rows="3" 
+                    className="w-full rounded-xl border border-white/10 bg-slate-800/50 px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    placeholder="e.g., 'Introduction to Machine Learning for Beginners' or 'Digital Marketing Strategies for Small Businesses'"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Who is your target audience?</label>
+                  <input 
+                    type="text" 
+                    value={courseData.audience}
+                    onChange={(e) => setCourseData({...courseData, audience: e.target.value})}
+                    className="w-full rounded-xl border border-white/10 bg-slate-800/50 px-4 py-3 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    placeholder="e.g., 'Complete beginners', 'Marketing professionals', 'Students aged 16-25'"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Number of slides</label>
+                    <select 
+                      value={courseData.slideCount}
+                      onChange={(e) => setCourseData({...courseData, slideCount: parseInt(e.target.value)})}
+                      className="w-full rounded-xl border border-white/10 bg-slate-800/50 px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    >
+                      <option value={5}>5 slides</option>
+                      <option value={8}>8 slides</option>
+                      <option value={12}>12 slides</option>
+                      <option value={15}>15 slides</option>
+                      <option value={20}>20 slides</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Course style</label>
+                    <select 
+                      value={courseData.style}
+                      onChange={(e) => setCourseData({...courseData, style: e.target.value})}
+                      className="w-full rounded-xl border border-white/10 bg-slate-800/50 px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    >
+                      <option value="professional">Professional</option>
+                      <option value="casual">Casual</option>
+                      <option value="academic">Academic</option>
+                      <option value="creative">Creative</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button 
+                    type="submit" 
+                    className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-8 py-4 text-lg font-semibold text-white hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
+                  >
+                    🤖 Generate AI Course
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      // Generation progress
+      if (step === 'generating') {
+        return (
+          <div className="max-w-4xl mx-auto">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
+              <div className="text-center">
+                <div className="text-6xl mb-4 ai-generating">🤖</div>
+                <h2 className="text-2xl font-semibold mb-2">Creating your course...</h2>
+                <p className="text-slate-400">AI is analyzing your requirements and generating content</p>
+                
+                <div className="mt-8 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Course Structure</span>
+                    <span className="text-sm text-green-400">✅</span>
+                  </div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div className="progress-bar h-2 rounded-full" style={{width: '100%'}}></div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Content Generation</span>
+                    <span className="text-sm text-green-400">✅</span>
+                  </div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div className="progress-bar h-2 rounded-full" style={{width: '100%'}}></div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Audio Generation</span>
+                    <span className="text-sm text-cyan-400">⏳</span>
+                  </div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div className="progress-bar h-2 rounded-full" style={{width: '75%'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Course preview
+      if (step === 'preview' && generatedCourse) {
+        return (
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-2">Course Preview</h2>
+              <p className="text-slate-400">Your AI-generated course is ready!</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                  <h3 className="text-xl font-semibold mb-4">Course Slides</h3>
+                  <div className="space-y-3">
+                    {generatedCourse.slides.map((slide, index) => (
+                      <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50">
+                        <div className="text-2xl">
+                          {slide.layout === 'HeroLeft' && '🎯'}
+                          {slide.layout === 'TwoCol' && '📊'}
+                          {slide.layout === 'Checklist' && '✅'}
+                          {slide.layout === 'ProcessTimeline' && '📅'}
+                          {slide.layout === 'ImageFocus' && '🖼️'}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium">{slide.elements.find(e => e.type === 'heading')?.text}</div>
+                          <div className="text-sm text-slate-400">{slide.layout} • {slide.durationSec}s</div>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setCurrentSlide(index);
+                            setStep('player');
+                          }}
+                          className="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
+                        >
+                          Play
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                  <h3 className="text-lg font-semibold mb-4">Course Stats</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Total Slides</span>
+                      <span className="font-semibold">{generatedCourse.slides.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Duration</span>
+                      <span className="font-semibold">{generatedCourse.slides.reduce((acc, slide) => acc + slide.durationSec, 0)}s</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Style</span>
+                      <span className="font-semibold capitalize">{courseData.style}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setStep('input')}
+                    className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
+                  >
+                    Create New
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setCurrentSlide(0);
+                      setStep('player');
+                    }}
+                    className="flex-1 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-sm text-white hover:from-cyan-600 hover:to-blue-700"
+                  >
+                    Start Course
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Course player
+      if (step === 'player' && generatedCourse) {
+        const slide = generatedCourse.slides[currentSlide];
+        const marks = slide.marks || [];
+        const timepoints = slide.timepoints || [];
+        
+        // Debug: Log the slide data
+        console.log('Current slide:', slide);
+        console.log('Slide elements:', slide.elements);
+        console.log('Slide layout:', slide.layout);
+
+    // Handle audio playback and reveals
+    useEffect(() => {
+      if (!audioRef.current) return;
+
+      const audio = audioRef.current;
+      
+      const handleTimeUpdate = () => {
+        setCurrentTime(audio.currentTime);
+        
+        // Check for reveals based on timepoints
+        setReveals(prev => {
+          let changed = false;
+          let next = { ...prev };
+          
+          timepoints.forEach((tp, i) => {
+            if (audio.currentTime >= tp && i < marks.length) {
+              const mark = marks[i];
+              if (!mark || !isFinite(tp)) return;
+              
+              const key = mark.targetId;
+              if (mark.index !== undefined) {
+                const want = mark.index + 1;
+                const have = typeof next[key] === "number" ? next[key] : (next[key] ? 999 : 0);
+                if (have < want) { next[key] = want; changed = true; }
+              } else {
+                if (!next[key]) { next[key] = 1; changed = true; }
+              }
+            }
+          });
+          
+          return changed ? next : prev;
+        });
+      };
+
+      const handleLoadedMetadata = () => {
+        setDuration(audio.duration);
+      };
+
+      const handleEnded = () => {
+        setIsPlaying(false);
+        if (currentSlide < generatedCourse.slides.length - 1) {
+          setTimeout(() => {
+            setCurrentSlide(prev => prev + 1);
+            setReveals({});
+          }, 1000);
+        }
+      };
+
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('ended', handleEnded);
+
+      return () => {
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('ended', handleEnded);
+      };
+    }, [currentSlide, timepoints, marks, slide]);
+
+    // Auto-reveal elements for testing (if no audio)
+    useEffect(() => {
+      if (!slide.audioUrl) {
+        // If no audio, reveal all elements after a short delay
+        const timer = setTimeout(() => {
+          const allReveals = {};
+          slide.elements?.forEach(element => {
+            if (element.type === 'bullets' || element.type === 'timeline') {
+              allReveals[element.id] = element.items ? element.items.length : 3;
+            } else {
+              allReveals[element.id] = true;
+            }
+          });
+          setReveals(allReveals);
+        }, 1000);
+        
+        return () => clearTimeout(timer);
+      }
+    }, [slide]);
+
+        const play = () => {
+          if (audioRef.current) {
+            audioRef.current.play();
+            setIsPlaying(true);
+          }
+        };
+
+        const pause = () => {
+          if (audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+          }
+        };
+
+        const reset = () => {
+          if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            setCurrentTime(0);
+            setIsPlaying(false);
+            setReveals({});
+          }
+        };
+
+        const progress = duration ? (currentTime / duration) * 100 : 0;
+
+        return (
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Course Player</h2>
+                <p className="text-slate-400">Slide {currentSlide + 1} of {generatedCourse.slides.length}</p>
+              </div>
+              <button 
+                onClick={() => setStep('preview')}
+                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
+              >
+                ← Back to Preview
+              </button>
+            </div>
+
+            {/* Hidden audio element */}
+            <audio 
+              ref={audioRef} 
+              src={slide.audioUrl} 
+              preload="metadata"
+            />
+
+            {/* Slide Display */}
+            <div className="rounded-3xl bg-white shadow-xl p-4 md:p-6 mb-6">
+              <SlideView slide={slide} reveals={reveals} theme={slide.theme} />
+              
+              {/* Debug info */}
+              <div className="mt-4 p-4 bg-gray-100 rounded-lg text-xs">
+                <div className="font-semibold mb-2">Debug Info:</div>
+                <div>Elements: {slide.elements ? slide.elements.length : 0}</div>
+                <div>Reveals: {JSON.stringify(reveals)}</div>
+                <div>Marks: {marks.length}</div>
+                <div>Timepoints: {timepoints.length}</div>
+                {slide.elements && (
+                  <div className="mt-2">
+                    <div className="font-semibold">Elements:</div>
+                    {slide.elements.map((el, i) => (
+                      <div key={i} className="ml-2">
+                        {el.type}: {el.text || el.id} (revealed: {reveals[el.id] ? 'yes' : 'no'})
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="rounded-2xl bg-white shadow p-4">
+              <div className="flex items-center gap-4 mb-4">
+                <button 
+                  onClick={() => setCurrentSlide(prev => Math.max(0, prev - 1))}
+                  disabled={currentSlide === 0}
+                  className="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  ← Prev
+                </button>
+                
+                {!isPlaying ? (
+                  <button onClick={play} className="px-4 py-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700">
+                    ▶️ Play
+                  </button>
+                ) : (
+                  <button onClick={pause} className="px-4 py-2 rounded-xl bg-rose-600 text-white hover:bg-rose-700">
+                    ⏸️ Pause
+                  </button>
+                )}
+                
+                <button onClick={reset} className="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200">
+                  🔄 Reset
+                </button>
+                
+                <button onClick={() => {
+                  const allReveals = {};
+                  slide.elements.forEach(element => {
+                    if (element.type === 'bullets' || element.type === 'timeline') {
+                      allReveals[element.id] = element.items ? element.items.length : 3;
+                    } else {
+                      allReveals[element.id] = true;
+                    }
+                  });
+                  setReveals(allReveals);
+                }} className="px-3 py-2 rounded-xl bg-blue-100 hover:bg-blue-200">
+                  👁️ Show All
+                </button>
+                
+                <button 
+                  onClick={() => setCurrentSlide(prev => Math.min(generatedCourse.slides.length - 1, prev + 1))}
+                  disabled={currentSlide === generatedCourse.slides.length - 1}
+                  className="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next →
+                </button>
+              </div>
+
+              {/* Progress bar */}
+              <div className="space-y-2">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-teal-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+                </div>
+                <div className="text-xs text-gray-500 flex justify-between">
+                  <span>{Math.floor(currentTime)}s / {Math.floor(duration)}s</span>
+                  <span>{Math.floor(progress)}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return null;
+    }
+
+    // Render the app
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

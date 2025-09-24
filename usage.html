@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Usage · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .usage-bar {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .usage-fill {
+      background: linear-gradient(90deg, #06b6d4, #3b82f6);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .usage-fill.warning {
+      background: linear-gradient(90deg, #f59e0b, #f97316);
+    }
+    .usage-fill.danger {
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="/dashboard.html">Dashboard</a>
+        <a class="hover:text-white" href="/courses.html">My Courses</a>
+        <a class="hover:text-white font-medium text-cyan-300" href="/usage.html">Usage</a>
+        <a class="hover:text-white" href="/account.html">Account</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="badge" id="userPlan">Pro Plan</span>
+          <span class="text-sm text-slate-400" id="userEmail">user@example.com</span>
+        </div>
+        <button id="btnLogout" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">Usage & Billing</h1>
+      <p class="mt-2 text-slate-400">Monitor your plan usage and manage your subscription</p>
+    </div>
+
+    <!-- Current Plan Overview -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-semibold">Current Plan</h2>
+          <p class="text-slate-400 mt-1">Your subscription details and limits</p>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-bold" id="planName">Pro Plan</div>
+          <div class="text-sm text-slate-400" id="planPrice">$29/month</div>
+        </div>
+      </div>
+      
+      <div class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <div class="text-sm text-slate-300 mb-1">Courses</div>
+          <div class="text-lg font-semibold" id="coursesLimit">Unlimited</div>
+        </div>
+        
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <div class="text-sm text-slate-300 mb-1">Slides per Course</div>
+          <div class="text-lg font-semibold" id="slidesLimit">200</div>
+        </div>
+        
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <div class="text-sm text-slate-300 mb-1">TTS Characters</div>
+          <div class="text-lg font-semibold" id="charactersLimit">100,000/month</div>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex items-center gap-4">
+        <span class="text-sm text-slate-400">Need more? <a href="/upgrade.html" class="text-cyan-400 hover:text-cyan-300">Upgrade your plan →</a></span>
+        <span class="text-sm text-slate-400">Billing cycle resets on <span id="resetDate">15th of each month</span></span>
+      </div>
+    </div>
+
+    <!-- Usage This Month -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Usage This Month</h2>
+      
+      <!-- Courses Created -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-medium text-white">Courses Created</h3>
+            <p class="text-sm text-slate-400">Number of courses you've created this month</p>
+          </div>
+          <div class="text-right">
+            <div class="text-lg font-semibold" id="coursesUsed">2</div>
+            <div class="text-sm text-slate-400" id="coursesLimit2">of Unlimited</div>
+          </div>
+        </div>
+        <div class="usage-bar h-3">
+          <div class="usage-fill" id="coursesUsageFill" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 mt-1">
+          <span>0</span>
+          <span id="coursesMax">∞</span>
+        </div>
+      </div>
+
+      <!-- TTS Characters -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-medium text-white">Text-to-Speech Characters</h3>
+            <p class="text-sm text-slate-400">Characters used for AI voice generation</p>
+          </div>
+          <div class="text-right">
+            <div class="text-lg font-semibold" id="charactersUsed">15,420</div>
+            <div class="text-sm text-slate-400" id="charactersLimitText">of 100,000</div>
+          </div>
+        </div>
+        <div class="usage-bar h-3">
+          <div class="usage-fill" id="charactersUsageFill" style="width: 15%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 mt-1">
+          <span>0</span>
+          <span id="charactersMax">100,000</span>
+        </div>
+      </div>
+
+      <!-- Slides Generated -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-medium text-white">Slides Generated</h3>
+            <p class="text-sm text-slate-400">Total slides created from PowerPoint uploads</p>
+          </div>
+          <div class="text-right">
+            <div class="text-lg font-semibold" id="slidesUsed">47</div>
+            <div class="text-sm text-slate-400" id="slidesLimitText">total this month</div>
+          </div>
+        </div>
+        <div class="usage-bar h-3">
+          <div class="usage-fill" id="slidesUsageFill" style="width: 23%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 mt-1">
+          <span>0</span>
+          <span>No limit</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/40 rounded-lg p-4 mt-6">
+        <div class="flex items-center gap-2 text-sm">
+          <span class="text-slate-300">📅 Billing cycle:</span>
+          <span class="text-white">Resets monthly on the 15th</span>
+          <span class="text-slate-400">• Next reset: <span id="nextReset">Mar 15, 2025</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage History -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Usage History</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left py-3 text-sm font-medium text-slate-300">Month</th>
+              <th class="text-right py-3 text-sm font-medium text-slate-300">Courses</th>
+              <th class="text-right py-3 text-sm font-medium text-slate-300">TTS Characters</th>
+              <th class="text-right py-3 text-sm font-medium text-slate-300">Slides</th>
+            </tr>
+          </thead>
+          <tbody id="usageHistory">
+            <!-- History will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Plan Features -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-6">Your Plan Features</h2>
+      
+      <div class="grid gap-6 md:grid-cols-2">
+        <div>
+          <h3 class="font-medium text-white mb-3">Included Features</h3>
+          <div class="space-y-2" id="includedFeatures">
+            <!-- Features will be loaded here -->
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="font-medium text-white mb-3">Available Voices</h3>
+          <div class="space-y-2" id="availableVoices">
+            <!-- Voices will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing Information -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-semibold">Billing Information</h2>
+          <p class="text-slate-400 mt-1">Manage your subscription and payment methods</p>
+        </div>
+        <button class="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+          Manage Billing
+        </button>
+      </div>
+      
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <div class="text-sm text-slate-300 mb-1">Next Billing Date</div>
+          <div class="text-lg font-semibold" id="nextBilling">March 15, 2025</div>
+        </div>
+        
+        <div class="rounded-lg border border-white/10 bg-slate-800/40 p-4">
+          <div class="text-sm text-slate-300 mb-1">Payment Method</div>
+          <div class="text-lg font-semibold">•••• •••• •••• 4242</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentUser = null;
+    let usageData = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadUsageData();
+      setupEventListeners();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Load usage data
+    async function loadUsageData() {
+      try {
+        const response = await fetch('/api/user/usage', { credentials: 'include' });
+        
+        if (response.ok) {
+          usageData = await response.json();
+          updateUsageDisplay();
+        }
+
+        // Load usage history
+        const historyResponse = await fetch('/api/user/usage-history', { credentials: 'include' });
+        if (historyResponse.ok) {
+          const history = await historyResponse.json();
+          updateUsageHistory(history);
+        }
+      } catch (error) {
+        console.error('Error loading usage data:', error);
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      // Update plan badge color
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+
+      // Update plan information
+      const planNames = {
+        'free': 'Free Plan',
+        'pro': 'Pro Plan',
+        'business': 'Business Plan'
+      };
+
+      const planPrices = {
+        'free': 'Free',
+        'pro': '$29/month',
+        'business': '$79/month'
+      };
+
+      document.getElementById('planName').textContent = planNames[currentUser.planType];
+      document.getElementById('planPrice').textContent = planPrices[currentUser.planType];
+
+      // Update limits
+      const limits = currentUser.limits || {};
+      document.getElementById('coursesLimit').textContent = limits.max_courses === -1 ? 'Unlimited' : limits.max_courses;
+      document.getElementById('slidesLimit').textContent = limits.max_slides_per_course === -1 ? 'Unlimited' : limits.max_slides_per_course;
+      document.getElementById('charactersLimit').textContent = limits.max_characters_per_month === -1 ? 'Unlimited' : limits.max_characters_per_month.toLocaleString() + '/month';
+
+      // Update features
+      updatePlanFeatures();
+    }
+
+    // Update usage display
+    function updateUsageDisplay() {
+      if (!usageData || !currentUser) return;
+      
+      const limits = currentUser.limits || {};
+      
+      // Courses
+      const courseUsed = usageData.courses_created || 0;
+      const courseLimit = limits.max_courses;
+      document.getElementById('coursesUsed').textContent = courseUsed;
+      document.getElementById('coursesLimit2').textContent = courseLimit === -1 ? 'of Unlimited' : `of ${courseLimit}`;
+      document.getElementById('coursesMax').textContent = courseLimit === -1 ? '∞' : courseLimit;
+      
+      if (courseLimit !== -1) {
+        const coursePercent = (courseUsed / courseLimit) * 100;
+        const courseFill = document.getElementById('coursesUsageFill');
+        courseFill.style.width = `${Math.min(100, coursePercent)}%`;
+        
+        // Update color based on usage
+        if (coursePercent >= 90) {
+          courseFill.className = 'usage-fill danger';
+        } else if (coursePercent >= 75) {
+          courseFill.className = 'usage-fill warning';
+        } else {
+          courseFill.className = 'usage-fill';
+        }
+      }
+      
+      // Characters
+      const charUsed = usageData.characters_used || 0;
+      const charLimit = limits.max_characters_per_month;
+      document.getElementById('charactersUsed').textContent = charUsed.toLocaleString();
+      document.getElementById('charactersLimitText').textContent = charLimit === -1 ? 'Unlimited' : `of ${charLimit.toLocaleString()}`;
+      document.getElementById('charactersMax').textContent = charLimit === -1 ? '∞' : charLimit.toLocaleString();
+      
+      if (charLimit !== -1) {
+        const charPercent = (charUsed / charLimit) * 100;
+        const charFill = document.getElementById('charactersUsageFill');
+        charFill.style.width = `${Math.min(100, charPercent)}%`;
+        
+        if (charPercent >= 90) {
+          charFill.className = 'usage-fill danger';
+        } else if (charPercent >= 75) {
+          charFill.className = 'usage-fill warning';
+        } else {
+          charFill.className = 'usage-fill';
+        }
+      }
+      
+      // Slides
+      const slideUsed = usageData.slides_created || 0;
+      document.getElementById('slidesUsed').textContent = slideUsed;
+      document.getElementById('slidesLimitText').textContent = 'total this month';
+      
+      // Slides don't have a hard limit, just show usage
+      const slideFill = document.getElementById('slidesUsageFill');
+      slideFill.style.width = `${Math.min(100, (slideUsed / 200) * 100)}%`; // Use 200 as visual reference
+    }
+
+    // Update plan features
+    function updatePlanFeatures() {
+      const features = currentUser.available_features || [];
+      const includedFeaturesDiv = document.getElementById('includedFeatures');
+      
+      const featureLabels = {
+        'basic_conversion': 'PowerPoint to Course Conversion',
+        'neural2_voices': 'Google Neural2 AI Voices',
+        'chirp3_voices': 'Google Chirp3 HD Voices (30 voices)',
+        'course_sharing': 'Course Sharing & Publishing',
+        'analytics': 'Course Analytics & Tracking',
+        'white_label': 'White-label Branding',
+        'team_seats': 'Team Collaboration'
+      };
+
+      includedFeaturesDiv.innerHTML = features.map(feature => 
+        `<div class="flex items-center gap-2">
+          <span class="text-green-400">✓</span>
+          <span class="text-sm text-slate-300">${featureLabels[feature] || feature}</span>
+        </div>`
+      ).join('');
+
+      // Update available voices
+      const voicesDiv = document.getElementById('availableVoices');
+      if (features.includes('neural2_voices') && features.includes('chirp3_voices')) {
+        voicesDiv.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span class="text-sm text-slate-300">8 Neural2 Voices</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span class="text-sm text-slate-300">30 Chirp3 HD Voices</span>
+          </div>
+        `;
+      } else if (features.includes('neural2_voices')) {
+        voicesDiv.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">✓</span>
+            <span class="text-sm text-slate-300">8 Neural2 Voices</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">✕</span>
+            <span class="text-sm text-slate-500">30 Chirp3 HD Voices</span>
+          </div>
+        `;
+      } else {
+        voicesDiv.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">✕</span>
+            <span class="text-sm text-slate-500">No AI voices included</span>
+          </div>
+        `;
+      }
+    }
+
+    // Update usage history table
+    function updateUsageHistory(history) {
+      const tbody = document.getElementById('usageHistory');
+      
+      if (!history || history.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-center py-8 text-slate-400">No usage history available</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = history.map(month => `
+        <tr class="border-b border-white/5">
+          <td class="py-3 text-sm text-white">${formatMonth(month.month)}</td>
+          <td class="py-3 text-sm text-slate-300 text-right">${month.courses_created || 0}</td>
+          <td class="py-3 text-sm text-slate-300 text-right">${(month.characters_used || 0).toLocaleString()}</td>
+          <td class="py-3 text-sm text-slate-300 text-right">${month.slides_created || 0}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Format month string
+    function formatMonth(monthStr) {
+      const date = new Date(monthStr + '-01');
+      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="universal-header.js"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .course-card {
+      transition: all 0.2s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .course-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+    .usage-bar {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .usage-fill {
+      background: linear-gradient(90deg, #06b6d4, #3b82f6);
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .fullscreen-course {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Course preview formatting */
+    .course-preview h1, .course-preview h2, .course-preview h3, .course-preview h4, .course-preview h5, .course-preview h6 {
+      font-weight: bold;
+      margin: 0;
+    }
+    .course-preview p {
+      margin: 0;
+    }
+    .course-preview ul, .course-preview ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .course-preview li {
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Universal Header will be inserted here by universal-header.js -->
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Welcome Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">Welcome back, <span id="userName">User</span>!</h1>
+      <p class="mt-2 text-slate-400">Create professional courses from your PowerPoint presentations with AI narration and interactive elements.</p>
+    </div>
+
+    <!-- Free Plan Upgrade Banner -->
+    <div id="freePlanBanner" class="hidden mb-8 rounded-2xl border border-yellow-400/40 bg-yellow-500/5 p-6">
+      <div class="flex items-start justify-between">
+        <div class="flex items-start gap-4">
+          <div class="text-2xl">🚀</div>
+          <div>
+            <h3 class="text-lg font-semibold text-yellow-300 mb-2">You're on the Free Plan</h3>
+            <p class="text-slate-300 mb-4">You can create 1 course with basic features. Upgrade to unlock unlimited courses, AI narration, and advanced features.</p>
+            <div class="flex items-center gap-4">
+              <a href="/plans.html" class="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+                View Plans
+              </a>
+              <a href="/upgrade.html" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">
+                Upgrade Now
+              </a>
+            </div>
+          </div>
+        </div>
+        <button id="dismissBanner" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <button id="btnCreateCourse" class="rounded-2xl border border-cyan-400/40 bg-cyan-500/5 p-6 text-left hover:bg-cyan-500/10 transition-colors">
+        <div class="text-cyan-300 text-2xl mb-2">📤</div>
+        <h3 class="font-semibold text-white">Create New Course</h3>
+        <p class="text-sm text-slate-300 mt-1">Upload PowerPoint to get started</p>
+      </button>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-green-300 text-2xl mb-2">📊</div>
+        <h3 class="font-semibold text-white">Your Courses</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="courseCount">0</span> courses created</p>
+      </div>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-purple-300 text-2xl mb-2">🎤</div>
+        <h3 class="font-semibold text-white">AI Characters</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="characterCount">0</span> used this month</p>
+      </div>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-orange-300 text-2xl mb-2">👥</div>
+        <h3 class="font-semibold text-white">Course Views</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="viewCount">0</span> total views</p>
+      </div>
+    </div>
+
+    <!-- Usage Stats -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-4">Usage This Month</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-slate-300">Courses Created</span>
+            <span class="text-sm font-medium" id="usageCourses">2 / 10</span>
+          </div>
+          <div class="usage-bar h-2">
+            <div class="usage-fill" id="courseUsageFill" style="width: 20%"></div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-slate-300">TTS Characters</span>
+            <span class="text-sm font-medium" id="usageCharacters">15,420 / 100,000</span>
+          </div>
+          <div class="usage-bar h-2">
+            <div class="usage-fill" id="characterUsageFill" style="width: 15%"></div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-slate-300">Interactive Slides</span>
+            <span class="text-sm font-medium" id="usageInteractive">5 / 50</span>
+          </div>
+          <div class="usage-bar h-2">
+            <div class="usage-fill" id="interactiveUsageFill" style="width: 10%"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-4 flex items-center gap-4">
+        <span class="text-xs text-slate-400">Resets monthly</span>
+        <a href="/upgrade.html" class="text-xs text-cyan-400 hover:text-cyan-300">Upgrade Plan →</a>
+      </div>
+    </div>
+
+    <!-- Course Grid -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold">My Courses</h2>
+        <div class="flex items-center gap-3">
+          <select id="filterStatus" class="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-sm">
+            <option value="all">All Courses</option>
+            <option value="draft">Drafts</option>
+            <option value="published">Published</option>
+            <option value="archived">Archived</option>
+          </select>
+          <button id="btnCreateCourse2" class="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+            + New Course
+          </button>
+        </div>
+      </div>
+      
+      <div id="coursesGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Courses will be loaded here -->
+      </div>
+      
+      <div id="coursesEmpty" class="hidden text-center py-12">
+        <div class="text-6xl mb-4">📚</div>
+        <h3 class="text-lg font-semibold mb-2">No courses yet</h3>
+        <p class="text-slate-400 mb-4">Upload your first PowerPoint to create a course</p>
+        <button id="btnCreateFirst" class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400">
+          Create Your First Course
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+      <div id="recentActivity" class="space-y-3">
+        <!-- Activity items will be loaded here -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Create Course Modal -->
+  <div id="createCourseModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-md">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">Create New Course</h3>
+          <button id="btnCloseModal" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        
+        <form id="createCourseForm" class="space-y-4">
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Course Title</label>
+            <input id="courseTitle" type="text" required 
+                   class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-sm" 
+                   placeholder="e.g., Introduction to Marketing">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">Description (optional)</label>
+            <textarea id="courseDescription" 
+                      class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-sm h-20" 
+                      placeholder="Brief description of your course..."></textarea>
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-2">PowerPoint File</label>
+            <input id="coursePPT" type="file" accept=".ppt,.pptx" required
+                   class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-sm">
+            <p class="text-xs text-slate-400 mt-1">Maximum 200MB, .ppt or .pptx format</p>
+          </div>
+          
+          <div class="flex gap-3 pt-4">
+            <button type="button" id="btnCancelCreate" 
+                    class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 font-medium hover:bg-white/10">
+              Cancel
+            </button>
+            <button type="submit" id="btnSubmitCreate"
+                    class="flex-1 rounded-xl bg-cyan-500 px-4 py-2 font-medium text-slate-900 hover:bg-cyan-400">
+              Create Course
+            </button>
+          </div>
+        </form>
+        
+        <div id="createProgress" class="hidden mt-4">
+          <div class="text-sm text-cyan-400 mb-2">Creating your course...</div>
+          <div class="w-full bg-slate-700 rounded-full h-2">
+            <div id="createProgressBar" class="bg-cyan-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <div id="createStatus" class="text-xs text-slate-400 mt-2">Uploading presentation...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Editor Modal -->
+  <div id="courseEditorModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-lg font-semibold" id="editorCourseTitle">Course Editor</h3>
+            <p class="text-sm text-slate-400" id="editorCourseSlides">0 slides</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btnAddInteractiveSlide" class="rounded-xl bg-purple-500 px-4 py-2 text-sm font-medium text-white hover:bg-purple-400">
+              ⚡ Add Interactive Slide
+            </button>
+            <button id="btnPreviewCourse" class="rounded-xl bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-400">
+              🎬 Preview Course
+            </button>
+            <button id="btnPublishCourse" class="rounded-xl bg-green-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-green-400">
+              Publish Course
+            </button>
+            <button id="btnCloseEditor" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+        </div>
+        
+        <div class="grid gap-6 md:grid-cols-2">
+          <!-- Slides Panel -->
+          <div>
+            <h4 class="font-medium mb-3">Course Slides</h4>
+            <div id="editorSlides" class="space-y-3 max-h-96 overflow-y-auto">
+              <!-- Slides will be loaded here -->
+            </div>
+          </div>
+          
+          <!-- Narration Panel -->
+          <div>
+            <h4 class="font-medium mb-3">Add Narration</h4>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm text-slate-300 mb-2">Selected Slide</label>
+                <div id="selectedSlidePreview" class="w-full h-32 bg-slate-900 rounded-lg border border-white/10 flex items-center justify-center text-slate-400">
+                  Select a slide to add narration
+                </div>
+              </div>
+              
+              <!-- Voice Quality Selection -->
+              <div>
+                <label class="block text-sm text-slate-300 mb-2">Voice Quality</label>
+                <select id="editorVoiceTier" class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm">
+                  <!-- Options will be populated based on user plan -->
+                </select>
+                <div id="tierDescription" class="text-xs text-slate-400 mt-1"></div>
+              </div>
+              
+              <!-- Language Selection -->
+              <div id="languageSection">
+                <label class="block text-sm text-slate-300 mb-2">Language</label>
+                <select id="editorLanguage" class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm">
+                  <!-- Languages will be populated based on selected tier -->
+                </select>
+              </div>
+              
+              <!-- Voice Selection -->
+              <div id="voiceSection">
+                <label class="block text-sm text-slate-300 mb-2">Voice</label>
+                <select id="editorVoice" class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm">
+                  <!-- Voices will be populated based on language and tier -->
+                </select>
+              </div>
+              
+              <!-- Speed -->
+              <div>
+                <label class="block text-sm text-slate-300 mb-2">Speed</label>
+                <select id="editorSpeed" class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm">
+                  <option value="0.75">0.75x (Slow)</option>
+                  <option value="1.0" selected>1.0x (Normal)</option>
+                  <option value="1.25">1.25x (Fast)</option>
+                  <option value="1.5">1.5x (Faster)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-slate-300 mb-2">Narration Text</label>
+                <textarea id="editorNarration" 
+                          class="w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-sm h-32" 
+                          placeholder="Enter the text you want to be spoken for this slide..."></textarea>
+                <div class="flex items-center justify-between mt-1">
+                  <span class="text-xs text-slate-500"><span id="narrationCount">0</span> characters</span>
+                  <div class="flex items-center gap-2">
+                    <button id="btnGenerateNarration" class="px-3 py-1 text-xs bg-cyan-500 text-slate-900 rounded hover:bg-cyan-400">
+                      🎧 Preview Audio
+                    </button>
+                    <button id="btnSaveNarration" class="px-3 py-1 text-xs bg-green-500 text-slate-900 rounded hover:bg-green-400">
+                      ✅ Save to Slide
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="narrationResult" class="hidden mt-3">
+                <div class="bg-slate-800/60 rounded-lg p-3 border border-cyan-400/40">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="text-cyan-400 text-sm">🎧 Audio Preview</span>
+                    <span class="text-xs text-slate-400">Audio ready for testing</span>
+                  </div>
+                  <audio id="narrationPlayer" class="w-full" controls></audio>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Screen Course Viewer -->
+  <div id="courseViewer" class="hidden fullscreen-course">
+    <!-- Course Header with Progress -->
+    <div class="bg-slate-800/90 border-b border-white/10 p-4 shadow-lg">
+      <div class="flex items-center justify-between max-w-6xl mx-auto">
+        <div class="flex items-center gap-6">
+          <div>
+            <h1 class="text-xl font-semibold text-white" id="courseViewerTitle">Course Preview</h1>
+            <div class="text-sm text-slate-300 mt-1">Student Experience Preview</div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex flex-col">
+              <div class="text-xs text-slate-400 mb-1">Course Progress</div>
+              <div class="w-64 h-3 bg-slate-700 rounded-full overflow-hidden">
+                <div id="courseProgress" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500" style="width: 20%"></div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="text-sm font-medium text-white" id="courseProgressText">Slide 1 of 5</div>
+              <div class="text-xs text-slate-400" id="courseProgressPercent">20% Complete</div>
+            </div>
+          </div>
+        </div>
+        <button id="btnExitCourse" class="rounded-xl bg-slate-700 px-4 py-2 text-sm hover:bg-slate-600 text-white">✕ Exit Preview</button>
+      </div>
+    </div>
+
+    <!-- Main Course Content -->
+    <div class="flex-1 flex items-center justify-center p-8 bg-slate-900">
+      <div class="max-w-4xl w-full">
+        <div id="courseSlideContainer" class="bg-white rounded-xl shadow-2xl overflow-hidden mb-6">
+          <div id="courseSlideContent" class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+            Loading course...
+          </div>
+        </div>
+        
+        <!-- Course Controls -->
+        <div class="bg-slate-800/60 rounded-xl border border-white/10 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <button id="btnCoursePrev" class="rounded-xl bg-slate-700 px-6 py-3 text-sm font-medium text-white hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              ← Previous Slide
+            </button>
+            
+            <div class="flex items-center gap-4">
+              <button id="btnCoursePlay" class="rounded-xl bg-green-500 px-6 py-3 text-sm font-medium text-slate-900 hover:bg-green-400 flex items-center gap-2">
+                <span id="playIcon">▶</span> Play Audio
+              </button>
+              <div class="text-center">
+                <div class="text-xs text-slate-400">Press SPACEBAR to play/pause</div>
+              </div>
+            </div>
+            
+            <button id="btnCourseNext" class="rounded-xl bg-cyan-500 px-6 py-3 text-sm font-medium text-slate-900 hover:bg-cyan-400">
+              Next Slide →
+            </button>
+          </div>
+          
+          <!-- Audio Status -->
+          <div id="audioStatus" class="text-center text-sm text-slate-400">
+            Click on a slide above and generate audio to test the course player
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let currentUser = null;
+    let userCourses = [];
+    let selectedSlideIndex = null;
+    let currentCourseData = null;
+    let courseSlides = [];
+    let currentSlideIndex = 0;
+    let courseAudio = null;
+    let currentCourseSlides = [];
+
+    // Voice tier configuration
+    const VOICE_TIERS = {
+      free: {
+        available: false,
+        name: "Free Plan",
+        description: "No AI voices included - upgrade to Pro plan"
+      },
+      pro: {
+        available: true,
+        name: "Neural Voices",
+        description: "High-quality Google Neural2 voices"
+      },
+      business: {
+        available: true,
+        name: "Neural + Chirp HD",
+        description: "Neural2 + premium Chirp3 HD voices (30 voices)"
+      }
+    };
+
+    // Available languages for each tier
+    const LANGUAGES = {
+      neural: {
+        'en-US': 'English (United States)',
+        'en-GB': 'English (United Kingdom)', 
+        'en-AU': 'English (Australia)',
+        'es-US': 'Spanish (United States)',
+        'es-ES': 'Spanish (Spain)',
+        'fr-FR': 'French (France)',
+        'de-DE': 'German (Germany)',
+        'it-IT': 'Italian (Italy)',
+        'pt-BR': 'Portuguese (Brazil)',
+        'ja-JP': 'Japanese (Japan)',
+        'ko-KR': 'Korean (South Korea)',
+        'zh-CN': 'Chinese (Mandarin)',
+        'hi-IN': 'Hindi (India)',
+        'ar-XA': 'Arabic (Generic)'
+      },
+      chirp: {
+        'en-US': 'English (United States)',
+        'en-GB': 'English (United Kingdom)',
+        'en-AU': 'English (Australia)',
+        'en-IN': 'English (India)',
+        'es-US': 'Spanish (United States)', 
+        'es-ES': 'Spanish (Spain)',
+        'fr-FR': 'French (France)',
+        'fr-CA': 'French (Canada)',
+        'de-DE': 'German (Germany)',
+        'it-IT': 'Italian (Italy)',
+        'pt-BR': 'Portuguese (Brazil)',
+        'ja-JP': 'Japanese (Japan)',
+        'ko-KR': 'Korean (South Korea)',
+        'zh-CN': 'Chinese (Mandarin)',
+        'hi-IN': 'Hindi (India)',
+        'ar-XA': 'Arabic (Generic)',
+        'ru-RU': 'Russian (Russia)',
+        'tr-TR': 'Turkish (Turkey)',
+        'pl-PL': 'Polish (Poland)',
+        'nl-NL': 'Dutch (Netherlands)',
+        'nl-BE': 'Dutch (Belgium)',
+        'sv-SE': 'Swedish (Sweden)',
+        'da-DK': 'Danish (Denmark)',
+        'nb-NO': 'Norwegian (Bokmål)',
+        'fi-FI': 'Finnish (Finland)',
+        'th-TH': 'Thai (Thailand)',
+        'vi-VN': 'Vietnamese (Vietnam)',
+        'id-ID': 'Indonesian (Indonesia)',
+        'ms-MY': 'Malay (Malaysia)',
+        'bn-IN': 'Bengali (India)',
+        'gu-IN': 'Gujarati (India)',
+        'kn-IN': 'Kannada (India)',
+        'ml-IN': 'Malayalam (India)',
+        'mr-IN': 'Marathi (India)',
+        'ta-IN': 'Tamil (India)',
+        'te-IN': 'Telugu (India)',
+        'ur-IN': 'Urdu (India)',
+        'uk-UA': 'Ukrainian (Ukraine)',
+        'cs-CZ': 'Czech (Czech Republic)',
+        'sk-SK': 'Slovak (Slovakia)',
+        'hu-HU': 'Hungarian (Hungary)',
+        'ro-RO': 'Romanian (Romania)',
+        'bg-BG': 'Bulgarian (Bulgaria)',
+        'hr-HR': 'Croatian (Croatia)',
+        'sr-RS': 'Serbian (Serbia)',
+        'sl-SI': 'Slovenian (Slovenia)',
+        'et-EE': 'Estonian (Estonia)',
+        'lv-LV': 'Latvian (Latvia)',
+        'lt-LT': 'Lithuanian (Lithuania)',
+        'mt-MT': 'Maltese (Malta)',
+        'is-IS': 'Icelandic (Iceland)',
+        'ga-IE': 'Irish (Ireland)',
+        'cy-GB': 'Welsh (Wales)',
+        'eu-ES': 'Basque (Spain)',
+        'ca-ES': 'Catalan (Spain)',
+        'gl-ES': 'Galician (Spain)',
+        'pt-PT': 'Portuguese (Portugal)',
+        'sw-KE': 'Swahili (Kenya)',
+        'af-ZA': 'Afrikaans (South Africa)',
+        'zu-ZA': 'Zulu (South Africa)',
+        'xh-ZA': 'Xhosa (South Africa)',
+        'he-IL': 'Hebrew (Israel)',
+        'fa-IR': 'Persian (Iran)',
+        'ur-PK': 'Urdu (Pakistan)',
+        'ne-NP': 'Nepali (Nepal)',
+        'si-LK': 'Sinhala (Sri Lanka)',
+        'my-MM': 'Myanmar (Burmese)',
+        'km-KH': 'Khmer (Cambodia)',
+        'lo-LA': 'Lao (Laos)',
+        'ka-GE': 'Georgian (Georgia)',
+        'hy-AM': 'Armenian (Armenia)',
+        'az-AZ': 'Azerbaijani (Azerbaijan)',
+        'kk-KZ': 'Kazakh (Kazakhstan)',
+        'ky-KG': 'Kyrgyz (Kyrgyzstan)',
+        'uz-UZ': 'Uzbek (Uzbekistan)',
+        'tg-TJ': 'Tajik (Tajikistan)',
+        'mn-MN': 'Mongolian (Mongolia)',
+        'bo-CN': 'Tibetan (China)',
+        'ug-CN': 'Uyghur (China)',
+        'am-ET': 'Amharic (Ethiopia)',
+        'ti-ET': 'Tigrinya (Ethiopia)',
+        'om-ET': 'Oromo (Ethiopia)',
+        'so-SO': 'Somali (Somalia)',
+        'rw-RW': 'Kinyarwanda (Rwanda)',
+        'ny-MW': 'Chichewa (Malawi)',
+        'sn-ZW': 'Shona (Zimbabwe)',
+        'st-ZA': 'Sesotho (South Africa)',
+        'tn-ZA': 'Setswana (South Africa)',
+        'ts-ZA': 'Xitsonga (South Africa)',
+        've-ZA': 'Tshivenda (South Africa)',
+        'ss-ZA': 'Siswati (South Africa)',
+        'nr-ZA': 'Ndebele (South Africa)',
+        'lg-UG': 'Luganda (Uganda)',
+        'ak-GH': 'Akan (Ghana)',
+        'tw-GH': 'Twi (Ghana)',
+        'ee-GH': 'Ewe (Ghana)',
+        'ha-NG': 'Hausa (Nigeria)',
+        'ig-NG': 'Igbo (Nigeria)',
+        'yo-NG': 'Yoruba (Nigeria)',
+        'ff-SN': 'Fulah (Senegal)',
+        'wo-SN': 'Wolof (Senegal)',
+        'bm-ML': 'Bambara (Mali)',
+        'sg-CF': 'Sango (Central African Republic)',
+        'ln-CD': 'Lingala (Democratic Republic of Congo)',
+        'ki-KE': 'Kikuyu (Kenya)',
+        'luo-KE': 'Luo (Kenya)',
+        'mas-KE': 'Maasai (Kenya)',
+        'mer-KE': 'Meru (Kenya)',
+        'kln-KE': 'Kalenjin (Kenya)'
+      }
+    };
+
+    // Neural2 voices by language
+    const NEURAL_VOICES = {
+      'en-US': [
+        { id: 'en-US-Neural2-A', name: 'Neural2-A', gender: 'Male' },
+        { id: 'en-US-Neural2-C', name: 'Neural2-C', gender: 'Female' },
+        { id: 'en-US-Neural2-D', name: 'Neural2-D', gender: 'Male' },
+        { id: 'en-US-Neural2-F', name: 'Neural2-F', gender: 'Female' }
+      ],
+      'en-GB': [
+        { id: 'en-GB-Neural2-A', name: 'Neural2-A', gender: 'Female' },
+        { id: 'en-GB-Neural2-B', name: 'Neural2-B', gender: 'Male' }
+      ],
+      'en-AU': [
+        { id: 'en-AU-Neural2-A', name: 'Neural2-A', gender: 'Female' },
+        { id: 'en-AU-Neural2-B', name: 'Neural2-B', gender: 'Male' }
+      ]
+      // More languages can be added as needed
+    };
+
+    // Chirp3 voices (same voices available for all languages)
+    const CHIRP_VOICES = [
+      { name: 'Achernar', gender: 'Female' },
+      { name: 'Achird', gender: 'Male' },
+      { name: 'Algenib', gender: 'Male' },
+      { name: 'Algieba', gender: 'Male' },
+      { name: 'Alnilam', gender: 'Male' },
+      { name: 'Aoede', gender: 'Female' },
+      { name: 'Autonoe', gender: 'Female' },
+      { name: 'Callirrhoe', gender: 'Female' },
+      { name: 'Charon', gender: 'Male' },
+      { name: 'Despina', gender: 'Female' },
+      { name: 'Enceladus', gender: 'Male' },
+      { name: 'Erinome', gender: 'Female' },
+      { name: 'Fenrir', gender: 'Male' },
+      { name: 'Gacrux', gender: 'Female' },
+      { name: 'Iapetus', gender: 'Male' },
+      { name: 'Kore', gender: 'Female' },
+      { name: 'Laomedeia', gender: 'Female' },
+      { name: 'Leda', gender: 'Female' },
+      { name: 'Orus', gender: 'Male' },
+      { name: 'Pulcherrima', gender: 'Female' },
+      { name: 'Puck', gender: 'Male' },
+      { name: 'Rasalgethi', gender: 'Male' },
+      { name: 'Sadachbia', gender: 'Male' },
+      { name: 'Sadaltager', gender: 'Male' },
+      { name: 'Schedar', gender: 'Male' },
+      { name: 'Sulafat', gender: 'Female' },
+      { name: 'Umbriel', gender: 'Male' },
+      { name: 'Vindemiatrix', gender: 'Female' },
+      { name: 'Zephyr', gender: 'Female' },
+      { name: 'Zubenelgenubi', gender: 'Male' }
+    ];
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadDashboardData();
+      setupEventListeners();
+    });
+
+    // Event listeners
+    function setupEventListeners() {
+      // Navigation
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      
+      // Create course buttons
+      document.getElementById('btnCreateCourse').addEventListener('click', showCreateModal);
+      document.getElementById('btnCreateCourse2').addEventListener('click', showCreateModal);
+      document.getElementById('btnCreateFirst').addEventListener('click', showCreateModal);
+      
+      // Modal controls
+      document.getElementById('btnCloseModal').addEventListener('click', hideCreateModal);
+      document.getElementById('btnCancelCreate').addEventListener('click', hideCreateModal);
+      document.getElementById('createCourseForm').addEventListener('submit', handleCreateCourse);
+      
+      // Editor controls
+      document.getElementById('btnCloseEditor').addEventListener('click', hideEditorModal);
+      document.getElementById('btnGenerateNarration').addEventListener('click', generateNarration);
+      document.getElementById('btnSaveNarration').addEventListener('click', saveNarration);
+      document.getElementById('btnPublishCourse').addEventListener('click', publishCourse);
+      document.getElementById('btnPreviewCourse').addEventListener('click', previewCurrentCourse);
+      
+      // Interactive slide controls - REDIRECT TO COURSE BUILDER
+      document.getElementById('btnAddInteractiveSlide').addEventListener('click', openCourseBuilder);
+      
+      // Voice selection change handlers
+      document.getElementById('editorVoiceTier').addEventListener('change', onVoiceTierChange);
+      document.getElementById('editorLanguage').addEventListener('change', onLanguageChange);
+      
+      // Course viewer controls
+      document.getElementById('btnExitCourse').addEventListener('click', hideCourseViewer);
+      document.getElementById('btnCoursePrev').addEventListener('click', () => {
+        if (currentSlideIndex > 0) {
+          currentSlideIndex--;
+          updateCourseDisplay();
+        }
+      });
+      document.getElementById('btnCourseNext').addEventListener('click', () => {
+        if (currentSlideIndex < currentCourseSlides.length - 1) {
+          currentSlideIndex++;
+          updateCourseDisplay();
+        }
+      });
+      document.getElementById('btnCoursePlay').addEventListener('click', () => {
+        if (courseAudio) {
+          if (courseAudio.paused) {
+            courseAudio.play();
+            document.getElementById('playIcon').textContent = '⏸';
+          } else {
+            courseAudio.pause();
+            document.getElementById('playIcon').textContent = '▶';
+          }
+        } else {
+          alert('No audio available for this slide. Add narration in the editor first.');
+        }
+      });
+      
+      // Character counter
+      document.getElementById('editorNarration').addEventListener('input', updateCharacterCount);
+      
+      // Filter
+      document.getElementById('filterStatus').addEventListener('change', filterCourses);
+      
+      // Banner dismiss
+      const dismissBtn = document.getElementById('dismissBanner');
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          document.getElementById('freePlanBanner').classList.add('hidden');
+          localStorage.setItem('bannerDismissed', 'true');
+        });
+      }
+      
+      // Keyboard controls for course viewer
+      document.addEventListener('keydown', (e) => {
+        if (!document.getElementById('courseViewer').classList.contains('hidden')) {
+          if (e.code === 'Space' && courseAudio && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') {
+            e.preventDefault();
+            document.getElementById('btnCoursePlay').click();
+          } else if (e.code === 'Escape') {
+            hideCourseViewer();
+          } else if (e.code === 'ArrowLeft') {
+            document.getElementById('btnCoursePrev').click();
+          } else if (e.code === 'ArrowRight') {
+            document.getElementById('btnCourseNext').click();
+          }
+        }
+      });
+    }
+
+    // NEW FUNCTION: Open course builder instead of inline interactive slide creation
+    function openCourseBuilder() {
+      if (!currentCourseData) {
+        alert('Please select a course first');
+        return;
+      }
+      
+      // Check if user has access to interactive slides
+      if (!currentUser || currentUser.planType === 'free') {
+        alert('Interactive slides require a Pro or Business plan. Please upgrade to access this feature.');
+        return;
+      }
+      
+      // Redirect to course builder with course ID
+      window.location.href = `/course-builder.html?courseId=${currentCourseData.id}`;
+    }
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+          populateVoiceOptions(); // Populate voice options based on plan
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Populate voice options based on user plan
+    function populateVoiceOptions() {
+      if (!currentUser) return;
+      
+      const tierSelect = document.getElementById('editorVoiceTier');
+      const tierDescription = document.getElementById('tierDescription');
+      
+      tierSelect.innerHTML = '';
+      
+      if (currentUser.planType === 'free') {
+        tierSelect.innerHTML = '<option value="">No voices available</option>';
+        tierSelect.disabled = true;
+        tierDescription.textContent = 'Upgrade to Pro plan to access AI voices';
+        
+        // Disable other selects
+        document.getElementById('editorLanguage').disabled = true;
+        document.getElementById('editorVoice').disabled = true;
+        return;
+      }
+      
+      // Enable selects
+      tierSelect.disabled = false;
+      document.getElementById('editorLanguage').disabled = false;
+      document.getElementById('editorVoice').disabled = false;
+      
+      // Add Neural voices option (available for Pro and Business)
+      const neuralOption = document.createElement('option');
+      neuralOption.value = 'neural';
+      neuralOption.textContent = 'Neural Voices (High Quality)';
+      tierSelect.appendChild(neuralOption);
+      
+      // Add Chirp option (only for Business)
+      if (currentUser.planType === 'business') {
+        const chirpOption = document.createElement('option');
+        chirpOption.value = 'chirp';
+        chirpOption.textContent = 'Chirp HD Voices (Premium)';
+        tierSelect.appendChild(chirpOption);
+      }
+      
+      // Set default selection
+      tierSelect.value = 'neural';
+      populateLanguages();
+    }
+
+    // Voice tier change handler
+    function onVoiceTierChange() {
+      const tier = document.getElementById('editorVoiceTier').value;
+      const tierDescription = document.getElementById('tierDescription');
+      
+      if (tier === 'neural') {
+        tierDescription.textContent = 'High-quality Google Neural2 voices';
+      } else if (tier === 'chirp') {
+        tierDescription.textContent = 'Premium Chirp3 HD voices with enhanced natural sound';
+      }
+      
+      populateLanguages();
+    }
+
+    // Populate languages based on selected tier
+    function populateLanguages() {
+      const tier = document.getElementById('editorVoiceTier').value;
+      const languageSelect = document.getElementById('editorLanguage');
+      
+      languageSelect.innerHTML = '';
+      
+      if (!tier) return;
+      
+      const languages = LANGUAGES[tier] || {};
+      
+      Object.entries(languages).forEach(([code, name]) => {
+        const option = document.createElement('option');
+        option.value = code;
+        option.textContent = name;
+        languageSelect.appendChild(option);
+      });
+      
+      // Set default to English US
+      languageSelect.value = 'en-US';
+      populateVoices();
+    }
+
+    // Language change handler
+    function onLanguageChange() {
+      populateVoices();
+    }
+
+    // Populate voices based on tier and language
+    function populateVoices() {
+      const tier = document.getElementById('editorVoiceTier').value;
+      const language = document.getElementById('editorLanguage').value;
+      const voiceSelect = document.getElementById('editorVoice');
+      
+      voiceSelect.innerHTML = '';
+      
+      if (!tier || !language) return;
+      
+      if (tier === 'neural') {
+        // Neural voices - language specific
+        const voices = NEURAL_VOICES[language] || [];
+        voices.forEach(voice => {
+          const option = document.createElement('option');
+          option.value = voice.id;
+          option.textContent = `${voice.name} (${voice.gender})`;
+          voiceSelect.appendChild(option);
+        });
+        
+        // If no specific voices for this language, show a default message
+        if (voices.length === 0) {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'No Neural voices available for this language';
+          voiceSelect.appendChild(option);
+        }
+      } else if (tier === 'chirp') {
+        // Chirp voices - available for all languages
+        CHIRP_VOICES.forEach(voice => {
+          const option = document.createElement('option');
+          option.value = `Chirp3-HD:${language}:${voice.name}`;
+          option.textContent = `${voice.name} (${voice.gender}) • Chirp3 HD`;
+          voiceSelect.appendChild(option);
+        });
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userName').textContent = currentUser.name || 'User';
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      // Update plan badge color
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+
+      // Show upgrade banner for free users
+      if (currentUser.planType === 'free') {
+        const banner = document.getElementById('freePlanBanner');
+        if (banner && !localStorage.getItem('bannerDismissed')) {
+          banner.classList.remove('hidden');
+        }
+      }
+    }
+
+    // Load dashboard data
+    async function loadDashboardData() {
+      try {
+        const [coursesResponse, usageResponse] = await Promise.all([
+          fetch('/api/user/courses', { credentials: 'include' }),
+          fetch('/api/user/usage', { credentials: 'include' })
+        ]);
+        
+        if (coursesResponse.ok) {
+          userCourses = await coursesResponse.json();
+          updateCoursesDisplay();
+        }
+        
+        if (usageResponse.ok) {
+          const usage = await usageResponse.json();
+          updateUsageDisplay(usage);
+        }
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      }
+    }
+
+    // Update courses display
+    function updateCoursesDisplay() {
+      const grid = document.getElementById('coursesGrid');
+      const empty = document.getElementById('coursesEmpty');
+      
+      document.getElementById('courseCount').textContent = userCourses.length;
+      
+      if (userCourses.length === 0) {
+        grid.style.display = 'none';
+        empty.classList.remove('hidden');
+        return;
+      }
+      
+      empty.classList.add('hidden');
+      grid.style.display = 'grid';
+      
+      grid.innerHTML = userCourses.map(course => createCourseCard(course)).join('');
+      
+      // Add click listeners
+      userCourses.forEach(course => {
+        const card = document.getElementById(`course-${course.id}`);
+        if (card) {
+          card.addEventListener('click', () => openCourseEditor(course));
+        }
+      });
+    }
+
+    // Create course card HTML
+    function createCourseCard(course) {
+      const statusColor = {
+        draft: 'text-yellow-400 bg-yellow-500/20',
+        published: 'text-green-400 bg-green-500/20',
+        archived: 'text-gray-400 bg-gray-500/20'
+      }[course.status] || 'text-slate-400 bg-slate-500/20';
+      
+      const lastUpdated = new Date(course.updated_at).toLocaleDateString();
+      
+      return `
+        <div id="course-${course.id}" class="course-card rounded-2xl p-6 cursor-pointer">
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="font-semibold text-white line-clamp-2">${course.title}</h3>
+            <span class="badge ${statusColor}">${course.status}</span>
+          </div>
+          
+          <p class="text-sm text-slate-300 mb-4 line-clamp-2">${course.description || 'No description'}</p>
+          
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>${course.actual_slide_count || 0} slides</span>
+            <span>Updated ${lastUpdated}</span>
+          </div>
+          
+          <div class="mt-4 flex items-center gap-2">
+            <button class="text-xs text-cyan-400 hover:text-cyan-300">Edit</button>
+            <span class="text-slate-600">•</span>
+            <button class="text-xs text-slate-400 hover:text-slate-300">Preview</button>
+            <span class="text-slate-600">•</span>
+            <button class="text-xs text-slate-400 hover:text-slate-300">Share</button>
+          </div>
+        </div>
+      `;
+    }
+
+// Update usage display
+function updateUsageDisplay(usage) {
+  if (!usage || !currentUser) return;
+  
+  const limits = currentUser.limits || {};
+  
+  // Courses
+  const courseUsed = usage.courses_created || 0;
+  const courseLimit = limits.max_courses;
+  
+  if (courseLimit === -1) {
+    document.getElementById('usageCourses').textContent = `${courseUsed} / Unlimited`;
+    document.getElementById('courseUsageFill').style.width = '0%';
+  } else {
+    document.getElementById('usageCourses').textContent = `${courseUsed} / ${courseLimit}`;
+    const coursePercent = courseLimit > 0 ? (courseUsed / courseLimit) * 100 : 0;
+    document.getElementById('courseUsageFill').style.width = `${Math.min(100, coursePercent)}%`;
+  }
+  
+  // Characters
+  const charUsed = usage.characters_used || 0;
+  const charLimit = limits.max_characters_per_month;
+  
+  if (charLimit === -1) {
+    document.getElementById('usageCharacters').textContent = `${charUsed.toLocaleString()} / Unlimited`;
+    document.getElementById('characterUsageFill').style.width = '0%';
+  } else {
+    document.getElementById('usageCharacters').textContent = `${charUsed.toLocaleString()} / ${charLimit.toLocaleString()}`;
+    const charPercent = charLimit > 0 ? (charUsed / charLimit) * 100 : 0;
+    document.getElementById('characterUsageFill').style.width = `${Math.min(100, charPercent)}%`;
+  }
+  
+  // Interactive slides
+  const interactiveUsed = usage.interactive_slides_created || 0;
+  const interactiveLimit = limits.max_interactive_slides;
+  
+  if (interactiveLimit === -1) {
+    document.getElementById('usageInteractive').textContent = `${interactiveUsed} / Unlimited`;
+    document.getElementById('interactiveUsageFill').style.width = '0%';
+  } else {
+    document.getElementById('usageInteractive').textContent = `${interactiveUsed} / ${interactiveLimit}`;
+    const interactivePercent = interactiveLimit > 0 ? (interactiveUsed / interactiveLimit) * 100 : 0;
+    document.getElementById('interactiveUsageFill').style.width = `${Math.min(100, interactivePercent)}%`;
+  }
+  
+  // Update stats counters
+  document.getElementById('characterCount').textContent = charUsed.toLocaleString();
+  document.getElementById('courseCount').textContent = userCourses.length; // Use actual courses array length
+}
+
+    // Modal functions
+    function showCreateModal() {
+      document.getElementById('createCourseModal').classList.remove('hidden');
+    }
+
+    function hideCreateModal() {
+      document.getElementById('createCourseModal').classList.add('hidden');
+      document.getElementById('createCourseForm').reset();
+      document.getElementById('createProgress').classList.add('hidden');
+    }
+
+    function showEditorModal() {
+      document.getElementById('courseEditorModal').classList.remove('hidden');
+    }
+
+    function hideEditorModal() {
+      document.getElementById('courseEditorModal').classList.add('hidden');
+      currentCourseData = null;
+      selectedSlideIndex = null;
+    }
+
+    function showCourseViewer() {
+      document.getElementById('courseViewer').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideCourseViewer() {
+      document.getElementById('courseViewer').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+      if (courseAudio) {
+        courseAudio.pause();
+        courseAudio = null;
+      }
+    }
+
+    // Create course handler
+    async function handleCreateCourse(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const formData = new FormData();
+      
+      formData.append('title', form.courseTitle.value);
+      formData.append('description', form.courseDescription.value);
+      formData.append('ppt', form.coursePPT.files[0]);
+      
+      // Show progress
+      form.style.display = 'none';
+      document.getElementById('createProgress').classList.remove('hidden');
+      
+      try {
+        updateProgress(20, 'Creating course...');
+        
+        const response = await fetch('/api/user/create-course', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+        
+        updateProgress(50, 'Converting PowerPoint...');
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create course');
+        }
+        
+        const result = await response.json();
+        updateProgress(100, 'Course created successfully!');
+        
+        setTimeout(() => {
+          hideCreateModal();
+          loadDashboardData(); // Refresh data
+        }, 1000);
+        
+      } catch (error) {
+        console.error('Create course error:', error);
+        alert('Failed to create course: ' + error.message);
+        form.style.display = 'block';
+        document.getElementById('createProgress').classList.add('hidden');
+      }
+    }
+
+    function updateProgress(percent, status) {
+      document.getElementById('createProgressBar').style.width = `${percent}%`;
+      document.getElementById('createStatus').textContent = status;
+    }
+
+    // Course editor
+    function openCourseEditor(course) {
+      currentCourseData = course;
+      document.getElementById('editorCourseTitle').textContent = course.title;
+      document.getElementById('editorCourseSlides').textContent = `${course.actual_slide_count || 0} slides`;
+      
+      loadCourseSlides(course.id);
+      showEditorModal();
+    }
+
+    async function loadCourseSlides(courseId) {
+      try {
+        const response = await fetch(`/api/user/course/${courseId}/slides`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const slides = await response.json();
+          currentCourseSlides = slides;
+          displayEditorSlides(slides);
+        }
+      } catch (error) {
+        console.error('Error loading slides:', error);
+      }
+    }
+
+    function displayEditorSlides(slides) {
+      const container = document.getElementById('editorSlides');
+      
+      container.innerHTML = slides.map((slide, index) => `
+        <div class="editor-slide flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-slate-900/60 cursor-pointer hover:bg-slate-900/80" 
+             data-slide-index="${index}">
+          <img src="${slide.image_url}" alt="Slide ${slide.slide_number}" class="w-16 h-12 object-cover rounded">
+          <div class="flex-1">
+            <div class="font-medium text-sm">Slide ${slide.slide_number}</div>
+            <div class="text-xs text-slate-400 flex items-center gap-2">
+              <span>${slide.slide_type !== 'standard' ? (slide.slide_type === 'hotspot' ? '🎯' : slide.slide_type === 'quiz' ? '❓' : slide.slide_type === 'assessment' ? '📊' : '⚡') : '📄'}</span>
+              <span>${slide.slide_type !== 'standard' ? (slide.slide_type.charAt(0).toUpperCase() + slide.slide_type.slice(1)) : 'Standard'}</span>
+              ${slide.audio_url ? '• 🎤 Has narration' : ''}
+            </div>
+          </div>
+          <div class="text-xs text-slate-500">${index + 1}</div>
+        </div>
+      `).join('');
+      
+      // Add click listeners
+      container.querySelectorAll('.editor-slide').forEach(slideEl => {
+        slideEl.addEventListener('click', () => {
+          const index = parseInt(slideEl.dataset.slideIndex);
+          selectSlide(slides[index], index);
+        });
+      });
+    }
+
+    function selectSlide(slide, index) {
+      selectedSlideIndex = index;
+      
+      // Update selected state
+      document.querySelectorAll('.editor-slide').forEach(el => {
+        el.classList.remove('ring-2', 'ring-cyan-400');
+      });
+      document.querySelector(`[data-slide-index="${index}"]`).classList.add('ring-2', 'ring-cyan-400');
+      
+      // Update preview
+      const preview = document.getElementById('selectedSlidePreview');
+      preview.innerHTML = `<img src="${slide.image_url}" alt="Slide ${slide.slide_number}" class="w-full h-full object-contain rounded">`;
+      
+      // Load existing narration
+      document.getElementById('editorNarration').value = slide.narration_text || '';
+      updateCharacterCount();
+      
+      // Clear any previous audio state
+      window.currentAudioUrl = null;
+      document.getElementById('narrationResult').classList.add('hidden');
+    }
+
+    function updateCharacterCount() {
+      const text = document.getElementById('editorNarration').value;
+      document.getElementById('narrationCount').textContent = text.length;
+    }
+
+    async function generateNarration() {
+      const text = document.getElementById('editorNarration').value.trim();
+      if (!text) {
+        alert('Please enter narration text first');
+        return;
+      }
+      
+      const voice = document.getElementById('editorVoice').value;
+      if (!voice) {
+        alert('Please select a voice first');
+        return;
+      }
+      
+      const speed = parseFloat(document.getElementById('editorSpeed').value);
+      
+      const btn = document.getElementById('btnGenerateNarration');
+      btn.textContent = '🎧 Generating...';
+      btn.disabled = true;
+      
+      try {
+        const response = await fetch('/api/generate-tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ text, voice, speakingRate: speed })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show the audio preview
+          document.getElementById('narrationResult').classList.remove('hidden');
+          document.getElementById('narrationPlayer').src = result.audioUrl;
+          
+          // Store the audio URL globally for saving
+          window.currentAudioUrl = result.audioUrl;
+          
+          // Optional: Auto-play for short audio (under 10 seconds estimated)
+          if (text.length < 500) { // Rough estimate for short audio
+            document.getElementById('narrationPlayer').play().catch(() => {});
+          }
+        } else {
+          alert('Failed to generate audio: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Audio generation error:', error);
+        alert('Failed to generate audio: Connection error');
+      } finally {
+        btn.textContent = '🎧 Preview Audio';
+        btn.disabled = false;
+      }
+    }
+
+    async function saveNarration() {
+      if (selectedSlideIndex === null || !currentCourseData) {
+        alert('Please select a slide first');
+        return;
+      }
+      
+      const text = document.getElementById('editorNarration').value.trim();
+      if (!text) {
+        alert('Please enter narration text first');
+        return;
+      }
+      
+      const saveBtn = document.getElementById('btnSaveNarration');
+      saveBtn.textContent = '💾 Saving...';
+      saveBtn.disabled = true;
+      
+      try {
+        // If audio was previewed, use that. Otherwise generate it now.
+        let audioUrl = window.currentAudioUrl;
+        
+        if (!audioUrl) {
+          // Generate audio on-the-fly for direct save
+          const voice = document.getElementById('editorVoice').value;
+          const speed = parseFloat(document.getElementById('editorSpeed').value);
+          
+          const response = await fetch('/api/generate-tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ text, voice, speakingRate: speed })
+          });
+          
+          const result = await response.json();
+          if (!result.success) {
+            throw new Error(result.error || 'Failed to generate audio');
+          }
+          
+          audioUrl = result.audioUrl;
+          window.currentAudioUrl = audioUrl;
+        }
+        
+        // Save to database
+        const response = await fetch(`/api/user/course/${currentCourseData.id}/slide/${selectedSlideIndex + 1}/narration`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ 
+            narration_text: text,
+            audio_url: audioUrl,
+            voice_settings: {
+              voice: document.getElementById('editorVoice').value,
+              speed: parseFloat(document.getElementById('editorSpeed').value)
+            }
+          })
+        });
+        
+        if (response.ok) {
+          // Success feedback
+          saveBtn.textContent = '✅ Saved!';
+          saveBtn.classList.add('bg-green-600');
+          
+          // Reset after delay
+          setTimeout(() => {
+            saveBtn.classList.remove('bg-green-600');
+            saveBtn.textContent = '✅ Save to Slide';
+          }, 2000);
+          
+          // Refresh slides to show updated status
+          loadCourseSlides(currentCourseData.id);
+          
+          alert('Narration saved successfully! This slide now has audio.');
+        } else {
+          const error = await response.json();
+          alert('Failed to save narration: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Save narration error:', error);
+        alert('Failed to save narration: ' + error.message);
+      } finally {
+        saveBtn.disabled = false;
+        if (saveBtn.textContent === '💾 Saving...') {
+          saveBtn.textContent = '✅ Save to Slide';
+        }
+      }
+    }
+
+    async function publishCourse() {
+      if (!currentCourseData) return;
+      
+      const confirmed = confirm('Are you sure you want to publish this course? It will be visible to students.');
+      if (!confirmed) return;
+      
+      try {
+        const response = await fetch(`/api/user/course/${currentCourseData.id}/publish`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          alert('Course published successfully!');
+          hideEditorModal();
+          loadDashboardData(); // Refresh data
+        } else {
+          const error = await response.json();
+          alert('Failed to publish course: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Publish course error:', error);
+        alert('Failed to publish course');
+      }
+    }
+
+    // Course preview functionality
+    async function previewCurrentCourse() {
+      if (!currentCourseData || !currentCourseSlides.length) {
+        alert('No course data available for preview');
+        return;
+      }
+      
+      // Set up course viewer title
+      document.getElementById('courseViewerTitle').textContent = `Preview: ${currentCourseData.title}`;
+      
+      // Reset course viewer state
+      currentSlideIndex = 0;
+      courseAudio = null;
+      
+      // Hide editor and show course viewer
+      hideEditorModal();
+      showCourseViewer();
+      
+      // Update the course display
+      updateCourseDisplay();
+    }
+
+    function updateCourseDisplay() {
+      if (!currentCourseSlides.length) return;
+      
+      const total = currentCourseSlides.length;
+      const progress = ((currentSlideIndex + 1) / total) * 100;
+      
+      // Update progress
+      document.getElementById('courseProgress').style.width = `${progress}%`;
+      document.getElementById('courseProgressText').textContent = `Slide ${currentSlideIndex + 1} of ${total}`;
+      document.getElementById('courseProgressPercent').textContent = `${Math.round(progress)}% Complete`;
+      
+      // Update slide content
+      const currentSlide = currentCourseSlides[currentSlideIndex];
+      
+      if (currentSlide.slide_type === 'hotspot' && currentSlide.hotspots && currentSlide.hotspots.length > 0) {
+        // Render hotspot slide with interactive hotspots
+        document.getElementById('courseSlideContent').innerHTML = `
+          <div class="relative w-full h-full">
+            <img class="w-full h-full object-contain" src="${currentSlide.image_url}" alt="Slide ${currentSlide.slide_number}" />
+            ${currentSlide.hotspots.map((hotspot, index) => `
+              <div class="absolute w-8 h-8 bg-cyan-500 border-2 border-white rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer hover:scale-110 transition-transform shadow-lg"
+                   style="left: ${hotspot.x_position * 100}%; top: ${hotspot.y_position * 100}%; transform: translate(-50%, -50%);"
+                   onclick="showHotspotInfo('${hotspot.title}', '${hotspot.description || 'No description provided'}')"
+                   title="${hotspot.title}">
+                ${index + 1}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else if ((currentSlide.slide_type === 'quiz' || currentSlide.slide_type === 'assessment') && currentSlide.questions && currentSlide.questions.length > 0) {
+        // Render quiz/assessment slide
+        document.getElementById('courseSlideContent').innerHTML = `
+          <div class="w-full h-full bg-white text-slate-800 p-6 overflow-y-auto">
+            <div class="max-w-4xl mx-auto">
+              <div class="mb-6 border-b border-slate-200 pb-4">
+                <h2 class="text-2xl font-bold mb-2">${currentSlide.title || 'Quiz'}</h2>
+                ${currentSlide.content ? `<p class="text-slate-600">${currentSlide.content}</p>` : ''}
+                <div class="text-sm text-slate-500 mt-2">
+                  ${currentSlide.questions.length} question${currentSlide.questions.length !== 1 ? 's' : ''} • 
+                  ${currentSlide.questions.reduce((sum, q) => sum + (q.points_value || 1), 0)} total points
+                </div>
+              </div>
+              
+              <div class="space-y-6">
+                ${currentSlide.questions.map((question, index) => generateQuizQuestionPreview(question, index)).join('')}
+              </div>
+              
+              <div class="mt-8 pt-6 border-t border-slate-200">
+                <button class="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600" onclick="alert('Quiz functionality coming soon!')">
+                  Submit Quiz
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentSlide.slide_type === 'standard' && currentSlide.interactive_data && currentSlide.interactive_data.canvasHtml) {
+        // Render standard slide with custom content
+        let canvasContent = currentSlide.interactive_data.canvasHtml;
+        
+        // Add click handlers for hotspots in course preview
+        canvasContent = canvasContent.replace(
+          /onclick="showHotspotPopup\(this\)"/g,
+          'onclick="showHotspotPreview(this)"'
+        );
+        
+        // Add click handlers for links in course preview
+        canvasContent = canvasContent.replace(
+          /onclick="editLinkUrl\(this\)"/g,
+          'onclick="openLinkPreview(this)"'
+        );
+        
+        document.getElementById('courseSlideContent').innerHTML = `
+          <div class="w-full h-full bg-white overflow-hidden course-preview">
+            <div class="w-full h-full relative" style="transform-origin: top left;">
+              ${canvasContent}
+            </div>
+          </div>
+        `;
+        
+        // Add interactive functionality to the course viewer
+        addCoursePreviewInteractivity();
+      } else if (currentSlide.slide_type === 'drag_drop' && currentSlide.interactive_data) {
+        // Render drag and drop exercise
+        const data = currentSlide.interactive_data;
+        const title = data.title || 'Drag & Drop Exercise';
+        const instructions = data.instructions || 'Drag items to their correct categories';
+        
+        document.getElementById('courseSlideContent').innerHTML = `
+          <div class="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+            <div class="text-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">${title}</h2>
+              <p class="text-gray-600">${instructions}</p>
+            </div>
+            
+            <div class="relative bg-white rounded-lg shadow-lg p-6 min-h-96">
+              <div class="relative w-full h-96">
+                ${data.dropZones ? data.dropZones.map(zone => `
+                  <div class="absolute border-2 border-dashed border-green-400 bg-green-100 rounded-lg flex items-center justify-center text-green-800 font-medium"
+                       style="left: ${zone.x}px; top: ${zone.y}px; width: ${zone.width}px; height: ${zone.height}px;">
+                    ${zone.label}
+                  </div>
+                `).join('') : ''}
+                
+                ${data.dragItems ? data.dragItems.map(item => `
+                  <div class="absolute bg-white border-2 border-gray-300 rounded-lg px-3 py-2 cursor-move text-sm font-medium shadow-md hover:shadow-lg transition-shadow"
+                       style="left: ${item.x}px; top: ${item.y}px; background-color: ${item.color};">
+                    ${item.text}
+                  </div>
+                `).join('') : ''}
+              </div>
+              
+              <div class="mt-6 text-center">
+                <button class="bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600" onclick="alert('Drag & Drop exercise functionality coming soon!')">
+                  Start Exercise
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        // Render standard slide (fallback to image)
+        document.getElementById('courseSlideContent').innerHTML = 
+          `<img class="w-full h-full object-contain" src="${currentSlide.image_url}" alt="Slide ${currentSlide.slide_number}" />`;
+      }
+      
+      // Update navigation buttons
+      document.getElementById('btnCoursePrev').disabled = currentSlideIndex === 0;
+      document.getElementById('btnCourseNext').disabled = currentSlideIndex === total - 1;
+      
+      // Update audio status
+      const audioStatus = document.getElementById('audioStatus');
+      if (currentSlide.audio_url) {
+        courseAudio = new Audio(currentSlide.audio_url);
+        audioStatus.textContent = 'Audio available for this slide - click Play Audio button';
+        document.getElementById('btnCoursePlay').disabled = false;
+      } else {
+        courseAudio = null;
+        audioStatus.textContent = 'No audio available for this slide';
+        document.getElementById('btnCoursePlay').disabled = true;
+      }
+      
+      // Reset play button
+      document.getElementById('playIcon').textContent = '▶';
+    }
+
+    function filterCourses() {
+      const filter = document.getElementById('filterStatus').value;
+      const filteredCourses = filter === 'all' ? userCourses : userCourses.filter(course => course.status === filter);
+      
+      const grid = document.getElementById('coursesGrid');
+      grid.innerHTML = filteredCourses.map(course => createCourseCard(course)).join('');
+      
+      // Re-add click listeners
+      filteredCourses.forEach(course => {
+        const card = document.getElementById(`course-${course.id}`);
+        if (card) {
+          card.addEventListener('click', () => openCourseEditor(course));
+        }
+      });
+    }
+
+    // Add interactive functionality for course preview
+    function addCoursePreviewInteractivity() {
+      // Add the interactive functions to the global scope for course preview
+      window.showHotspotPreview = function(hotspotElement) {
+        // Hide any existing popups
+        document.querySelectorAll('.hotspot-preview-popup').forEach(popup => popup.remove());
+        
+        const hotspotText = hotspotElement.parentElement.getAttribute('data-hotspot-text') || 'Click to learn more about this area.';
+        
+        const popup = document.createElement('div');
+        popup.className = 'hotspot-preview-popup';
+        popup.style.cssText = 'position: absolute; background: white; border: 2px solid #3b82f6; border-radius: 8px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; max-width: 300px; z-index: 1000; font-size: 14px; line-height: 1.4; color: #1f293b; font-weight: 500;';
+        popup.innerHTML = hotspotText;
+        
+        // Position popup
+        const rect = hotspotElement.getBoundingClientRect();
+        const courseViewer = document.getElementById('courseSlideContent');
+        const courseRect = courseViewer.getBoundingClientRect();
+        
+        // Calculate position relative to the course viewer
+        const left = rect.left - courseRect.left + 50;
+        const top = rect.top - courseRect.top - 10;
+        
+        // Ensure popup stays within bounds
+        popup.style.left = Math.max(10, Math.min(left, courseRect.width - 250)) + 'px';
+        popup.style.top = Math.max(10, Math.min(top, courseRect.height - 100)) + 'px';
+        
+        courseViewer.appendChild(popup);
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          if (popup.parentElement) {
+            popup.remove();
+          }
+        }, 5000);
+      };
+      
+      window.openLinkPreview = function(linkElement) {
+        const url = linkElement.parentElement.getAttribute('data-link-url');
+        if (url) {
+          // Ensure URL has protocol
+          let fullUrl = url;
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            fullUrl = 'https://' + url;
+          }
+          window.open(fullUrl, '_blank');
+        } else {
+          alert('No URL set for this link');
+        }
+      };
+      
+      // Close popups when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.hotspot-preview-popup') && !e.target.closest('[onclick*="showHotspotPreview"]')) {
+          document.querySelectorAll('.hotspot-preview-popup').forEach(popup => popup.remove());
+        }
+      });
+    }
+
+    // Show hotspot information when clicked
+    function showHotspotInfo(title, description) {
+      // Create a simple modal or alert to show hotspot info
+      // For now, using a simple alert - you could enhance this with a proper modal
+      alert(`${title}\n\n${description}`);
+    }
+
+    // Generate quiz question preview HTML
+    function generateQuizQuestionPreview(question, index) {
+      let optionsHtml = '';
+      
+      switch (question.question_type) {
+        case 'multiple_choice':
+          const options = JSON.parse(question.options || '[]');
+          optionsHtml = options.map((option, i) => `
+            <div class="flex items-center gap-2">
+              <input type="radio" name="q${index}" id="q${index}_${i}" class="w-4 h-4">
+              <label for="q${index}_${i}" class="flex-1">${option}</label>
+            </div>
+          `).join('');
+          break;
+          
+        case 'true_false':
+          optionsHtml = `
+            <div class="flex items-center gap-2">
+              <input type="radio" name="q${index}" id="q${index}_true" class="w-4 h-4">
+              <label for="q${index}_true" class="flex-1">True</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="radio" name="q${index}" id="q${index}_false" class="w-4 h-4">
+              <label for="q${index}_false" class="flex-1">False</label>
+            </div>
+          `;
+          break;
+          
+        case 'short_answer':
+          optionsHtml = `
+            <input type="text" class="w-full border border-slate-300 rounded-lg p-3" placeholder="Enter your answer here...">
+          `;
+          break;
+      }
+      
+      return `
+        <div class="border border-slate-200 rounded-lg p-4">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-medium text-lg">Question ${index + 1}</h3>
+            <span class="text-sm text-slate-500">${question.points_value || 1} point${(question.points_value || 1) !== 1 ? 's' : ''}</span>
+          </div>
+          <p class="text-slate-700 mb-4">${question.question_text}</p>
+          <div class="space-y-2">
+            ${optionsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+  </script>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>

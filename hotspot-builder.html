@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hotspot Builder · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    
+    .builder-canvas {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      min-height: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hotspot-marker {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: rgba(6, 182, 212, 0.9);
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      z-index: 10;
+      transform: translate(-50%, -50%);
+    }
+    
+    .hotspot-marker:hover {
+      transform: translate(-50%, -50%) scale(1.2);
+      background: rgba(6, 182, 212, 1);
+    }
+    
+    .hotspot-marker.selected {
+      background: rgba(239, 68, 68, 0.9);
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+    }
+    
+    .file-drop-area {
+      border: 2px dashed #94a3b8;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: rgba(51, 65, 85, 0.2);
+    }
+    
+    .file-drop-area.dragover {
+      border-color: #06b6d4;
+      background: rgba(6, 182, 212, 0.1);
+    }
+    
+    .builder-toolbar {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+    
+    .icon-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+      gap: 8px;
+    }
+    
+    .icon-option {
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(51, 65, 85, 0.5);
+    }
+    
+    .icon-option:hover, .icon-option.selected {
+      border-color: #06b6d4;
+      background: rgba(6, 182, 212, 0.2);
+    }
+    
+    .hotspot-list-item {
+      background: rgba(51, 65, 85, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .hotspot-list-item:hover {
+      background: rgba(51, 65, 85, 1);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    
+    .hotspot-list-item.selected {
+      border-color: rgba(56, 189, 248, 0.6);
+      background: rgba(56, 189, 248, 0.1);
+    }
+    
+    .loading-spinner {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 2px solid #06b6d4;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="#" id="btnBackToCourse">← Back to Course Builder</a>
+        <a class="hover:text-white" href="/dashboard.html">Dashboard</a>
+        <a class="hover:text-white" href="/courses.html">My Courses</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="badge" id="userPlan">Pro Plan</span>
+          <span class="text-sm text-slate-400" id="userEmail">user@example.com</span>
+        </div>
+        <button id="btnLogout" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="text-4xl">🎯</div>
+        <h1 class="text-3xl font-bold tracking-tight">Interactive Hotspot Builder</h1>
+      </div>
+      <p class="text-slate-400" id="courseInfo">Loading course information...</p>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="statusMessages" class="mb-6 space-y-2">
+      <!-- Success/error messages will appear here -->
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- Canvas Area -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Hotspot Canvas</h2>
+          <div class="flex items-center gap-3">
+            <button id="btnPreviewSlide" class="rounded-xl bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-400 disabled:opacity-50" disabled>
+              👁️ Preview
+            </button>
+            <button id="btnSaveSlide" class="rounded-xl bg-green-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-green-400 disabled:opacity-50" disabled>
+              💾 Save Slide
+            </button>
+          </div>
+        </div>
+        
+        <!-- File Upload Area -->
+        <div id="hotspotUploadArea" class="file-drop-area mb-4">
+          <div class="text-4xl mb-3">🖼️</div>
+          <p class="text-lg font-medium mb-2">Upload Background Image</p>
+          <p class="text-sm text-slate-400 mb-4">Drag & drop an image or click to browse</p>
+          <input type="file" id="hotspotImageInput" accept="image/*" class="hidden">
+          <button id="btnBrowseHotspotImage" class="px-4 py-2 bg-cyan-500 text-slate-900 rounded-lg hover:bg-cyan-400">
+            Browse Files
+          </button>
+          <p class="text-xs text-slate-500 mt-2">Supports JPG, PNG, GIF, WebP (max 10MB)</p>
+        </div>
+        
+        <!-- Image Canvas -->
+        <div id="hotspotCanvas" class="builder-canvas hidden">
+          <img id="hotspotCanvasImage" class="w-full h-full object-contain">
+          <!-- Hotspots will be positioned absolutely here -->
+        </div>
+        
+        <!-- Instructions -->
+        <div id="hotspotInstructions" class="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+          <h3 class="font-medium text-blue-300 mb-2">How to Add Hotspots:</h3>
+          <ol class="text-sm text-slate-300 space-y-1">
+            <li>1. Upload a background image above</li>
+            <li>2. Click anywhere on the image to place a hotspot</li>
+            <li>3. Configure each hotspot in the panel on the right</li>
+            <li>4. Save your interactive slide when ready</li>
+          </ol>
+        </div>
+      </div>
+      
+      <!-- Configuration Panel -->
+      <div class="builder-toolbar">
+        <h2 class="text-xl font-semibold mb-4">Hotspot Configuration</h2>
+        
+        <!-- Slide Title -->
+        <div class="mb-4">
+          <label class="block text-sm text-slate-300 mb-2">Slide Title *</label>
+          <input id="hotspotSlideTitle" type="text" 
+                 class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white" 
+                 placeholder="e.g., Explore the Solar System">
+        </div>
+        
+        <!-- Slide Description -->
+        <div class="mb-4">
+          <label class="block text-sm text-slate-300 mb-2">Slide Description</label>
+          <textarea id="hotspotSlideDescription" 
+                    class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white h-16" 
+                    placeholder="Brief description of this interactive slide..."></textarea>
+        </div>
+        
+        <!-- Current Hotspot Settings -->
+        <div id="hotspotSettings" class="hidden">
+          <h3 class="font-medium text-cyan-300 mb-3">Selected Hotspot</h3>
+          
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm text-slate-300 mb-1">Hotspot Title *</label>
+              <input id="hotspotTitle" type="text" 
+                     class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white" 
+                     placeholder="e.g., Jupiter">
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-300 mb-1">Description</label>
+              <textarea id="hotspotDescription" 
+                        class="w-full rounded-lg border border-white/10 bg-slate-900 p-2 text-sm text-white h-20" 
+                        placeholder="Information shown when hotspot is clicked..."></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-slate-300 mb-2">Hotspot Icon</label>
+              <div class="icon-selector">
+                <div class="icon-option" data-icon="info">ℹ️</div>
+                <div class="icon-option" data-icon="warning">⚠️</div>
+                <div class="icon-option" data-icon="help">❓</div>
+                <div class="icon-option" data-icon="star">⭐</div>
+                <div class="icon-option" data-icon="location">📍</div>
+                <div class="icon-option" data-icon="zoom">🔍</div>
+                <div class="icon-option" data-icon="play">▶️</div>
+                <div class="icon-option" data-icon="book">📖</div>
+              </div>
+            </div>
+            
+            <div class="flex gap-2">
+              <button id="btnUpdateHotspot" class="flex-1 px-3 py-2 bg-green-500 text-slate-900 rounded text-sm hover:bg-green-400">
+                ✅ Update
+              </button>
+              <button id="btnDeleteHotspot" class="px-3 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-400">
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Hotspot List -->
+        <div class="mt-6">
+          <h3 class="font-medium text-slate-300 mb-3">All Hotspots (<span id="hotspotCount">0</span>)</h3>
+          <div id="hotspotList" class="space-y-2 max-h-32 overflow-y-auto">
+            <div class="text-center text-slate-500 text-sm py-4">
+              No hotspots added yet
+            </div>
+          </div>
+        </div>
+        
+        <!-- Usage Info -->
+        <div class="mt-6 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+          <div class="text-sm text-purple-300 mb-1">Interactive Slide Usage</div>
+          <div class="text-xs text-slate-400" id="usageInfo">Loading usage information...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-slate-800 rounded-2xl border border-white/10 p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold">Hotspot Slide Preview</h3>
+          <button id="btnClosePreview" class="text-slate-400 hover:text-white">✕</button>
+        </div>
+        
+        <div id="previewContent" class="bg-white rounded-lg overflow-hidden">
+          <!-- Preview content will be generated here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentCourse = null;
+    let hotspots = [];
+    let selectedHotspotIndex = -1;
+    let hotspotBackgroundImage = null;
+    let uploadedImageUrl = null; // Store the actual uploaded file URL
+    let isEditMode = false;
+    let editSlideId = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadCourseData();
+      setupEventListeners();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Load course data from URL parameter
+    async function loadCourseData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('courseId');
+      const slideId = urlParams.get('slideId');
+      
+      if (!courseId) {
+        showError('No course ID provided. Redirecting to dashboard...');
+        setTimeout(() => window.location.href = '/dashboard.html', 2000);
+        return;
+      }
+      
+      try {
+        // Load course basic info
+        const courseResponse = await fetch(`/api/user/course/${courseId}`, {
+          credentials: 'include'
+        });
+        
+        if (courseResponse.ok) {
+          currentCourse = await courseResponse.json();
+          document.getElementById('courseInfo').textContent = `Creating hotspot slide for: ${currentCourse.title}`;
+          document.getElementById('btnBackToCourse').href = `/course-builder.html?courseId=${courseId}`;
+        } else {
+          throw new Error('Course not found');
+        }
+
+        // If editing existing slide, load slide data
+        if (slideId) {
+          isEditMode = true;
+          editSlideId = slideId;
+          await loadExistingSlide(courseId, slideId);
+        }
+
+        // Load usage stats
+        const usageResponse = await fetch('/api/user/usage', {
+          credentials: 'include'
+        });
+        
+        if (usageResponse.ok) {
+          const usage = await usageResponse.json();
+          updateUsageDisplay(usage);
+        }
+        
+      } catch (error) {
+        console.error('Error loading course:', error);
+        showError('Failed to load course. Redirecting to dashboard...');
+        setTimeout(() => window.location.href = '/dashboard.html', 3000);
+      }
+    }
+
+    // Load existing slide for editing
+    async function loadExistingSlide(courseId, slideId) {
+      try {
+        const response = await fetch(`/api/user/course/${courseId}/slide/${slideId}/interactive`, {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const slideData = await response.json();
+          const slide = slideData.slide;
+          
+          // Populate form fields
+          document.getElementById('hotspotSlideTitle').value = slide.title || '';
+          document.getElementById('hotspotSlideDescription').value = slide.content || '';
+          
+          // Load hotspots if they exist
+          if (slideData.slide.hotspots && slideData.slide.hotspots.length > 0) {
+            hotspots = slideData.slide.hotspots.map(h => ({
+              id: h.id,
+              x: h.x_position,
+              y: h.y_position,
+              title: h.title,
+              description: h.description,
+              icon: h.icon_type || 'info'
+            }));
+            
+            // If there's a background image in the slide data, load it
+            if (slide.image_url) {
+              uploadedImageUrl = slide.image_url;
+              loadBackgroundImage(slide.image_url);
+            }
+            
+            updateHotspotList();
+          }
+          
+          showSuccess('Loaded existing slide for editing');
+        } else {
+          throw new Error('Failed to load slide data');
+        }
+      } catch (error) {
+        console.error('Error loading existing slide:', error);
+        showError('Failed to load existing slide data');
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      // Update plan badge color
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+    }
+
+    // Update usage display
+    function updateUsageDisplay(usage) {
+      if (!currentUser || !currentUser.limits) return;
+      
+      const interactiveUsed = usage.interactive_slides_created || 0;
+      const interactiveLimit = currentUser.limits.max_interactive_slides;
+      
+      let usageText;
+      if (interactiveLimit === -1) {
+        usageText = `${interactiveUsed} interactive slides used this month (Unlimited)`;
+      } else {
+        usageText = `${interactiveUsed} / ${interactiveLimit} interactive slides used this month`;
+      }
+      
+      document.getElementById('usageInfo').textContent = usageText;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      
+      // Image upload
+      document.getElementById('btnBrowseHotspotImage').addEventListener('click', () => {
+        document.getElementById('hotspotImageInput').click();
+      });
+      document.getElementById('hotspotImageInput').addEventListener('change', handleHotspotImageUpload);
+      
+      // Hotspot management
+      document.getElementById('btnUpdateHotspot').addEventListener('click', updateSelectedHotspot);
+      document.getElementById('btnDeleteHotspot').addEventListener('click', deleteSelectedHotspot);
+      document.getElementById('btnSaveSlide').addEventListener('click', saveHotspotSlide);
+      document.getElementById('btnPreviewSlide').addEventListener('click', previewSlide);
+      
+      // Preview modal
+      document.getElementById('btnClosePreview').addEventListener('click', closePreview);
+      
+      // Icon selection
+      document.querySelectorAll('.icon-option').forEach(icon => {
+        icon.addEventListener('click', () => selectHotspotIcon(icon.dataset.icon, icon));
+      });
+      
+      // Drag and drop for image upload
+      const uploadArea = document.getElementById('hotspotUploadArea');
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+      
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+          handleImageFile(files[0]);
+        }
+      });
+    }
+
+    // Handle image upload
+    function handleHotspotImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      handleImageFile(file);
+    }
+
+    // Handle image file processing
+    async function handleImageFile(file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        showError('Image file too large. Maximum size is 10MB.');
+        return;
+      }
+      
+      try {
+        // Upload the file immediately
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const uploadResponse = await fetch('/api/user/upload-interactive', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        
+        const uploadResult = await uploadResponse.json();
+        
+        if (!uploadResult.success) {
+          throw new Error('Failed to upload image: ' + (uploadResult.error || 'Unknown error'));
+        }
+        
+        // Store both the file URL and create a preview
+        uploadedImageUrl = uploadResult.fileUrl;
+        
+        // Create data URL for preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          loadBackgroundImage(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        
+        showSuccess('Background image uploaded successfully');
+        
+      } catch (error) {
+        console.error('Upload error:', error);
+        showError('Failed to upload image: ' + error.message);
+      }
+    }
+
+    // Load background image
+    function loadBackgroundImage(imageData) {
+      const img = document.getElementById('hotspotCanvasImage');
+      img.src = imageData;
+      
+      document.getElementById('hotspotUploadArea').classList.add('hidden');
+      document.getElementById('hotspotCanvas').classList.remove('hidden');
+      
+      // Add click listener to place hotspots
+      const canvas = document.getElementById('hotspotCanvas');
+      canvas.addEventListener('click', placeHotspot);
+      
+      hotspotBackgroundImage = imageData; // Keep for preview
+      
+      // Enable save button now that we have an image
+      document.getElementById('btnSaveSlide').disabled = false;
+      document.getElementById('btnPreviewSlide').disabled = false;
+      
+      // Re-render existing hotspots if any
+      if (hotspots.length > 0) {
+        renderHotspots();
+      }
+    }
+
+    // Place new hotspot
+    function placeHotspot(event) {
+      // Don't place hotspot if clicking on existing hotspot
+      if (event.target.classList.contains('hotspot-marker')) return;
+      
+      const canvas = document.getElementById('hotspotCanvas');
+      const rect = canvas.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      
+      // Create new hotspot
+      const hotspot = {
+        id: Date.now(),
+        x: x,
+        y: y,
+        title: `Hotspot ${hotspots.length + 1}`,
+        description: '',
+        icon: 'info'
+      };
+      
+      hotspots.push(hotspot);
+      renderHotspots();
+      updateHotspotList();
+      selectHotspot(hotspots.length - 1);
+    }
+
+    // Render hotspots on canvas
+    function renderHotspots() {
+      // Remove existing hotspot markers
+      const existingMarkers = document.querySelectorAll('.hotspot-marker');
+      existingMarkers.forEach(marker => marker.remove());
+      
+      const canvas = document.getElementById('hotspotCanvas');
+      
+      hotspots.forEach((hotspot, index) => {
+        const marker = document.createElement('div');
+        marker.className = 'hotspot-marker';
+        marker.style.left = `${hotspot.x * 100}%`;
+        marker.style.top = `${hotspot.y * 100}%`;
+        marker.textContent = index + 1;
+        marker.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectHotspot(index);
+        });
+        
+        canvas.appendChild(marker);
+      });
+    }
+
+    // Select hotspot for editing
+    function selectHotspot(index) {
+      selectedHotspotIndex = index;
+      const hotspot = hotspots[index];
+      
+      // Update marker appearance
+      document.querySelectorAll('.hotspot-marker').forEach((marker, i) => {
+        marker.classList.toggle('selected', i === index);
+      });
+      
+      // Update list appearance
+      document.querySelectorAll('.hotspot-list-item').forEach((item, i) => {
+        item.classList.toggle('selected', i === index);
+      });
+      
+      // Show settings panel
+      document.getElementById('hotspotSettings').classList.remove('hidden');
+      
+      // Populate form
+      document.getElementById('hotspotTitle').value = hotspot.title;
+      document.getElementById('hotspotDescription').value = hotspot.description;
+      
+      // Select icon
+      document.querySelectorAll('.icon-option').forEach(icon => {
+        icon.classList.toggle('selected', icon.dataset.icon === hotspot.icon);
+      });
+    }
+
+    // Select hotspot icon
+    function selectHotspotIcon(iconType, iconElement) {
+      document.querySelectorAll('.icon-option').forEach(icon => {
+        icon.classList.remove('selected');
+      });
+      iconElement.classList.add('selected');
+      
+      if (selectedHotspotIndex >= 0) {
+        hotspots[selectedHotspotIndex].icon = iconType;
+      }
+    }
+
+    // Update selected hotspot
+    function updateSelectedHotspot() {
+      if (selectedHotspotIndex < 0) return;
+      
+      const title = document.getElementById('hotspotTitle').value.trim();
+      if (!title) {
+        showError('Hotspot title is required');
+        return;
+      }
+      
+      hotspots[selectedHotspotIndex] = {
+        ...hotspots[selectedHotspotIndex],
+        title: title,
+        description: document.getElementById('hotspotDescription').value.trim()
+      };
+      
+      updateHotspotList();
+      showSuccess('Hotspot updated');
+    }
+
+    // Delete selected hotspot
+    function deleteSelectedHotspot() {
+      if (selectedHotspotIndex < 0) return;
+      
+      if (confirm('Are you sure you want to delete this hotspot?')) {
+        hotspots.splice(selectedHotspotIndex, 1);
+        selectedHotspotIndex = -1;
+        
+        document.getElementById('hotspotSettings').classList.add('hidden');
+        renderHotspots();
+        updateHotspotList();
+        showSuccess('Hotspot deleted');
+      }
+    }
+
+    // Update hotspot list
+    function updateHotspotList() {
+      const list = document.getElementById('hotspotList');
+      const count = document.getElementById('hotspotCount');
+      
+      count.textContent = hotspots.length;
+      
+      if (hotspots.length === 0) {
+        list.innerHTML = `
+          <div class="text-center text-slate-500 text-sm py-4">
+            No hotspots added yet
+          </div>
+        `;
+        return;
+      }
+      
+      list.innerHTML = hotspots.map((hotspot, index) => `
+        <div class="hotspot-list-item ${selectedHotspotIndex === index ? 'selected' : ''}" 
+             onclick="selectHotspot(${index})">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-cyan-500 text-white text-xs flex items-center justify-center">
+                ${index + 1}
+              </div>
+              <div>
+                <div class="font-medium text-white text-sm">${hotspot.title}</div>
+                <div class="text-xs text-slate-400">${hotspot.description ? hotspot.description.substring(0, 30) + '...' : 'No description'}</div>
+              </div>
+            </div>
+            <div class="text-xs text-slate-500">${hotspot.icon}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Preview slide
+    function previewSlide() {
+      if (!hotspotBackgroundImage) {
+        showError('Please upload a background image first');
+        return;
+      }
+      
+      const title = document.getElementById('hotspotSlideTitle').value.trim();
+      if (!title) {
+        showError('Please enter a slide title');
+        return;
+      }
+      
+      // Generate preview content
+      const previewContent = document.getElementById('previewContent');
+      previewContent.innerHTML = `
+        <div class="relative w-full" style="aspect-ratio: 16/9;">
+          <img src="${hotspotBackgroundImage}" alt="Background" class="w-full h-full object-contain">
+          ${hotspots.map((hotspot, index) => `
+            <div class="absolute w-8 h-8 bg-cyan-500 border-2 border-white rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer hover:scale-110 transition-transform"
+                 style="left: ${hotspot.x * 100}%; top: ${hotspot.y * 100}%; transform: translate(-50%, -50%);"
+                 onclick="showHotspotInfo('${hotspot.title}', '${hotspot.description}')">
+              ${index + 1}
+            </div>
+          `).join('')}
+        </div>
+        <div class="p-4 bg-slate-100">
+          <h3 class="text-xl font-bold text-slate-800 mb-2">${title}</h3>
+          <p class="text-slate-600">${document.getElementById('hotspotSlideDescription').value || 'Click the numbered hotspots above to explore!'}</p>
+          <div id="hotspotInfo" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+            <h4 class="font-semibold text-blue-800 mb-2" id="infoTitle"></h4>
+            <p class="text-blue-700" id="infoDescription"></p>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('previewModal').classList.remove('hidden');
+    }
+
+    // Show hotspot info in preview
+    function showHotspotInfo(title, description) {
+      const infoDiv = document.getElementById('hotspotInfo');
+      const titleEl = document.getElementById('infoTitle');
+      const descEl = document.getElementById('infoDescription');
+      
+      titleEl.textContent = title;
+      descEl.textContent = description || 'No description provided';
+      infoDiv.classList.remove('hidden');
+    }
+
+    // Close preview modal
+    function closePreview() {
+      document.getElementById('previewModal').classList.add('hidden');
+    }
+
+    // Save hotspot slide - FIXED VERSION
+    async function saveHotspotSlide() {
+      const title = document.getElementById('hotspotSlideTitle').value.trim();
+      const description = document.getElementById('hotspotSlideDescription').value.trim();
+      
+      // Validation
+      if (!title) {
+        showError('Please enter a slide title');
+        return;
+      }
+      
+      if (!uploadedImageUrl) {
+        showError('Please upload a background image');
+        return;
+      }
+      
+      if (hotspots.length === 0) {
+        showError('Please add at least one hotspot');
+        return;
+      }
+      
+      // Check for hotspots without titles
+      const invalidHotspots = hotspots.filter(h => !h.title.trim());
+      if (invalidHotspots.length > 0) {
+        showError('All hotspots must have titles');
+        return;
+      }
+      
+      const saveButton = document.getElementById('btnSaveSlide');
+      const originalText = saveButton.textContent;
+      
+      try {
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<div class="loading-spinner"></div> Saving...';
+        
+        const slideData = {
+          slideType: 'hotspot',
+          data: {
+            title: title,
+            content: description,
+            imageUrl: uploadedImageUrl, // Use the uploaded file URL
+            pointsValue: hotspots.length * 5, // 5 points per hotspot
+            interactiveData: {
+              backgroundImage: uploadedImageUrl
+            },
+            hotspots: hotspots.map(h => ({
+              x: h.x,
+              y: h.y,
+              title: h.title,
+              description: h.description,
+              icon: h.icon || 'info'
+            }))
+          }
+        };
+        
+        let apiUrl;
+        let method;
+        
+        if (isEditMode && editSlideId) {
+          // Update existing slide
+          apiUrl = `/api/user/course/${currentCourse.id}/slide/${editSlideId}/interactive`;
+          method = 'PUT';
+        } else {
+          // Create new slide
+          apiUrl = `/api/user/course/${currentCourse.id}/interactive-slide`;
+          method = 'POST';
+        }
+        
+        const response = await fetch(apiUrl, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(slideData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          showSuccess(`Hotspot slide ${isEditMode ? 'updated' : 'created'} successfully!`);
+          
+          // Reset save button to success state
+          saveButton.innerHTML = '✅ Saved!';
+          saveButton.classList.add('bg-green-600');
+          
+          // Redirect after a delay
+          setTimeout(() => {
+            window.location.href = `/course-builder.html?courseId=${currentCourse.id}`;
+          }, 2000);
+        } else {
+          throw new Error(result.error || 'Failed to save slide');
+        }
+      } catch (error) {
+        console.error('Save slide error:', error);
+        showError('Failed to save slide: ' + error.message);
+        
+        saveButton.disabled = false;
+        saveButton.textContent = originalText;
+        saveButton.classList.remove('bg-green-600');
+      }
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const statusMessages = document.getElementById('statusMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-green-300';
+      messageDiv.textContent = message;
+      
+      statusMessages.innerHTML = '';
+      statusMessages.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+
+    // Show error message
+    function showError(message) {
+      const statusMessages = document.getElementById('statusMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-300';
+      messageDiv.textContent = message;
+      
+      statusMessages.innerHTML = '';
+      statusMessages.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+
+    // Logout function
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Make functions available globally for onclick handlers
+    window.selectHotspot = selectHotspot;
+    window.showHotspotInfo = showHotspotInfo;
+  </script>
+</body>
+</html>

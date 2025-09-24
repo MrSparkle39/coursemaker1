@@ -1,0 +1,7 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f8fafc"/>
+  <rect x="50" y="50" width="700" height="500" fill="white" stroke="#e2e8f0" stroke-width="2" rx="12"/>
+  <text x="400" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#64748b">Interactive Slide</text>
+  <circle cx="400" cy="380" r="40" fill="#3b82f6" opacity="0.1"/>
+  <text x="400" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#3b82f6">⚡</text>
+</svg>

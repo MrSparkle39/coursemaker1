@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Courses · CourseMaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass{backdrop-filter:blur(12px);background:rgba(15,23,42,.55)}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.25rem .5rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)}
+    .course-card {
+      transition: all 0.2s ease;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .course-card:hover {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+  
+  <!-- Navigation -->
+  <header class="sticky top-0 z-40 border-b border-white/5 glass">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-cyan-500/20 grid place-items-center ring-1 ring-cyan-400/40">✨</div>
+        <span class="text-xl font-semibold tracking-tight">CourseMaker</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="/dashboard.html">Dashboard</a>
+        <a class="hover:text-white font-medium text-cyan-300" href="/courses.html">My Courses</a>
+        <a class="hover:text-white" href="/usage.html">Usage</a>
+        <a class="hover:text-white" href="/account.html">Account</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="badge" id="userPlan">Pro Plan</span>
+          <span class="text-sm text-slate-400" id="userEmail">user@example.com</span>
+        </div>
+        <button id="btnLogout" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10">Sign out</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight">My Courses</h1>
+        <p class="mt-2 text-slate-400">Manage and edit your course library</p>
+      </div>
+      <button id="btnCreateCourse" class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400">
+        + Create New Course
+      </button>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-4">
+          <div>
+            <label class="block text-sm text-slate-300 mb-1">Filter by Status</label>
+            <select id="filterStatus" class="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-sm">
+              <option value="all">All Courses</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm text-slate-300 mb-1">Sort by</label>
+            <select id="sortBy" class="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-sm">
+              <option value="updated">Last Updated</option>
+              <option value="created">Date Created</option>
+              <option value="title">Title A-Z</option>
+              <option value="slides">Slide Count</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="flex-1 max-w-md">
+          <label class="block text-sm text-slate-300 mb-1">Search Courses</label>
+          <input id="searchInput" type="text" placeholder="Search by title or description..." 
+                 class="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-sm">
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Stats -->
+    <div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-green-400 text-2xl mb-2">📊</div>
+        <h3 class="font-semibold text-white">Total Courses</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="totalCourses">0</span> courses created</p>
+      </div>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-blue-400 text-2xl mb-2">📝</div>
+        <h3 class="font-semibold text-white">Draft Courses</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="draftCourses">0</span> in progress</p>
+      </div>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-purple-400 text-2xl mb-2">🚀</div>
+        <h3 class="font-semibold text-white">Published</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="publishedCourses">0</span> live courses</p>
+      </div>
+      
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="text-orange-400 text-2xl mb-2">👥</div>
+        <h3 class="font-semibold text-white">Total Views</h3>
+        <p class="text-sm text-slate-300 mt-1"><span id="totalViews">0</span> course views</p>
+      </div>
+    </div>
+
+    <!-- Course Grid -->
+    <div id="coursesGrid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Courses will be loaded here -->
+    </div>
+    
+    <!-- Empty State -->
+    <div id="coursesEmpty" class="hidden text-center py-16">
+      <div class="text-6xl mb-4">📚</div>
+      <h3 class="text-xl font-semibold mb-2">No courses found</h3>
+      <p class="text-slate-400 mb-6">Create your first course to get started</p>
+      <button id="btnCreateFirst" class="rounded-xl bg-cyan-500 px-6 py-3 font-medium text-slate-900 hover:bg-cyan-400">
+        Create Your First Course
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="coursesLoading" class="text-center py-16">
+      <div class="text-4xl mb-4">⏳</div>
+      <p class="text-slate-400">Loading your courses...</p>
+    </div>
+
+  </div>
+
+  <script>
+    let currentUser = null;
+    let allCourses = [];
+    let filteredCourses = [];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadUserData();
+      await loadCourses();
+      setupEventListeners();
+    });
+
+    // Load user data
+    async function loadUserData() {
+      try {
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          currentUser = await response.json();
+          updateUserInterface();
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Update UI with user data
+    function updateUserInterface() {
+      if (!currentUser) return;
+      
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPlan').textContent = currentUser.planType.charAt(0).toUpperCase() + currentUser.planType.slice(1) + ' Plan';
+      
+      // Update plan badge color
+      const planBadge = document.getElementById('userPlan');
+      if (currentUser.planType === 'pro') {
+        planBadge.className = 'badge text-cyan-300 border-cyan-400/40 bg-cyan-500/20';
+      } else if (currentUser.planType === 'business') {
+        planBadge.className = 'badge text-purple-300 border-purple-400/40 bg-purple-500/20';
+      } else {
+        planBadge.className = 'badge text-slate-300 border-slate-400/40 bg-slate-500/20';
+      }
+    }
+
+    // Load courses
+    async function loadCourses() {
+      try {
+        const response = await fetch('/api/user/courses', { credentials: 'include' });
+        
+        if (response.ok) {
+          allCourses = await response.json();
+          filteredCourses = [...allCourses];
+          updateCourseStats();
+          displayCourses();
+        } else {
+          throw new Error('Failed to load courses');
+        }
+      } catch (error) {
+        console.error('Error loading courses:', error);
+        document.getElementById('coursesLoading').classList.add('hidden');
+        document.getElementById('coursesEmpty').classList.remove('hidden');
+      }
+    }
+
+    // Update course statistics
+    function updateCourseStats() {
+      const total = allCourses.length;
+      const draft = allCourses.filter(c => c.status === 'draft').length;
+      const published = allCourses.filter(c => c.status === 'published').length;
+      const totalViews = allCourses.reduce((sum, c) => sum + (c.view_count || 0), 0);
+
+      document.getElementById('totalCourses').textContent = total;
+      document.getElementById('draftCourses').textContent = draft;
+      document.getElementById('publishedCourses').textContent = published;
+      document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+    }
+
+    // Display courses
+    function displayCourses() {
+      const grid = document.getElementById('coursesGrid');
+      const empty = document.getElementById('coursesEmpty');
+      const loading = document.getElementById('coursesLoading');
+      
+      loading.classList.add('hidden');
+      
+      if (filteredCourses.length === 0) {
+        grid.classList.add('hidden');
+        empty.classList.remove('hidden');
+        return;
+      }
+      
+      empty.classList.add('hidden');
+      grid.classList.remove('hidden');
+      
+      grid.innerHTML = filteredCourses.map(course => createCourseCard(course)).join('');
+      
+      // Add click listeners
+      filteredCourses.forEach(course => {
+        const card = document.getElementById(`course-${course.id}`);
+        if (card) {
+          card.addEventListener('click', (e) => {
+            if (!e.target.closest('.course-actions')) {
+              openCourse(course);
+            }
+          });
+        }
+      });
+    }
+
+    // Create course card HTML
+    function createCourseCard(course) {
+      const statusColor = {
+        draft: 'text-yellow-400 bg-yellow-500/20 border-yellow-400/40',
+        published: 'text-green-400 bg-green-500/20 border-green-400/40',
+        archived: 'text-gray-400 bg-gray-500/20 border-gray-400/40'
+      }[course.status] || 'text-slate-400 bg-slate-500/20 border-slate-400/40';
+      
+      const lastUpdated = new Date(course.updated_at).toLocaleDateString();
+      const created = new Date(course.created_at).toLocaleDateString();
+      
+      return `
+        <div id="course-${course.id}" class="course-card rounded-2xl p-6 cursor-pointer">
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="font-semibold text-white text-lg line-clamp-2 flex-1">${course.title}</h3>
+            <span class="badge ${statusColor} ml-3">${course.status}</span>
+          </div>
+          
+          <p class="text-sm text-slate-300 mb-4 line-clamp-3">${course.description || 'No description provided'}</p>
+          
+          <div class="grid grid-cols-2 gap-4 mb-4 text-xs text-slate-400">
+            <div>
+              <span class="font-medium">Slides:</span> ${course.actual_slide_count || 0}
+            </div>
+            <div>
+              <span class="font-medium">Duration:</span> ${formatDuration(course.total_duration || 0)}
+            </div>
+            <div>
+              <span class="font-medium">Created:</span> ${created}
+            </div>
+            <div>
+              <span class="font-medium">Updated:</span> ${lastUpdated}
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-between pt-4 border-t border-white/10">
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              ${course.is_public ? '🌐 Public' : '🔒 Private'}
+              ${course.view_count ? ` • ${course.view_count} views` : ''}
+            </div>
+            
+            <div class="course-actions flex items-center gap-2">
+              <button onclick="editCourse(${course.id})" class="text-xs text-cyan-400 hover:text-cyan-300 px-2 py-1 rounded hover:bg-cyan-500/10">
+                Edit
+              </button>
+              <button onclick="duplicateCourse(${course.id})" class="text-xs text-slate-400 hover:text-slate-300 px-2 py-1 rounded hover:bg-slate-500/10">
+                Duplicate
+              </button>
+              <button onclick="deleteCourse(${course.id})" class="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded hover:bg-red-500/10">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Format duration in seconds to readable format
+    function formatDuration(seconds) {
+      if (!seconds) return '0m';
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      if (minutes > 0) {
+        return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+      }
+      return `${remainingSeconds}s`;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('btnLogout').addEventListener('click', logout);
+      document.getElementById('btnCreateCourse').addEventListener('click', () => window.location.href = '/dashboard.html');
+      document.getElementById('btnCreateFirst').addEventListener('click', () => window.location.href = '/dashboard.html');
+      
+      document.getElementById('filterStatus').addEventListener('change', filterAndSort);
+      document.getElementById('sortBy').addEventListener('change', filterAndSort);
+      document.getElementById('searchInput').addEventListener('input', filterAndSort);
+    }
+
+    // Filter and sort courses
+    function filterAndSort() {
+      const status = document.getElementById('filterStatus').value;
+      const sortBy = document.getElementById('sortBy').value;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      
+      // Filter
+      filteredCourses = allCourses.filter(course => {
+        const matchesStatus = status === 'all' || course.status === status;
+        const matchesSearch = !search || 
+          course.title.toLowerCase().includes(search) ||
+          (course.description && course.description.toLowerCase().includes(search));
+        return matchesStatus && matchesSearch;
+      });
+      
+      // Sort
+      filteredCourses.sort((a, b) => {
+        switch (sortBy) {
+          case 'created':
+            return new Date(b.created_at) - new Date(a.created_at);
+          case 'updated':
+            return new Date(b.updated_at) - new Date(a.updated_at);
+          case 'title':
+            return a.title.localeCompare(b.title);
+          case 'slides':
+            return (b.actual_slide_count || 0) - (a.actual_slide_count || 0);
+          default:
+            return new Date(b.updated_at) - new Date(a.updated_at);
+        }
+      });
+      
+      displayCourses();
+    }
+
+    // Course actions
+    function openCourse(course) {
+      window.location.href = `/dashboard.html?edit=${course.id}`;
+    }
+
+    function editCourse(courseId) {
+      window.location.href = `/dashboard.html?edit=${courseId}`;
+    }
+
+    async function duplicateCourse(courseId) {
+      if (!confirm('Are you sure you want to duplicate this course?')) return;
+      
+      try {
+        const response = await fetch(`/api/user/course/${courseId}/duplicate`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          alert('Course duplicated successfully!');
+          loadCourses(); // Refresh the list
+        } else {
+          const error = await response.json();
+          alert('Failed to duplicate course: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Duplicate course error:', error);
+        alert('Failed to duplicate course');
+      }
+    }
+
+    async function deleteCourse(courseId) {
+      if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
+      
+      try {
+        const response = await fetch(`/api/user/course/${courseId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          alert('Course deleted successfully!');
+          loadCourses(); // Refresh the list
+        } else {
+          const error = await response.json();
+          alert('Failed to delete course: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Delete course error:', error);
+        alert('Failed to delete course');
+      }
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    }
+  </script>
+
+  <!-- Universal Footer will be inserted here by universal-footer.js -->
+  <div class="universal-footer-placeholder"></div>
+
+  <!-- Universal Footer Script -->
+  <script src="universal-footer.js"></script>
+</body>
+</html>
